@@ -4,19 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHAKTI MOBILE - Live Dashboard</title>
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN for Analytics Graph -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- ================= FIREBASE SDK INTEGRATION WITH YOUR API KEYS ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Aapki bheji hui Firebase config keys yahan perfectly set kar di hain
         const firebaseConfig = {
             apiKey: "AIzaSyBFM1JgizFIwUtI2uX9tQ2ZWv2Mlb_RtHo",
             authDomain: "shakti-mobile-dashboard.firebaseapp.com",
@@ -59,7 +54,6 @@
 </head>
 <body class="p-4 max-w-md mx-auto pb-10">
 
-    <!-- ================= LOGIN SCREEN ================= -->
     <div id="loginScreen" class="flex flex-col justify-center min-h-[80vh]">
         <div class="card-bg p-6 rounded-2xl shadow-xl border border-slate-800">
             <div class="text-center mb-6">
@@ -94,10 +88,8 @@
     </div>
 
 
-    <!-- ================= MAIN DASHBOARD CONTENT ================= -->
     <div id="dashboardContent" class="hidden">
         
-        <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
@@ -111,7 +103,6 @@
             </div>
         </div>
 
-        <!-- Top Stats Grid -->
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="card-bg p-3 rounded-xl">
                 <p class="text-xs text-gray-400 uppercase">Today's Sale</p>
@@ -135,7 +126,6 @@
             </div>
         </div>
 
-        <!-- PIE/DONUT CHART SECTION -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Business Cash Flow Split</h3>
             <div style="position: relative; height:180px; width:100%" class="flex justify-center">
@@ -143,18 +133,22 @@
             </div>
         </div>
 
-        <!-- Inventory / Stock Status Section -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Current Stock & Inventory</h3>
                 <span class="text-xs text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-900 flex items-center gap-1">
-                    <span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Live Multi-Device Sync
+                    <span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Multi-Device Sync
                 </span>
             </div>
-            <div id="stockContainer" class="space-y-2 text-xs"></div>
+            
+            <div class="mb-3 relative flex items-center">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 text-gray-500 text-xs"></i>
+                <input type="text" id="searchStockInp" oninput="renderStockTable()" placeholder="Search model stock count..." class="w-full input-field rounded-lg py-2 pl-9 pr-3 text-xs">
+            </div>
+
+            <div id="stockContainer" class="space-y-2 text-xs max-h-48 overflow-y-auto"></div>
         </div>
 
-        <!-- Filter & Analytics Section -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <label class="block text-xs text-gray-400 uppercase mb-2">Select Filter Month</label>
             <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4">
@@ -176,13 +170,11 @@
             </div>
         </div>
 
-        <!-- Top Selling Products -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Top Selling Models</h3>
             <div id="topProductsContainer" class="space-y-2 text-xs"></div>
         </div>
 
-        <!-- ADD STOCK FORM SECTION -->
         <div class="card-bg p-4 rounded-xl mb-4 border-l-4 border-emerald-500">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">
                 <i class="fa-solid fa-boxes-stacked text-emerald-400 mr-1"></i> Add / Update New Stock
@@ -198,7 +190,6 @@
             </div>
         </div>
 
-        <!-- Add New Sale Form -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Add New Sale</h3>
             <div class="space-y-3">
@@ -240,7 +231,6 @@
             </div>
         </div>
 
-        <!-- Add Shop Expense Form -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Add Shop Expense</h3>
             <div class="grid grid-cols-2 gap-2 mb-2">
@@ -252,7 +242,6 @@
             </button>
         </div>
 
-        <!-- Expense History Log -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Expense History Log</h3>
             <div class="overflow-x-auto">
@@ -270,7 +259,6 @@
             </div>
         </div>
 
-        <!-- Sales History Log -->
         <div class="card-bg p-4 rounded-xl">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Sales History Log</h3>
@@ -301,14 +289,13 @@
 
     </div>
 
-    <!-- JavaScript Logic -->
     <script>
         let salesData = [];
         let expenseData = [];
         let inventory = {};
         let myChart = null;
 
-        // Login Screen Setup
+        // Login Check
         window.onload = function() {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 showDashboard();
@@ -341,10 +328,9 @@
             setupRealtimeSync(); 
         }
 
-        // ================= CLOUD LIVE REALTIME SYNC (FIREBASE DETECT) =================
+        // FIREBASE CLOUD REALTIME SYNC
         function setupRealtimeSync() {
             if (!window.onSnapshot) {
-                // Local Fallback if offline
                 salesData = JSON.parse(localStorage.getItem('salesData')) || [];
                 expenseData = JSON.parse(localStorage.getItem('expenseData')) || [];
                 inventory = JSON.parse(localStorage.getItem('inventory')) || {};
@@ -352,7 +338,6 @@
                 return;
             }
 
-            // Realtime listening triggers automatically when any device saves data
             window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
                 if (docSnap.exists()) {
                     const cloudData = docSnap.data();
@@ -380,7 +365,6 @@
             }
         }
 
-        // Add Stock Function
         function addStockInventory() {
             const model = document.getElementById('stockModelName').value.trim();
             const qty = parseInt(document.getElementById('stockCount').value) || 0;
@@ -391,13 +375,11 @@
             }
 
             inventory[model] = (inventory[model] || 0) + qty;
-
             document.getElementById('stockModelName').value = '';
             document.getElementById('stockCount').value = '';
             syncToCloud();
         }
 
-        // Add Sale Function (Automatic minus stock count)
         function addSale() {
             const date = document.getElementById('saleDate').value;
             const model = document.getElementById('modelName').value.trim();
@@ -417,7 +399,6 @@
                 return;
             }
 
-            // Automatic stock reduction
             inventory[model] = currentStock - qty;
 
             const newSale = {
@@ -453,7 +434,6 @@
             expenseData.push({ id: Date.now(), name, amount, date });
             document.getElementById('expenseName').value = '';
             document.getElementById('expenseAmount').value = '';
-            
             syncToCloud(); 
         }
 
@@ -492,143 +472,4 @@
                 totalCost += item.cost;
             });
 
-            expenseData.forEach(exp => { totalExpenses += exp.amount; });
-            let actualNetMargin = monthProfitTotal - totalExpenses;
-
-            document.getElementById('todaySale').innerText = `₹${todaySaleTotal}`;
-            document.getElementById('todayProfit').innerText = `₹${todayProfitTotal}`;
-            document.getElementById('todayOrders').innerText = `${todayOrderCount} Orders`;
-            document.getElementById('monthSale').innerText = `₹${monthSaleTotal}`;
-            document.getElementById('monthProfit').innerText = `₹${monthProfitTotal}`;
-            document.getElementById('totalUnitsSold').innerText = totalUnits;
-            document.getElementById('totalCapitalCost').innerText = `₹${totalCost}`;
-            document.getElementById('totalOtherExpenses').innerText = `₹${totalExpenses}`;
-            document.getElementById('actualNetMargin').innerText = `₹${actualNetMargin}`;
-
-            renderLog();
-            renderExpenseLog();
-            renderTopProducts();
-            renderStockTable();
-            updateChart(totalCost, totalExpenses, actualNetMargin);
-        }
-
-        function renderLog() {
-            const tbody = document.getElementById('logTableBody');
-            const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
-            tbody.innerHTML = '';
-            const filteredData = salesData.filter(item => item.model.toLowerCase().includes(searchKeyword));
-
-            if(filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-4 italic">No matching sales found</td></tr>`;
-                return;
-            }
-            filteredData.reverse().forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/50";
-                tr.innerHTML = `
-                    <td class="py-2.5 font-mono text-gray-400">${item.date.substring(5)}</td>
-                    <td class="py-2.5 font-semibold text-gray-200">${item.model}</td>
-                    <td class="py-2.5 text-center font-mono">${item.qty}</td>
-                    <td class="py-2.5 text-center"><span class="px-1 py-0.5 rounded text-[10px] ${item.mode === 'UPI' ? 'bg-purple-950 text-purple-400' : item.mode === 'Cash' ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'}">${item.mode}</span></td>
-                    <td class="py-2.5 text-right font-mono text-gray-400">₹${item.cost}</td>
-                    <td class="py-2.5 text-right font-mono font-semibold text-blue-400">₹${item.sale}</td>
-                    <td class="py-2.5 text-center"><button onclick="deleteSale(${item.id})" class="text-rose-500 px-1"><i class="fa-solid fa-trash-can"></i></button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderExpenseLog() {
-            const tbody = document.getElementById('expenseTableBody');
-            tbody.innerHTML = '';
-            if(expenseData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-500 py-3 italic">No expenses recorded yet</td></tr>`;
-                return;
-            }
-            expenseData.reverse().forEach(exp => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/50";
-                tr.innerHTML = `
-                    <td class="py-2 font-mono text-gray-400">${exp.date.substring(5)}</td>
-                    <td class="py-2 font-semibold text-gray-200">${exp.name}</td>
-                    <td class="py-2 text-right font-mono text-rose-400">₹${exp.amount}</td>
-                    <td class="py-2 text-center"><button onclick="deleteExpense(${exp.id})" class="text-rose-500 px-1"><i class="fa-solid fa-trash-can"></i></button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderStockTable() {
-            const container = document.getElementById('stockContainer');
-            container.innerHTML = '';
-            if (Object.keys(inventory).length === 0) {
-                container.innerHTML = `<p class="text-gray-500 italic">No inventory tracked yet. Add stock below.</p>`;
-                return;
-            }
-            for (const [model, count] of Object.entries(inventory)) {
-                const badgeColor = count <= 2 ? 'bg-rose-950 text-rose-400 border border-rose-900' : 'bg-emerald-950 text-emerald-400';
-                const statusText = count <= 2 ? '(Low Stock)' : 'Units Left';
-                
-                const div = document.createElement('div');
-                div.className = "flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-800";
-                div.innerHTML = `<span>${model}</span> <span class="font-mono ${badgeColor} px-2 py-0.5 rounded">${count} ${statusText}</span>`;
-                container.appendChild(div);
-            }
-        }
-
-        function renderTopProducts() {
-            const container = document.getElementById('topProductsContainer');
-            container.innerHTML = '';
-            let productCounts = {};
-            salesData.forEach(item => { productCounts[item.model] = (productCounts[item.model] || 0) + item.qty; });
-            let sorted = Object.entries(productCounts).sort((a,b) => b[1] - a[1]).slice(0, 3);
-
-            if(sorted.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 italic">No sales data available yet.</p>`;
-                return;
-            }
-            sorted.forEach(([model, qty], index) => {
-                const div = document.createElement('div');
-                div.className = "flex justify-between items-center bg-slate-900/30 p-2 rounded";
-                div.innerHTML = `<span>#${index+1} ${model}</span><span class="font-bold text-blue-400">${qty} sold</span>`;
-                container.appendChild(div);
-            });
-        }
-
-        function updateChart(capitalCost, expenses, netProfit) {
-            const ctx = document.getElementById('analyticsChart').getContext('2d');
-            if (myChart) { myChart.destroy(); }
-            const dataValues = (capitalCost === 0 && expenses === 0 && netProfit === 0) ? [10, 10, 10] : [capitalCost, expenses, Math.max(0, netProfit)];
-
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Stock Cost', 'Expenses', 'Net Margin'],
-                    datasets: [{
-                        data: dataValues,
-                        backgroundColor: ['#3B82F6', '#F43F5E', '#10B981'],
-                        borderWidth: 2, borderColor: '#121A2E'
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right', labels: { color: '#94A3B8', font: { size: 10 }, boxWidth: 12 } } }
-                }
-            });
-        }
-
-        function exportToCSV() {
-            if(salesData.length === 0) { alert("No data to export!"); return; }
-            let csvContent = "data:text/csv;charset=utf-8,Date,Product Name,Quantity,Payment Mode,Cost Price,Sale Price\n";
-            salesData.forEach(r => { csvContent += `${r.date},${r.model},${r.qty},${r.mode},${r.cost},${r.sale}\n`; });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Sales_Report_Shakti_Mobile.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
-</body>
-</html>
+            expenseData.forEach(exp => { totalExpenses += exp
