@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHAKTI MOBILE - Live Sync Dashboard</title>
+    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN for Analytics Graph -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- ================= FIREBASE SDK INTEGRATION ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -43,6 +47,7 @@
 </head>
 <body class="p-4 max-w-md mx-auto pb-32">
 
+    <!-- ================= OTP LOGIN SCREEN ================= -->
     <div id="loginScreen" class="flex flex-col justify-center min-h-[80vh]">
         <div class="card-bg p-6 rounded-2xl shadow-xl border border-slate-800">
             <div class="text-center mb-6">
@@ -89,8 +94,10 @@
     </div>
 
 
+    <!-- ================= MAIN DASHBOARD CONTENT ================= -->
     <div id="dashboardContent" class="hidden">
         
+        <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
@@ -104,6 +111,7 @@
             </div>
         </div>
 
+        <!-- Top Stats Grid -->
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="card-bg p-3 rounded-xl">
                 <p class="text-xs text-gray-400 uppercase">Today's Sale</p>
@@ -127,21 +135,23 @@
             </div>
         </div>
 
+        <!-- TOP CARDS KE NICHE NEW 4 BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-4">
             <button onclick="openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
-                <p class="text-base">➕ Add Sale</p>
+                <p class="text-sm">➕ Add Sale</p>
             </button>
             <button onclick="openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
-                <p class="text-base">📦 Add Stock</p>
+                <p class="text-sm">📦 Add Stock</p>
             </button>
             <button onclick="openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
-                <p class="text-base">💸 Expense</p>
+                <p class="text-sm">💸 Expense</p>
             </button>
-            <button onclick="openModal('udhaarModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
-                <p class="text-base">📊 View Report</p>
+            <button onclick="document.getElementById('analyticsChart').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+                <p class="text-sm">📊 View Report</p>
             </button>
         </div>
 
+        <!-- PIE/DONUT CHART SECTION -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Business Cash Flow Split</h3>
             <div style="position: relative; height:180px; width:100%" class="flex justify-center">
@@ -149,6 +159,7 @@
             </div>
         </div>
 
+        <!-- Inventory / Stock Status Section -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Current Stock & Inventory</h3>
@@ -157,6 +168,7 @@
                 </span>
             </div>
 
+            <!-- SHOP LIVE STOCK VALUE BOX -->
             <div class="bg-blue-950/40 border border-blue-900/60 rounded-xl p-3 mb-3 flex justify-between items-center">
                 <div>
                     <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Total Shop Stock Value</p>
@@ -165,6 +177,7 @@
                 <i class="fa-solid fa-calculator text-blue-900 text-xl mr-1"></i>
             </div>
             
+            <!-- ADVANCED SEARCH STOCK BY: MODEL, BRAND, IMEI -->
             <div class="mb-3 grid grid-cols-3 gap-1.5">
                 <select id="stockSearchType" class="input-field rounded-lg p-2 text-xs col-span-1">
                     <option value="model">Model Name</option>
@@ -180,7 +193,8 @@
             <div id="stockContainer" class="space-y-2 text-xs max-h-48 overflow-y-auto"></div>
         </div>
 
-        <div class="card-bg p-4 rounded-xl mb-4">
+        <!-- ================= UDHAAR BOX LIVE REGISTER SECTION (FIXED SHOW ISSUE) ================= -->
+        <div class="card-bg p-4 rounded-xl mb-4 border-t-4 border-rose-500">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
                 <h3 class="text-sm font-semibold text-rose-400 uppercase tracking-wider"><i class="fa-solid fa-book-bookmark mr-1"></i> Udhaar Box Register</h3>
                 <span id="totalUdhaarValuation" class="text-sm font-bold text-rose-400 font-mono">₹0 Pending</span>
@@ -188,10 +202,12 @@
             <div class="mb-3">
                 <input type="text" id="searchUdhaarInp" oninput="renderUdhaarTable()" placeholder="Search Customer Name or Number..." class="w-full input-field rounded-lg p-2 text-xs">
             </div>
-            <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto">
-                </div>
+            <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto pt-1">
+                <!-- Udhaar items render here dynamically -->
+            </div>
         </div>
 
+        <!-- Filter & Analytics Section -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <label class="block text-xs text-gray-400 uppercase mb-2">Select Filter Month</label>
             <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4">
@@ -213,11 +229,13 @@
             </div>
         </div>
 
+        <!-- Top Selling Products -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Top Selling Models</h3>
             <div id="topProductsContainer" class="space-y-2 text-xs"></div>
         </div>
 
+        <!-- Expense History Log -->
         <div class="card-bg p-4 rounded-xl mb-4">
             <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Expense History Log</h3>
             <div class="overflow-x-auto">
@@ -235,6 +253,7 @@
             </div>
         </div>
 
+        <!-- Sales History Log -->
         <div class="card-bg p-4 rounded-xl">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Sales History Log</h3>
@@ -270,6 +289,9 @@
 
     </div>
 
+    <!-- ================= POPUP BOX MODALS ================= -->
+    
+    <!-- 🔴 UDHAAR REGISTER POPUP MODAL -->
     <div id="udhaarModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -297,6 +319,7 @@
         </div>
     </div>
 
+    <!-- 🟢 ADD/EDIT SALE MODAL -->
     <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -324,6 +347,7 @@
         </div>
     </div>
 
+    <!-- 🔵 ADD/EDIT STOCK MODAL -->
     <div id="stockModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -344,6 +368,7 @@
         </div>
     </div>
 
+    <!-- 🟠 ADD EXPENSE MODAL -->
     <div id="expenseModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -359,6 +384,7 @@
     </div>
 
 
+    <!-- ================= STICKY BOTTOM 4 BIG BUTTONS LAYOUT ================= -->
     <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto card-bg p-3 grid grid-cols-4 gap-2 border-t border-slate-800 z-40 text-xs font-bold">
         <button onclick="openModal('saleModal')" class="bg-emerald-600 py-3 rounded-xl flex flex-col items-center justify-center">🟢 Add Sale</button>
         <button onclick="openModal('stockModal')" class="bg-blue-600 py-3 rounded-xl flex flex-col items-center justify-center">🔵 Add Stock</button>
@@ -367,6 +393,7 @@
     </div>
 
 
+    <!-- JavaScript Core Processing Engine -->
     <script>
         let salesData = []; let expenseData = []; let inventory = {}; let udhaarData = []; let myChart = null; let generatedOTP = null;
 
@@ -411,6 +438,8 @@
                 if (docSnap.exists()) {
                     let c = docSnap.data();
                     salesData = c.salesData || []; expenseData = c.expenseData || []; inventory = c.inventory || {}; udhaarData = c.udhaarData || [];
+                } else {
+                    salesData = []; expenseData = []; inventory = {}; udhaarData = []; syncToCloud();
                 }
                 updateDashboardUI();
             });
@@ -626,11 +655,20 @@
             });
         }
 
+        // ================= FIXED LOGIC: RENDERS CARDS WITHOUT GETTING LOCKED =================
         function renderUdhaarTable() {
             const container = document.getElementById('udhaarContainer');
+            if(!container) return; // UI element check safeguard
+            
             const kw = document.getElementById('searchUdhaarInp').value.toLowerCase();
             container.innerHTML = '';
             let totalPendingMarket = 0;
+
+            if(udhaarData.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 italic py-2">No Udhaar records stored yet.</p>`;
+                document.getElementById('totalUdhaarValuation').innerText = "₹0 Pending";
+                return;
+            }
 
             let filtered = udhaarData.filter(x => x.name.toLowerCase().includes(kw) || x.phone.includes(kw));
 
@@ -690,12 +728,6 @@
                 let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between";
                 d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d);
             });
-        }
-        function exportToCSV() {
-            let csv = "Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n";
-            salesData.forEach(x => csv += `${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`);
-            let link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
-            link.setAttribute("download", "Sales_Report.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
 </body>
