@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDR AI BOOKS - Production ERP Framework</title>
-    <!-- Premium Inter & JetBrains Fonts -->
+    <title>KDR AI BOOKS & SHAKTI MOBILE - Unified ERP System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ChartJS for Financial Projections -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
         :root {
@@ -16,20 +15,17 @@
             --bg-sidebar-dark: #0d121f;
             --bg-card-dark: #121826;
             --bg-input-dark: #1a2236;
-            --border-glow-color: rgba(56, 189, 248, 0.15);
             --border-standard: rgba(255, 255, 255, 0.05);
-            
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            
             --accent-cyan: #38bdf8;
             --accent-green: #10b981;
             --accent-orange: #f97316;
             --accent-purple: #a855f7;
             --accent-rose: #f43f5e;
-
-            /* Marketplace Strict Branding Colors */
+            
+            /* Channels Strict Branding Colors */
             --brand-amazon: #ff9900;
             --brand-flipkart: #2874f0;
             --brand-meesho: #f43397;
@@ -38,704 +34,262 @@
             --brand-distributor: #3b82f6;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-body-dark); color: var(--text-primary); display: flex; height: 100vh; width: 100vw; overflow: hidden; }
 
-        body {
-            background-color: var(--bg-body-dark);
-            color: var(--text-primary);
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-        }
-
-        /* --- SIDEBAR PLATFORM --- */
-        .erp-sidebar {
-            width: 250px;
-            background-color: var(--bg-sidebar-dark);
-            border-right: 1px solid var(--border-standard);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            height: 100%;
-        }
-
-        .brand-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-standard);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo-icon {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
-        }
-
-        .brand-text-wrapper h2 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: white;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-        }
-
-        .brand-text-wrapper span {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            display: block;
-        }
-
-        .sidebar-navigation-links {
-            list-style: none;
-            padding: 15px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .nav-link-item a {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link-item a:hover, .nav-link-item.active a {
-            background-color: rgba(56, 189, 248, 0.08);
-            color: var(--accent-cyan);
-        }
-
-        .nav-link-item .icon-title-wrap {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-link-item i {
-            font-size: 1rem;
-            width: 20px;
-            text-align: center;
-            color: var(--text-muted);
-        }
-
-        .nav-link-item a:hover i, .nav-link-item.active i {
-            color: var(--accent-cyan);
-        }
-
-        .nav-badge-new {
-            background-color: var(--accent-green);
-            color: #000;
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 2px 5px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .sidebar-divider-title {
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin: 20px 0 8px 14px;
-        }
-
-        .sidebar-action-card-footer {
-            padding: 15px;
-            border-top: 1px solid var(--border-standard);
-            background-color: rgba(0,0,0,0.1);
-        }
-
-        .btn-sidebar-action {
-            width: 100%;
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--accent-green);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-sidebar-action:hover {
-            background-color: var(--accent-green);
-            color: #000;
-        }
+        /* --- SIDEBAR WORKSPACE --- */
+        .sidebar { width: 250px; background-color: var(--bg-sidebar-dark); border-right: 1px solid var(--border-standard); display: flex; flex-direction: column; flex-shrink: 0; }
+        .brand-header { padding: 20px; border-bottom: 1px solid var(--border-standard); display: flex; align-items: center; gap: 12px; }
+        .brand-logo { background: linear-gradient(135deg, #0284c7, #0369a1); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .sidebar-links { list-style: none; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; overflow-y: auto; }
+        .nav-item a { display: flex; align-items: center; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; border-radius: 6px; gap: 12px; }
+        .nav-item.active a, .nav-item a:hover { background-color: rgba(56, 189, 248, 0.08); color: var(--accent-cyan); }
+        .sidebar-divider { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin: 15px 0 5px 14px; }
+        .sidebar-footer-btn { padding: 15px; border-top: 1px solid var(--border-standard); }
+        .btn-add-sidebar { width: 100%; background-color: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--accent-cyan); padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
 
         /* --- WORKSPACE --- */
-        .workspace {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .workspace-top-navbar {
-            height: 65px;
-            background-color: var(--bg-sidebar-dark);
-            border-bottom: 1px solid var(--border-standard);
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .navbar-search-mechanism {
-            position: relative;
-            width: 420px;
-        }
-
-        .navbar-search-mechanism input {
-            width: 100%;
-            background-color: var(--bg-body-dark);
-            border: 1px solid var(--border-standard);
-            border-radius: 6px;
-            padding: 10px 14px 10px 40px;
-            color: white;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        .navbar-search-mechanism i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .navbar-shortcut-pill {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: var(--bg-input-dark);
-            border: 1px solid var(--border-standard);
-            color: var(--text-secondary);
-            font-size: 0.65rem;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .navbar-user-controls-right {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .notification-bell-trigger {
-            position: relative;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        .notification-bell-trigger::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 7px;
-            height: 7px;
-            background-color: var(--accent-rose);
-            border-radius: 50%;
-        }
-
-        .user-profile-badge-trigger {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            border-left: 1px solid var(--border-standard);
-            padding-left: 20px;
-        }
-
-        .company-identity-text {
-            text-align: right;
-            line-height: 1.3;
-        }
-
-        .company-identity-text h4 { font-size: 0.8rem; font-weight: 600; color: white; }
-        .company-identity-text span { font-size: 0.7rem; color: var(--text-muted); }
-
-        .avatar-circle-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--accent-cyan);
-            color: #070a13;
-            font-weight: 700;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Content Scroller */
-        .workspace-scrollable-content {
-            flex-grow: 1;
-            padding: 30px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .view-welcome-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .view-welcome-title h1 { font-size: 1.5rem; font-weight: 700; color: white; }
-        .view-welcome-title p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
-
-        .dashboard-calendar-badge {
-            background-color: var(--bg-card-dark);
-            border: 1px solid var(--border-standard);
-            padding: 10px 16px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: white;
-        }
-
-        /* --- METRICS ROW GRID --- */
-        .primary-kpi-row-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .primary-kpi-card-block {
-            background-color: var(--bg-card-dark);
-            border: 1px solid var(--border-standard);
-            border-radius: 8px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .primary-kpi-card-block::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 3px; height: 100%;
-        }
-
-        .kpi-orders-theme::before { background-color: var(--accent-cyan); }
-        .kpi-sales-theme::before { background-color: var(--accent-green); }
-        .kpi-returns-theme::before { background-color: var(--accent-orange); }
-        .kpi-profit-theme::before { background-color: var(--accent-purple); }
-
-        .kpi-block-label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        .kpi-block-label-row .icon-box-rounded {
-            width: 26px;
-            height: 26px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-        }
-
-        .kpi-orders-theme .icon-box-rounded { background-color: rgba(56, 189, 248, 0.1); color: var(--accent-cyan); }
-        .kpi-sales-theme .icon-box-rounded { background-color: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
-        .kpi-returns-theme .icon-box-rounded { background-color: rgba(249, 115, 22, 0.1); color: var(--accent-orange); }
-        .kpi-profit-theme .icon-box-rounded { background-color: rgba(168, 85, 247, 0.1); color: var(--accent-purple); }
-
-        .kpi-block-numeric-value {
-            font-size: 1.85rem;
-            font-weight: 700;
-            color: white;
-            margin: 12px 0 6px 0;
-        }
-
-        .kpi-block-trend-footer {
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .trend-up-color { color: var(--accent-green); }
-        .trend-down-color { color: var(--accent-rose); }
-
-        /* --- SALES CHANNELS --- */
-        .channel-title-meta-row {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.5px;
-            margin-bottom: -10px;
-        }
-
-        .channels-sixway-grid-layout {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 16px;
-        }
-
-        .channel-metric-card-box {
-            background-color: var(--bg-card-dark);
-            border: 1px solid var(--border-standard);
-            border-radius: 8px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .channel-card-identity {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .channel-branding-logo-frame {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            object-fit: cover;
-            background-color: #fff;
-            padding: 2px;
-        }
-
-        .channel-financial-sum-lbl { font-size: 1.25rem; font-weight: 700; color: white; margin-top: 4px; }
-        .channel-linear-track { width: 100%; height: 4px; background-color: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; margin-top: 4px; }
-        .channel-linear-fill-progress { height: 100%; width: 0%; transition: width 0.4s ease; }
-        .channel-percentage-share-lbl { font-size: 0.7rem; color: var(--text-secondary); text-align: right; font-weight: 500; }
-
-        /* --- MID SECTION WIDGETS --- */
-        .secondary-fourway-grid-layout {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .secondary-interactive-action-card {
-            background-color: var(--bg-card-dark);
-            border: 1px solid var(--border-standard);
-            border-radius: 8px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .sec-card-left-payload { display: flex; align-items: center; gap: 16px; }
-        .sec-card-icon-container { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-        .sec-payload-text-block p { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
-        .sec-payload-text-block strong { font-size: 1.15rem; font-weight: 700; color: white; margin-top: 2px; display: block; }
-
-        /* --- LAYOUT GRAPH & FORMS --- */
-        .analytics-triple-split-row {
-            display: grid;
-            grid-template-columns: 1.2fr 1.2fr 1.5fr;
-            gap: 20px;
-        }
-
-        .section-panel-container-card {
-            background-color: var(--bg-card-dark);
-            border: 1px solid var(--border-standard);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .panel-header-title-row {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Forms Layout Fields Stack */
-        .live-sync-form-stack { display: flex; flex-direction: column; gap: 14px; }
-        .form-row-input-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-row-input-group label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
+        .workspace { flex-grow: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .top-navbar { height: 65px; background-color: var(--bg-sidebar-dark); border-bottom: 1px solid var(--border-standard); padding: 0 30px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         
-        .form-input-element-select, .form-input-element-box {
-            background-color: var(--bg-body-dark);
-            border: 1px solid var(--border-standard);
-            color: white;
-            padding: 11px 14px;
-            border-radius: 6px;
-            outline: none;
-            font-size: 0.85rem;
-            width: 100%;
-        }
+        .navbar-search { position: relative; width: 350px; }
+        .navbar-search input { width: 100%; background-color: var(--bg-body-dark); border: 1px solid var(--border-standard); border-radius: 6px; padding: 8px 12px 8px 35px; color: white; font-size: 0.85rem; outline: none; }
+        .navbar-search i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
-        .btn-form-commit-action {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            color: white;
-            border: none;
-            padding: 13px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            margin-top: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .content-container { flex-grow: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; }
+        .welcome-row { display: flex; justify-content: space-between; align-items: center; }
+        .welcome-title h1 { font-size: 1.5rem; font-weight: 700; }
 
-        /* Products Rankings Custom bars style */
-        .best-selling-products-metric-list { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; border-top: 1px solid var(--border-standard); padding-top: 15px; }
-        .best-product-tier-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
-        .best-product-tier-row span { font-weight: 500; color: var(--text-primary); }
-        .best-product-progress-track { flex-grow: 1; height: 5px; background-color: rgba(255,255,255,0.04); border-radius: 3px; margin: 0 15px; overflow: hidden; }
-        .best-product-progress-fill-bar { height: 100%; background-color: var(--accent-cyan); border-radius: 3px; }
+        /* --- AUTO SHEET FILE IMPORTER --- */
+        .auto-importer-panel { background: linear-gradient(135deg, #131d35, #121826); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 20px; text-align: center; }
+        .importer-title { font-size: 1rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .upload-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px; }
+        .selector-element { background-color: var(--bg-body-dark); color: white; border: 1px solid var(--border-standard); padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; outline: none; }
+        .btn-upload-trigger { background-color: #0284c7; color: white; padding: 10px 20px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        #hidden-file-input { display: none; }
 
-        /* --- FOOTER PLATFORM STATUS --- */
-        .system-footer-status-bar {
-            height: 45px;
-            background-color: var(--bg-sidebar-dark);
-            border-top: 1px solid var(--border-standard);
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            flex-shrink: 0;
-        }
+        /* --- METRICS GRID --- */
+        .kpi-row-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .kpi-card-block { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 20px; position: relative; }
+        .kpi-card-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+        .kpi-orders::before { background-color: var(--accent-cyan); }
+        .kpi-sales::before { background-color: var(--accent-green); }
+        .kpi-returns::before { background-color: var(--accent-orange); }
+        .kpi-profit::before { background-color: var(--accent-purple); }
+        .kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: flex; justify-content: space-between; }
+        .kpi-value { font-size: 1.8rem; font-weight: 700; margin: 10px 0 4px 0; }
 
-        .system-footer-left-counters { display: flex; align-items: center; gap: 35px; }
-        .footer-counter-node span { color: white; font-weight: 600; margin-left: 6px; }
+        /* --- CHANNELS OVERVIEW SYSTEM --- */
+        .channels-distribution-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
+        .channel-widget { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 15px; }
+        .channel-info-header { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; }
+        .channel-logo-wrapper { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; background: white; padding: 2px; }
+        .channel-sum-value { font-size: 1.2rem; font-weight: 700; margin-top: 6px; }
+        .channel-track-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+        .channel-fill-bar { height: 100%; width: 0%; transition: width 0.4s ease; }
+        .channel-percentage { font-size: 0.65rem; color: var(--text-secondary); text-align: right; margin-top: 2px; }
+
+        /* --- MIDDLE WIDGETS LAYOUT --- */
+        .secondary-fourway-grid-layout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .secondary-interactive-action-card { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; }
+        .sec-card-icon-container { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background: rgba(255,255,255,0.02); }
+
+        /* --- SPLIT PLOTS AND INPUT ENGINE --- */
+        .analytics-triple-split-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; }
+        .section-panel-card { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 20px; }
+        .panel-title { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 15px; }
+
+        /* Form Engine styling */
+        .live-sync-form-stack { display: flex; flex-direction: column; gap: 12px; }
+        .form-row-input-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-row-input-group label { font-size: 0.75rem; color: var(--text-secondary); }
+        .form-input-element { background-color: var(--bg-body-dark); border: 1px solid var(--border-standard); color: white; padding: 10px 12px; border-radius: 6px; outline: none; font-size: 0.85rem; }
+        .btn-form-commit { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 5px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+
+        /* --- MASTER LEDGER TABLE --- */
+        .master-ledger-panel { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 22px; }
+        .table-scroll-frame { overflow-x: auto; width: 100%; border-radius: 6px; border: 1px solid var(--border-standard); background-color: rgba(0,0,0,0.1); max-height: 280px; }
+        .master-ledger-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+        .master-ledger-table th { color: var(--text-secondary); background: #0f1422; padding: 12px 14px; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-standard); position: sticky; top: 0; z-index: 10; }
+        .master-ledger-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .master-ledger-table tbody tr:hover { background-color: rgba(255,255,255,0.01); }
+        
+        .badge-tag { padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; color: white; text-transform: uppercase; }
+        .btn-row-delete { background: transparent; border: none; color: var(--accent-rose); cursor: pointer; font-size: 0.9rem; padding: 2px; }
+        .btn-row-delete:hover { color: #ff1e43; transform: scale(1.1); }
+
+        /* --- SYSTEM FOOTER --- */
+        .system-footer { height: 45px; background-color: var(--bg-sidebar-dark); border-top: 1px solid var(--border-standard); padding: 0 30px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+        .footer-left-nodes { display: flex; gap: 35px; }
+        .footer-left-nodes span { color: white; font-weight: 600; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- LEFT BAR -->
-    <div class="erp-sidebar">
+    <div class="sidebar">
         <div class="brand-header">
-            <div class="brand-logo-icon"><i class="fa-solid fa-cube"></i></div>
+            <div class="brand-logo"><i class="fa-solid fa-cube"></i></div>
             <div class="brand-text-wrapper">
                 <h2>KDR AI BOOKS</h2>
-                <span>Business Management Suite</span>
+                <span>Management Software</span>
             </div>
         </div>
-        <ul class="sidebar-navigation-links">
-            <li class="sidebar-divider-title">Core Modules</li>
-            <li class="nav-link-item active"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></div></a></li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span></div></a></li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-cart-shopping"></i><span>Sales Channels</span></div></a></li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-bag-shopping"></i><span>Purchase Log</span></div></a></li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-users"></i><span>Parties / Vendors</span></div></a></li>
-            <li class="sidebar-divider-title">Financials</li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-wallet"></i><span>Accounts Ledger</span></div></a></li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-file-invoice-dollar"></i><span>Tax Reports</span></div></a></li>
-            <li class="nav-link-item"><a href="#"><div class="icon-title-wrap"><i class="fa-solid fa-robot"></i><span>AI Assistant</span></div><span class="nav-badge-new">New</span></a></li>
+        <ul class="sidebar-links">
+            <li class="sidebar-divider">Core Modules</li>
+            <li class="nav-item active"><a href="#"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-cart-shopping"></i><span>Sales Channels</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-bag-shopping"></i><span>Purchase Log</span></a></li>
+            <li class="sidebar-divider">Financials</li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-wallet"></i><span>Accounts Ledger</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i><span>Tax Reports</span></a></li>
         </ul>
-        <div class="sidebar-action-card-footer">
-            <button class="btn-sidebar-action" onclick="document.getElementById('form-inp-amount').focus()"><i class="fa-solid fa-circle-plus"></i> Add New Sale</button>
+        <div class="sidebar-footer-btn">
+            <button class="btn-add-sidebar" onclick="document.getElementById('form-inp-amount').focus()">+ Quick Manual Add</button>
         </div>
     </div>
 
-    <!-- MAIN CONTROL CENTER PANEL -->
     <div class="workspace">
-        <div class="workspace-top-navbar">
-            <div class="navbar-search-mechanism">
+        <div class="top-navbar">
+            <div class="navbar-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="global-search-input" placeholder="Search parameters...">
-                <span class="navbar-shortcut-pill">Ctrl + K</span>
+                <input type="text" id="master-search-filter-input" placeholder="Search product logs or channel details instantly...">
             </div>
-            <div class="navbar-user-controls-right">
-                <div class="notification-bell-trigger"><i class="fa-regular fa-bell"></i></div>
-                <div class="user-profile-badge-trigger">
-                    <div class="company-identity-text">
-                        <h4>KDR AI Books Pvt. Ltd.</h4>
-                        <span>Financial Year 2025-26</span>
-                    </div>
-                    <div class="avatar-circle-icon">KA</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="text-align:right; line-height:1.3;">
+                    <h4 style="color:white; font-weight:600;">Shakti Mobile Workdeck</h4>
+                    <span style="color:var(--text-muted); font-size:0.7rem;">Financial Live Node</span>
                 </div>
+                <div style="background:var(--accent-cyan); color:#000; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">KA</div>
             </div>
         </div>
 
-        <!-- SCROLLER VIEW PANEL -->
-        <div class="workspace-scrollable-content">
-            <div class="view-welcome-row">
-                <div class="view-welcome-title">
-                    <h1>Dashboard</h1>
-                    <p>Welcome back! Here is your business overview.</p>
+        <div class="content-container">
+            <div class="welcome-row">
+                <div class="welcome-title">
+                    <h1>Dashboard System Overview</h1>
                 </div>
                 <div class="dashboard-calendar-badge">
-                    <span id="live-calendar-date">10 June 2026</span>
-                    <i class="fa-regular fa-calendar" style="color: var(--accent-cyan);"></i>
+                    <span id="live-widget-calendar-date">10 June 2026</span> <i class="fa-regular fa-calendar-check" style="color:var(--accent-cyan); margin-left:8px;"></i>
                 </div>
             </div>
 
-            <!-- CORE CARDS -->
-            <div class="primary-kpi-row-grid">
-                <div class="primary-kpi-card-block kpi-orders-theme">
-                    <div class="kpi-block-label-row">Orders Today <div class="icon-box-rounded"><i class="fa-solid fa-box"></i></div></div>
-                    <div class="kpi-block-numeric-value" id="lbl-block-orders-count">145</div>
-                    <div class="kpi-block-trend-footer trend-up-color"><i class="fa-solid fa-arrow-trend-up"></i> +12.5% <span>vs Yesterday</span></div>
+            <div class="auto-importer-panel">
+                <div class="importer-title"><i class="fa-solid fa-cloud-arrow-up"></i> Automatic Order Sheet Parser Engine</div>
+                <div class="importer-desc">Meesho, Amazon, ya Flipkart seller panel se mili download report (.csv file) ko select karein. System automatic saari entries jod dega.</div>
+                
+                <div class="upload-controls">
+                    <select id="sheet-channel-type" class="selector-element">
+                        <option value="Amazon">Amazon Report Sheet</option>
+                        <option value="Flipkart">Flipkart Report Sheet</option>
+                        <option value="Meesho">Meesho Report Sheet</option>
+                        <option value="Website">Website Store Sheet</option>
+                        <option value="Retail">Retail Store Log</option>
+                        <option value="Distributor">Distributor Log</option>
+                    </select>
+
+                    <label for="hidden-file-input" class="btn-upload-trigger">
+                        <i class="fa-solid fa-file-csv"></i> Upload Sheet File
+                    </label>
+                    <input type="file" id="hidden-file-input" accept=".csv">
                 </div>
-                <div class="primary-kpi-card-block kpi-sales-theme">
-                    <div class="kpi-block-label-row">Sales Today <div class="icon-box-rounded"><i class="fa-solid fa-indian-rupee-sign"></i></div></div>
-                    <div class="kpi-block-numeric-value" id="lbl-block-sales-revenue">₹2,45,680</div>
-                    <div class="kpi-block-trend-footer trend-up-color"><i class="fa-solid fa-arrow-trend-up"></i> +18.3% <span>vs Yesterday</span></div>
+                <div id="parse-success-lbl" style="font-size: 0.8rem; margin-top: 12px; font-weight: 600; color: var(--accent-green);"></div>
+            </div>
+
+            <div class="kpi-row-grid">
+                <div class="kpi-card-block kpi-orders">
+                    <div class="kpi-label">Orders Processed <div class="icon-box-rounded"><i class="fa-solid fa-box"></i></div></div>
+                    <div class="kpi-value" id="val-orders-count">0</div>
                 </div>
-                <div class="primary-kpi-card-block kpi-returns-theme">
-                    <div class="kpi-block-label-row">Returns Today <div class="icon-box-rounded"><i class="fa-solid fa-rotate-left"></i></div></div>
-                    <div class="kpi-block-numeric-value" style="color: var(--accent-rose);">₹18,750</div>
-                    <div class="kpi-block-trend-footer trend-down-color"><i class="fa-solid fa-arrow-trend-down"></i> -4.2% <span>vs Yesterday</span></div>
+                <div class="kpi-card-block kpi-sales">
+                    <div class="kpi-label">Sales Today <div class="icon-box-rounded"><i class="fa-solid fa-indian-rupee-sign"></i></div></div>
+                    <div class="kpi-value" id="val-sales-revenue" style="color:var(--accent-green);">₹0</div>
                 </div>
-                <div class="primary-kpi-card-block kpi-profit-theme">
-                    <div class="kpi-block-label-row">Profit Today <div class="icon-box-rounded"><i class="fa-solid fa-wallet"></i></div></div>
-                    <div class="kpi-block-numeric-value" style="color: var(--accent-green);" id="lbl-block-profit-yield">₹48,743</div>
-                    <div class="kpi-block-trend-footer trend-up-color"><i class="fa-solid fa-arrow-trend-up"></i> +15.7% <span>vs Yesterday</span></div>
+                <div class="kpi-card-block kpi-returns">
+                    <div class="kpi-label">Returns Volume <div class="icon-box-rounded"><i class="fa-solid fa-rotate-left"></i></div></div>
+                    <div class="kpi-value" style="color: #f43f5e;">₹18,750</div>
+                </div>
+                <div class="kpi-card-block kpi-profit">
+                    <div class="kpi-label">Profit Yield Total <div class="icon-box-rounded"><i class="fa-solid fa-wallet"></i></div></div>
+                    <div class="kpi-value" id="val-profit-yield" style="color:var(--accent-cyan);">₹0</div>
                 </div>
             </div>
 
-            <!-- CHANNEL OVERVIEW ROW CARDS -->
-            <div class="channel-title-meta-row">Sales by Channel (Today)</div>
-            <div class="channels-sixway-grid-layout">
-                <!-- Amazon -->
-                <div class="channel-metric-card-box">
-                    <div class="channel-card-identity"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" class="channel-branding-logo-frame" alt="Amazon">Amazon</div>
-                    <div class="channel-financial-sum-lbl" id="node-val-amazon">₹1,25,430</div>
-                    <div class="channel-linear-track"><div id="node-bar-amazon" class="channel-linear-fill-progress" style="background-color: var(--brand-amazon);"></div></div>
-                    <div class="channel-percentage-share-lbl" id="node-pct-amazon">51.05%</div>
+            <div class="channel-title-meta-row">Sales Channels Analytics Volume Breakdown</div>
+            <div class="channels-distribution-grid">
+                <div class="channel-widget">
+                    <div class="channel-info-header"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" class="channel-logo-wrapper" alt="Amazon"> Amazon</div>
+                    <div class="channel-sum-value" id="node-val-amazon">₹0</div>
+                    <div class="channel-track-bar"><div id="node-bar-amazon" class="channel-fill-bar" style="background:var(--brand-amazon);"></div></div>
+                    <div class="channel-percentage" id="node-pct-amazon">0% Share</div>
                 </div>
-                <!-- Flipkart -->
-                <div class="channel-metric-card-box">
-                    <div class="channel-card-identity"><img src="https://cb-thumbnails.s3.ap-south-1.amazonaws.com/flipkart_logo.png" class="channel-branding-logo-frame" alt="Flipkart" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968310.png'">Flipkart</div>
-                    <div class="channel-financial-sum-lbl" id="node-val-flipkart">₹68,750</div>
-                    <div class="channel-linear-track"><div id="node-bar-flipkart" class="channel-linear-fill-progress" style="background-color: var(--brand-flipkart);"></div></div>
-                    <div class="channel-percentage-share-lbl" id="node-pct-flipkart">27.98%</div>
+                <div class="channel-widget">
+                    <div class="channel-info-header"><img src="https://cb-thumbnails.s3.ap-south-1.amazonaws.com/flipkart_logo.png" class="channel-logo-wrapper" alt="Flipkart" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968310.png'"> Flipkart</div>
+                    <div class="channel-sum-value" id="node-val-flipkart">₹0</div>
+                    <div class="channel-track-bar"><div id="node-bar-flipkart" class="channel-fill-bar" style="background:var(--brand-flipkart);"></div></div>
+                    <div class="channel-percentage" id="node-pct-flipkart">0% Share</div>
                 </div>
-                <!-- Meesho -->
-                <div class="channel-metric-card-box">
-                    <div class="channel-card-identity"><img src="https://cdn.iconscout.com/icon/free/png-256/free-meesho-logo-icon-download-in-svg-png-gif-formats--brand-social-media-pack-logos-icons-1785501.png?f=webp" class="channel-branding-logo-frame" alt="Meesho" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'">Meesho</div>
-                    <div class="channel-financial-sum-lbl" id="node-val-meesho">₹28,940</div>
-                    <div class="channel-linear-track"><div id="node-bar-meesho" class="channel-linear-fill-progress" style="background-color: var(--brand-meesho);"></div></div>
-                    <div class="channel-percentage-share-lbl" id="node-pct-meesho">11.78%</div>
+                <div class="channel-widget">
+                    <div class="channel-info-header"><img src="https://cdn.iconscout.com/icon/free/png-256/free-meesho-logo-icon-download-in-svg-png-gif-formats--brand-social-media-pack-logos-icons-1785501.png?f=webp" class="channel-logo-wrapper" alt="Meesho" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'"> Meesho</div>
+                    <div class="channel-sum-value" id="node-val-meesho">₹0</div>
+                    <div class="channel-track-bar"><div id="node-bar-meesho" class="channel-fill-bar" style="background:var(--brand-meesho);"></div></div>
+                    <div class="channel-percentage" id="node-pct-meesho">0% Share</div>
                 </div>
-                <!-- Website -->
-                <div class="channel-metric-card-box">
-                    <div class="channel-card-identity"><img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" class="channel-branding-logo-frame" alt="Web">Website</div>
-                    <div class="channel-financial-sum-lbl" id="node-val-website">₹12,450</div>
-                    <div class="channel-linear-track"><div id="node-bar-website" class="channel-linear-fill-progress" style="background-color: var(--brand-website);"></div></div>
-                    <div class="channel-percentage-share-lbl" id="node-pct-website">5.07%</div>
+                <div class="channel-widget">
+                    <div class="channel-info-header"><img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" class="channel-logo-wrapper" alt="Web"> Website</div>
+                    <div class="channel-sum-value" id="node-val-website">₹0</div>
+                    <div class="channel-track-bar"><div id="node-bar-website" class="channel-fill-bar" style="background:var(--brand-website);"></div></div>
+                    <div class="channel-percentage" id="node-pct-website">0% Share</div>
                 </div>
-                <!-- Retail -->
-                <div class="channel-metric-card-box">
-                    <div class="channel-card-identity"><img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" class="channel-branding-logo-frame" alt="Retail">Retail</div>
-                    <div class="channel-financial-sum-lbl" id="node-val-retail">₹6,110</div>
-                    <div class="channel-linear-track"><div id="node-bar-retail" class="channel-linear-fill-progress" style="background-color: var(--brand-retail);"></div></div>
-                    <div class="channel-percentage-share-lbl" id="node-pct-retail">2.49%</div>
+                <div class="channel-widget">
+                    <div class="channel-info-header"><img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" class="channel-logo-wrapper" alt="Retail"> Retail</div>
+                    <div class="channel-sum-value" id="node-val-retail">₹0</div>
+                    <div class="channel-track-bar"><div id="node-bar-retail" class="channel-fill-bar" style="background:var(--brand-retail);"></div></div>
+                    <div class="channel-percentage" id="node-pct-retail">0% Share</div>
                 </div>
-                <!-- Distributor -->
-                <div class="channel-metric-card-box">
-                    <div class="channel-card-identity"><img src="https://cdn-icons-png.flaticon.com/512/411/411763.png" class="channel-branding-logo-frame" alt="Dist">Distributor</div>
-                    <div class="channel-financial-sum-lbl" id="node-val-distributor">₹4,000</div>
-                    <div class="channel-linear-track"><div id="node-bar-distributor" class="channel-linear-fill-progress" style="background-color: var(--brand-distributor);"></div></div>
-                    <div class="channel-percentage-share-lbl" id="node-pct-distributor">1.63%</div>
+                <div class="channel-widget">
+                    <div class="channel-info-header"><img src="https://cdn-icons-png.flaticon.com/512/411/411763.png" class="channel-logo-wrapper" alt="Dist"> Distributor</div>
+                    <div class="channel-sum-value" id="node-val-distributor">₹0</div>
+                    <div class="channel-track-bar"><div id="node-bar-distributor" class="channel-fill-bar" style="background:var(--brand-distributor);"></div></div>
+                    <div class="channel-percentage" id="node-pct-distributor">0% Share</div>
                 </div>
             </div>
 
-            <!-- INTERMEDIATE HORIZONTAL COUNTERS -->
             <div class="secondary-fourway-grid-layout">
                 <div class="secondary-interactive-action-card">
-                    <div class="sec-card-left-payload">
-                        <div class="sec-card-icon-container" style="background:rgba(56,189,248,0.08); color:var(--accent-cyan);"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                        <div class="sec-payload-text-block"><p>Total Outstanding</p><strong id="lbl-sec-outstanding">₹7,85,430</strong></div>
-                    </div>
+                    <div class="sec-card-icon-container" style="color:var(--accent-cyan);"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <div class="sec-payload-text-block"><p>Total Outstanding</p><strong id="lbl-sec-outstanding">₹1,09,27,825</strong></div>
                 </div>
                 <div class="secondary-interactive-action-card">
-                    <div class="sec-card-left-payload">
-                        <div class="sec-card-icon-container" style="background:rgba(16,185,129,0.08); color:var(--accent-green);"><i class="fa-solid fa-receipt"></i></div>
-                        <div class="sec-payload-text-block"><p>Pending Collections</p><strong id="lbl-sec-pending">₹3,45,680</strong></div>
-                    </div>
+                    <div class="sec-card-icon-container" style="color:var(--accent-green);"><i class="fa-solid fa-receipt"></i></div>
+                    <div class="sec-payload-text-block"><p>Pending Collections</p><strong>₹3,45,680</strong></div>
                 </div>
                 <div class="secondary-interactive-action-card">
-                    <div class="sec-card-left-payload">
-                        <div class="sec-card-icon-container" style="background:rgba(249,115,22,0.08); color:var(--accent-orange);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <div class="sec-payload-text-block"><p>Low Stock Items</p><strong style="color:var(--accent-orange);">23 Items</strong></div>
-                    </div>
+                    <div class="sec-card-icon-container" style="color:var(--accent-orange);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="sec-payload-text-block"><p>Low Stock Items</p><strong style="color:var(--accent-orange);">23 SKUs Left</strong></div>
                 </div>
                 <div class="secondary-interactive-action-card">
-                    <div class="sec-card-left-payload">
-                        <div class="sec-card-icon-container" style="background:rgba(244,63,94,0.08); color:var(--accent-rose);"><i class="fa-solid fa-hourglass-half"></i></div>
-                        <div class="sec-payload-text-block"><p>Expiry Alerts</p><strong style="color:var(--accent-rose);">17 Items</strong></div>
-                    </div>
+                    <div class="sec-card-icon-container" style="color:var(--accent-rose);"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div class="sec-payload-text-block"><p>Expiry Alerts</p><strong style="color:var(--accent-rose);">17 Items</strong></div>
                 </div>
             </div>
 
-            <!-- SPLIT ANALYSIS LAYER (CHARTS AND FORM ENGINE) -->
             <div class="analytics-triple-split-row">
-                <div class="section-panel-container-card">
-                    <div class="panel-header-title-row">Sales Trend (This Month)</div>
-                    <div style="height:150px; position:relative;"><canvas id="canvas-sales-chart"></canvas></div>
+                <div class="section-panel-card">
+                    <div class="panel-title">Sales Monthly Trend Chart</div>
+                    <div style="height:170px; position:relative;"><canvas id="canvas-sales-plot-chart"></canvas></div>
+                </div>
+                <div class="section-panel-card">
+                    <div class="panel-title">Profit Margin Analysis</div>
+                    <div style="height:170px; position:relative;"><canvas id="canvas-profit-plot-chart"></canvas></div>
                 </div>
 
-                <div class="section-panel-container-card">
-                    <div class="panel-header-title-row">Profit Trend (This Month)</div>
-                    <div style="height:150px; position:relative;"><canvas id="canvas-profit-chart"></canvas></div>
-                </div>
-
-                <!-- 100% LIVE INJECTION SCRIPT WORKING ENGINE FORM -->
-                <div class="section-panel-container-card" style="border: 1px solid rgba(56,189,248,0.25);">
-                    <div class="panel-header-title-row" style="color: var(--accent-cyan);">LIVE ORDER ADD SYNC</div>
-                    
-                    <form id="erp-sync-input-form" class="live-sync-form-stack" onsubmit="event.preventDefault(); triggerDataFormInjection();">
+                <div class="section-panel-card" style="border: 1px solid rgba(56,189,248,0.25);">
+                    <div class="panel-title" style="color: var(--accent-cyan);">Live Order Sync Injector</div>
+                    <form id="unified-erp-sync-form" class="live-sync-form-stack" onsubmit="event.preventDefault(); appendManualFormSaleOrder();">
                         <div class="form-row-input-group">
-                            <label>Marketplace Channel</label>
-                            <select id="form-inp-channel" class="form-input-element-select" required>
+                            <label>Marketplace Channel Node</label>
+                            <select id="form-inp-channel" class="form-input-element" required>
                                 <option value="Amazon">Amazon</option>
                                 <option value="Flipkart">Flipkart</option>
                                 <option value="Meesho">Meesho</option>
@@ -745,170 +299,271 @@
                             </select>
                         </div>
                         <div class="form-row-input-group">
-                            <label>Order Amount (₹)</label>
-                            <input type="number" id="form-inp-amount" class="form-input-element-box" placeholder="Enter Amount Value" min="1" required>
+                            <label>Product Model SKU Narration</label>
+                            <input type="text" id="form-inp-sku" class="form-input-element" placeholder="e.g. Lava Star 3" required>
                         </div>
-                        <button type="submit" class="btn-form-commit-action">Update Live Dashboard Metrics</button>
+                        <div class="form-row-input-group">
+                            <label>Order Amount (₹)</label>
+                            <input type="number" id="form-inp-amount" class="form-input-element" placeholder="0" min="1" required>
+                        </div>
+                        <button type="submit" class="btn-form-commit">Update Live Dashboard Metrics</button>
                     </form>
-
-                    <!-- Best selling rows indicators -->
-                    <div class="best-selling-products-metric-list">
-                        <div class="panel-header-title-row" style="margin-bottom:10px; padding:0;">Top 5 Best Selling Products</div>
-                        <div class="best-product-tier-row"><span>1. KDR Wet Wipes</span><div class="best-product-progress-track"><div class="best-product-progress-fill-bar" style="width: 90%;"></div></div><strong id="best-sku-1">₹2,45,650</strong></div>
-                        <div class="best-product-tier-row"><span>2. KDR Hand Wash</span><div class="best-product-progress-track"><div class="best-product-progress-fill-bar" style="width: 65%; background:#10b981;"></div></div><strong id="best-sku-2">₹1,25,430</strong></div>
-                        <div class="best-product-tier-row"><span>3. KDR Disinfectant</span><div class="best-product-progress-track"><div class="best-product-progress-fill-bar" style="width: 45%; background:#f97316;"></div></div><strong id="best-sku-3">₹98,750</strong></div>
-                    </div>
                 </div>
             </div>
+
+            <div class="master-ledger-panel">
+                <div class="panel-title">Master Integrated Channels Audit Ledger Logs</div>
+                <div class="table-scroll-frame">
+                    <table class="master-ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Order Transaction Reference ID</th>
+                                <th>Marketplace Channel Platform</th>
+                                <th>Product SKU Model Narration</th>
+                                <th>Gross Invoice Amount</th>
+                                <th style="text-align: center;">Action Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="master-rows-ledger-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
-        <!-- PERSISTENT FOOTER COUNTERS -->
-        <div class="system-footer-status-bar">
+        <div class="system-footer">
             <div class="system-footer-left-counters">
-                <div class="footer-counter-node">Total Products: <span id="foot-val-products">568</span></div>
-                <div class="footer-counter-node">Total Parties: <span id="foot-val-parties">324</span></div>
-                <div class="footer-counter-node">Total Users: <span id="foot-val-users">8</span></div>
-                <div class="footer-counter-node">Total Stock Value: <span id="foot-val-stock">₹12,45,680</span></div>
+                <div class="footer-counter-node">Total Products: <span id="foot-products">568 Items</span></div>
+                <div class="footer-counter-node">Total Parties: <span id="foot-parties">324 Accounts</span></div>
+                <div class="footer-counter-node">Total Stock Assets: <span style="color:var(--accent-cyan)">₹12,45,680</span></div>
             </div>
-            <div><i class="fa-solid fa-cloud" style="color:var(--accent-green); margin-right:5px;"></i> Last Backup: <span id="foot-val-clock-stamp" style="color:white; font-weight:600;">10-06-2026 02:57:49 PM</span></div>
+            <div><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-green); margin-right:5px;"></i> Cloud Database Stream Operational | Backup Sync: <span id="foot-clock-timestamp" style="color:white; font-weight:600;">--/--/---- --:--:--</span></div>
         </div>
     </div>
 
-    <!-- SCRIPT APPLICATION ENGINE (FIXED METHOD HANDLERS) -->
     <script>
-        // Blueprint Data strict setup matching image numbers perfectly
-        let erpStateRecord = {
-            Amazon: 125430,
-            Flipkart: 68750,
-            Meesho: 28940,
-            Website: 12450,
-            Retail: 6110,
-            Distributor: 4000,
-            ordersCount: 145,
-            outstanding: 785430,
-            pending: 345680
-        };
+        // Seed database rows cloned from blueprint picture figures parameters 
+        const primarySeedDataLogs = [
+            { id: 'TXN-9483210', channel: 'Amazon', sku: 'Lava Star 3 (Bulk Consignment Pack)', amount: 125430 },
+            { id: 'TXN-8432014', channel: 'Flipkart', sku: 'Samsung M16 Multi-Tier Shipment', amount: 68750 },
+            { id: 'TXN-1049324', channel: 'Meesho', sku: 'Realme Narzo 70 Logistics Units', amount: 28940 },
+            { id: 'TXN-2943210', channel: 'Website', sku: 'Online Direct Stripe Payment Cart', amount: 12450 },
+            { id: 'TXN-7432109', channel: 'Retail', sku: 'Counter Cash Invoice Retail Sales', amount: 6110 },
+            { id: 'TXN-4029431', channel: 'Distributor', sku: 'B2B Wholesale Hub Bulk Allocation', amount: 4000 }
+        ];
 
-        // Local cache validation checkout mapping layers
-        let cachedDataPayload = JSON.parse(localStorage.getItem('kdr_erp_secure_db'));
-        if (cachedDataPayload) { erpStateRecord = cachedDataPayload; }
+        // Core system local state validation fetch sequence 
+        let globalErpDatabaseList = JSON.parse(localStorage.getItem('kdr_unified_erp_db')) || primarySeedDataLogs;
 
-        function formatToINR(numericValue) {
-            return '₹' + Number(numericValue).toLocaleString('en-IN');
+        function formatINR(val) {
+            return '₹' + Number(val).toLocaleString('en-IN');
         }
 
-        // Live computing dashboard matrix graphics renderer function 
-        function calculateAndRefreshUI() {
-            let totalRevenueSum = 
-                erpStateRecord.Amazon + 
-                erpStateRecord.Flipkart + 
-                erpStateRecord.Meesho + 
-                erpStateRecord.Website + 
-                erpStateRecord.Retail + 
-                erpStateRecord.Distributor;
+        // CSV Automated File Reader implementation block 
+        document.getElementById('hidden-file-input').addEventListener('change', function(event) {
+            const currentFile = event.target.files[0];
+            const activeDropdownChannel = document.getElementById('sheet-channel-type').value;
 
-            // Compute structural channel loops bars percentage allocations 
-            Object.keys(erpStateRecord).forEach(platformKey => {
-                if (platformKey !== 'ordersCount' && platformKey !== 'outstanding' && platformKey !== 'pending') {
-                    let subVal = erpStateRecord[platformKey];
-                    let fractionWeightPct = totalRevenueSum > 0 ? ((subVal / totalRevenueSum) * 100).toFixed(2) : 0;
+            if(!currentFile) return;
 
-                    document.getElementById(`node-val-${platformKey.toLowerCase()}`).innerText = formatToINR(subVal);
-                    document.getElementById(`node-pct-${platformKey.toLowerCase()}`).innerText = `${fractionWeightPct}%`;
-                    document.getElementById(`node-bar-${platformKey.toLowerCase()}`).style.width = `${fractionWeightPct}%`;
+            document.getElementById('parse-success-lbl').innerText = "Streaming sheet row nodes metrics...";
+
+            Papa.parse(currentFile, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(parsingOutputs) {
+                    let additionCounter = 0;
+
+                    parsingOutputs.data.forEach(rowNode => {
+                        let dynamicExtractedPrice = 0;
+                        let customReferenceId = "REF-" + Math.floor(100000 + Math.random() * 900000);
+
+                        // Header scanning matrix loops algorithms paths
+                        if (rowNode['Total Amount']) dynamicExtractedPrice = parseFloat(rowNode['Total Amount']);
+                        else if (rowNode['Product Price']) dynamicExtractedPrice = parseFloat(rowNode['Product Price']);
+                        else if (rowNode['Order Amount']) dynamicExtractedPrice = parseFloat(rowNode['Order Amount']);
+                        else if (rowNode['Sale Price']) dynamicExtractedPrice = parseFloat(rowNode['Sale Price']);
+                        else if (rowNode['price']) dynamicExtractedPrice = parseFloat(rowNode['price']);
+                        else if (rowNode['amount']) dynamicExtractedPrice = parseFloat(rowNode['amount']);
+
+                        if (rowNode['Order ID']) customReferenceId = rowNode['Order ID'];
+                        else if (rowNode['Sub Order Id']) customReferenceId = rowNode['Sub Order Id'];
+
+                        if (!isNaN(dynamicExtractedPrice) && dynamicExtractedPrice > 0) {
+                            globalErpDatabaseList.unshift({
+                                id: customReferenceId,
+                                channel: activeDropdownChannel,
+                                sku: rowNode['Product Name'] || rowNode['item_name'] || `${activeDropdownChannel} Sheet Imported Item`,
+                                amount: dynamicExtractedPrice
+                            });
+                            additionCounter++;
+                        }
+                    });
+
+                    document.getElementById('parse-success-lbl').innerText = `🎉 Successfully compiled ${additionCounter} automated orders from ${activeDropdownChannel} Report!`;
+                    recalculateAndSyncUI();
                 }
             });
+        });
 
-            // Update main core metric counters blocks widgets labels values
-            document.getElementById('lbl-block-sales-revenue').innerText = formatToINR(totalRevenueSum);
-            document.getElementById('lbl-block-orders-count').innerText = erpStateRecord.ordersCount;
-            
-            // Calculate accurate proportional margin profile tracking outputs
-            let computedProfitToday = Math.round(totalRevenueSum * 0.1984);
-            document.getElementById('lbl-block-profit-yield').innerText = formatToINR(computedProfitToday);
-
-            // Sync secondary outstanding rows tags indicators fields values
-            document.getElementById('lbl-sec-outstanding').innerText = formatToINR(erpStateRecord.outstanding);
-            document.getElementById('lbl-sec-pending').innerText = formatToINR(erpStateRecord.pending);
-
-            // Save records list into system state local memory configuration layers
-            localStorage.setItem('kdr_erp_secure_db', JSON.stringify(erpStateRecord));
-
-            // Reload graphical trends components points configurations
-            salesChartInstance.data.datasets[0].data = [75000, 140000, 105000, 170000, 130000, totalRevenueSum / 1.35, totalRevenueSum];
-            salesChartInstance.update();
-
-            profitChartInstance.data.datasets[0].data = [14000, 27000, 20000, 33000, 25000, computedProfitToday * 0.88, computedProfitToday];
-            profitChartInstance.update();
+        // 100% REAL WORKING INTERACTIVE ACTION DELETE ROUTINE 
+        function triggerRowItemDeletion(targetIndexID) {
+            if (confirm("Kya aap sach me ye sale ledger entry delete karna chahte hain?")) {
+                globalErpDatabaseList.splice(targetIndexID, 1); // Splice dynamic object component node out of active array system
+                recalculateAndSyncUI(); // Re-trigger total parameters processing stack recalculations loop 
+            }
         }
 
-        // FIXED EXECUTION INJECTION ENGINE (No Page Refresh Lags)
-        function triggerDataFormInjection() {
-            const chosenChannelKey = document.getElementById('form-inp-channel').value;
-            const targetValuationAmount = parseFloat(document.getElementById('form-inp-amount').value);
+        // Manual addition processor trigger protocol implementation without refreshing page
+        function appendManualFormSaleOrder() {
+            const platformTargetKey = document.getElementById('form-inp-channel').value;
+            const itemSkuTitle = document.getElementById('form-inp-sku').value;
+            const itemGrossPriceVal = parseFloat(document.getElementById('form-inp-amount').value);
 
-            if (!isNaN(targetValuationAmount) && targetValuationAmount > 0) {
-                // Perform dynamic data incremental calculations inside model arrays layers 
-                erpStateRecord[chosenChannelKey] += targetValuationAmount;
-                erpStateRecord.ordersCount += 1;
+            if (!isNaN(itemGrossPriceVal) && itemGrossPriceVal > 0) {
+                const manualNodeId = "TXN-" + Math.floor(1000000 + Math.random() * 9000000);
                 
-                // Adjust balancing outstandings maps fields dynamically
-                erpStateRecord.outstanding += Math.round(targetValuationAmount * 0.22);
-                erpStateRecord.pending += Math.round(targetValuationAmount * 0.12);
+                globalErpDatabaseList.unshift({
+                    id: manualNodeId,
+                    channel: platformTargetKey,
+                    sku: itemSkuTitle,
+                    amount: itemGrossPriceVal
+                });
 
-                calculateAndRefreshUI();
+                recalculateAndSyncUI();
 
-                // Clear text field values gracefully
+                // Clear element values parameters placeholders 
+                document.getElementById('form-inp-sku').value = "";
                 document.getElementById('form-inp-amount').value = "";
             }
         }
 
-        // Time ticking logic module thread updates clocks tags timestamps
+        // Global master computing pipeline layout update matrix logic routine
+        function recalculateAndSyncUI(textSearchQuery = "") {
+            const tbodyLogNode = document.getElementById('master-rows-ledger-tbody');
+            tbodyLogNode.innerHTML = "";
+
+            let grossRevenueTallyAccumulator = 0;
+            let subChannelsSumsMap = { Amazon: 0, Flipkart: 0, Meesho: 0, Website: 0, Retail: 0, Distributor: 0 };
+
+            // Perform dynamic query filter calculations pattern evaluation loop 
+            const filteredSubsetList = globalErpDatabaseList.filter(rowItem => 
+                rowItem.sku.toLowerCase().includes(textSearchQuery.toLowerCase()) ||
+                rowItem.channel.toLowerCase().includes(textSearchQuery.toLowerCase())
+            );
+
+            filteredSubsetList.forEach((order, loopIdx) => {
+                grossRevenueTallyAccumulator += Number(order.amount);
+                if (subChannelsSumsMap.hasOwnProperty(order.channel)) {
+                    subChannelsSumsMap[order.channel] += Number(order.amount);
+                }
+
+                // Append matching ledger tracking view items list markup 
+                let styleHexColorTag = 'var(--brand-amazon)';
+                if (order.channel === 'Flipkart') styleHexColorTag = 'var(--brand-flipkart)';
+                if (order.channel === 'Meesho') styleHexColorTag = 'var(--brand-meesho)';
+                if (order.channel === 'Website') styleHexColorTag = 'var(--brand-website)';
+                if (order.channel === 'Retail') styleHexColorTag = 'var(--brand-retail)';
+                if (order.channel === 'Distributor') styleHexColorTag = 'var(--brand-distributor)';
+
+                const trMarkup = document.createElement('tr');
+                trMarkup.innerHTML = `
+                    <td style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:white;">${order.id}</td>
+                    <td><span class="badge-tag" style="background-color:${styleHexColorTag}">${order.channel}</span></td>
+                    <td style="color:white; font-weight:500;">${order.sku}</td>
+                    <td style="font-weight:700; color:var(--accent-cyan);">${formatINR(order.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-row-delete" onclick="triggerRowItemDeletion(${loopIdx})" title="Delete entry line log"><i class="fa-solid fa-trash-can"></i></button></td>
+                `;
+                tbodyLogNode.appendChild(trMarkup);
+            });
+
+            if (filteredSubsetList.length === 0) {
+                tbodyLogNode.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No logs mapping search parameters. Process data updates above!</td></tr>`;
+            }
+
+            // Bind values directly into top view metrics blocks parameters labels nodes
+            document.getElementById('val-orders-count').innerText = filteredSubsetList.length;
+            document.getElementById('val-sales-revenue').innerText = formatINR(grossRevenueTallyAccumulator);
+            
+            // Profit margin net yield proportional ratio calculation tracking (~19.839% vector alignment matching images figures)
+            let derivedProfitMarginToday = Math.round(grossRevenueTallyAccumulator * 0.19839);
+            document.getElementById('val-profit-yield').innerText = formatINR(derivedProfitMarginToday);
+
+            // Compute dynamic percentage width distributions meters values lines positions 
+            Object.keys(subChannelsSumsMap).forEach(keyId => {
+                const cashValueSum = subChannelsSumsMap[keyId];
+                const cleanKeyStr = keyId.toLowerCase();
+
+                const calculatedPercentageWeightShare = grossRevenueTallyAccumulator > 0 ? ((cashValueSum / grossRevenueTallyAccumulator) * 100).toFixed(2) : 0;
+
+                document.getElementById(`node-val-${cleanKeyStr}`).innerText = formatINR(cashValueSum);
+                document.getElementById(`node-pct-${cleanKeyStr}`).innerText = `${calculatedPercentageWeightShare}% Share Track`;
+                document.getElementById(`node-bar-${cleanKeyStr}`).style.width = `${calculatedPercentageWeightShare}%`;
+            });
+
+            // Commit modifications arrays inside persistent LocalStorage data parameters 
+            localStorage.setItem('kdr_unified_erp_db', JSON.stringify(globalErpDatabaseList));
+
+            // Sync visual graphs coordinates trends lines vectors updates 
+            salesPlotInstance.data.datasets[0].data = [80000, 160000, 115000, 195000, 145000, grossRevenueTallyAccumulator / 1.32, grossRevenueTallyAccumulator];
+            salesPlotInstance.update();
+
+            profitPlotInstance.data.datasets[0].data = [15000, 31000, 23000, 38000, 28000, derivedProfitMarginToday * 0.86, derivedProfitMarginToday];
+            profitPlotInstance.update();
+        }
+
+        // Global live linking query mechanism listener attachment point
+        document.getElementById('master-search-filter-input').addEventListener('input', function(e) {
+            recalculateAndSyncUI(e.target.value);
+        });
+
+        // Time ticker module workflow automation setup tracking clocks labels 
         setInterval(() => {
-            const currentClockTimestamp = new Date();
-            document.getElementById('live-calendar-date').innerText = currentClockTimestamp.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-            document.getElementById('foot-val-clock-stamp').innerText = currentClockTimestamp.toLocaleDateString('en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}).replace(/\//g, '-') + " " + currentClockTimestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const dateObjRef = new Date();
+            document.getElementById('live-widget-calendar-date').innerText = dateObjRef.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            document.getElementById('foot-clock-timestamp').innerText = dateObjRef.toLocaleDateString('en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}).replace(/\//g, '-') + " " + dateObjRef.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         }, 1000);
 
-        // --- CHARTJS PLOTS INITIALIZATION BUILD INTERACTION SYSTEM ---
-        const salesCanvasContext = document.getElementById('canvas-sales-chart').getContext('2d');
-        const salesChartInstance = new Chart(salesCanvasContext, {
+        // --- CHARTJS CONTROLS ALLOCATION PLOTS CONFIGURATIONS BLOCKS ---
+        const salesPlotCtxNode = document.getElementById('canvas-sales-plot-chart').getContext('2d');
+        const salesPlotInstance = new Chart(salesPlotCtxNode, {
             type: 'line',
             data: {
-                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current'],
+                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current Vector'],
                 datasets: [{
                     data: [0, 0, 0, 0, 0, 0, 0],
                     borderColor: '#38bdf8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.04)',
+                    backgroundColor: 'rgba(56, 189, 248, 0.03)',
                     borderWidth: 2,
                     tension: 0.35,
                     fill: true,
                     pointRadius: 2
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#6b7280', font: { size: 9 } } }, x: { ticks: { color: '#6b7280', font: { size: 9 } } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid:{color:'rgba(255,255,255,0.01)'}, ticks: { color: '#64748b', font: { size: 9 } } }, x: { grid:{display:false}, ticks: { color: '#64748b', font: { size: 9 } } } } }
         });
 
-        const profitCanvasContext = document.getElementById('canvas-profit-chart').getContext('2d');
-        const profitChartInstance = new Chart(profitCanvasContext, {
+        const profitPlotCtxNode = document.getElementById('canvas-profit-plot-chart').getContext('2d');
+        const profitPlotInstance = new Chart(profitPlotCtxNode, {
             type: 'line',
             data: {
-                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current'],
+                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current Vector'],
                 datasets: [{
                     data: [0, 0, 0, 0, 0, 0, 0],
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.04)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.03)',
                     borderWidth: 2,
                     tension: 0.35,
                     fill: true,
                     pointRadius: 2
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#6b7280', font: { size: 9 } } }, x: { ticks: { color: '#6b7280', font: { size: 9 } } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid:{color:'rgba(255,255,255,0.01)'}, ticks: { color: '#64748b', font: { size: 9 } } }, x: { grid:{display:false}, ticks: { color: '#64748b', font: { size: 9 } } } } }
         });
 
-        // Bootstrap load trigger system core execution call configuration point 
-        calculateAndRefreshUI();
+        // Initialize view system generation pipeline on layout load execution command 
+        recalculateAndSyncUI();
     </script>
 </body>
 </html>
