@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHAKTI MOBILE V8</title>
+<style>
+body{margin:0;background:#0a0f1f;color:white;font-family:Arial}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#111827,#312e81)}
+.logo{width:90px;height:90px;border-radius:22px;margin:auto;background:linear-gradient(135deg,#f59e0b,#fde68a);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:bold;color:#111}
+.wrap{padding:12px}.card{background:#111827;border-radius:20px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big{font-size:24px;font-weight:bold}
+input,button,select{width:100%;padding:12px;margin:5px 0;border:none;border-radius:12px;box-sizing:border-box}
+button{background:linear-gradient(135deg,#2563eb,#9333ea);color:#fff}
+.item{padding:8px;border-bottom:1px solid #243041}
+.smallbtn{width:auto;padding:8px 12px;margin-top:6px}
+#msg{display:none;padding:10px;background:#14532d;border-radius:10px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo">SM</div><h2>SHAKTI MOBILE V8</h2></div>
+<div class="wrap">
+
+<div id="msg">✅ Sale Added Successfully</div>
+
+<div class="grid">
+<div class="card"><div>Today Sale</div><div id="todaySale" class="big">₹0</div></div>
+<div class="card"><div>Today Profit</div><div id="todayProfit" class="big">₹0</div></div>
+</div>
+
+<div class="grid">
+<div class="card"><div>Total Sales</div><div id="totalSales" class="big">₹0</div></div>
+<div class="card"><div>Total Profit</div><div id="totalProfit" class="big">₹0</div></div>
+</div>
+
+<div class="card">🏆 Top Selling Product<br><b id="topSelling">No Data</b></div>
+<div class="card">💰 Most Profitable Product<br><b id="topProfit">No Data</b></div>
+
+<div class="card">
+<input id="search" placeholder="🔍 Search Product" onkeyup="render()">
+<select id="monthFilter" onchange="render()"></select>
+<input id="date" type="date">
+<input id="product" placeholder="Product Name">
+<input id="qty" type="number" value="1">
+<input id="cost" type="number" placeholder="Cost Price">
+<input id="sale" type="number" placeholder="Sale Price">
+<button onclick="addSale()">➕ Add Sale</button>
+</div>
+
+<div class="card">
+<h3>Sales History</h3>
+<div id="history"></div>
+</div>
+
+</div>
+
+<script>
+date.value=new Date().toISOString().split('T')[0];
+let sales=JSON.parse(localStorage.getItem('shakti_v8')||'[]');
+
+function addSale(){
+ let p=product.value.trim();
+ let q=+qty.value||1;
+ let c=+cost.value||0;
+ let s=+sale.value||0;
+ if(!p||!s) return;
+
+ sales.push({date:date.value,product:p,qty:q,sale:s*q,profit:(s-c)*q});
+ localStorage.setItem('shakti_v8',JSON.stringify(sales));
+
+ product.value='';
+ qty.value='1';
+ cost.value='';
+ sale.value='';
+
+ msg.style.display='block';
+ setTimeout(()=>msg.style.display='none',2000);
+
+ window.scrollTo({top:0,behavior:'smooth'});
+ render();
+}
+
+function delSale(i){
+ if(confirm('Delete this sale?')){
+  sales.splice(i,1);
+  localStorage.setItem('shakti_v8',JSON.stringify(sales));
+  render();
+ }
+}
+
+function editSale(i){
+ let n=prompt('Product Name',sales[i].product);
+ if(!n) return;
+ sales[i].product=n;
+ localStorage.setItem('shakti_v8',JSON.stringify(sales));
+ render();
+}
+
+function render(){
+ let today=new Date().toISOString().split('T')[0];
+ let currentMonth=today.substring(0,7);
+ let q=(search.value||'').toLowerCase();
+
+ let ts=0,tp=0,totalS=0,totalP=0;
+ let qtyMap={},profitMap={},months=new Set([currentMonth]);
+ let h='';
+
+ sales.forEach(x=>{
+  months.add(x.date.substring(0,7));
+  totalS+=x.sale; totalP+=x.profit;
+  if(x.date===today){ts+=x.sale;tp+=x.profit;}
+  qtyMap[x.product]=(qtyMap[x.product]||0)+x.qty;
+  profitMap[x.product]=(profitMap[x.product]||0)+x.profit;
+ });
+
+ monthFilter.innerHTML=[...months].sort().reverse().map(m=>`<option>${m}</option>`).join('');
+ let sel=monthFilter.value||currentMonth;
+
+ sales.forEach((x,i)=>{
+  if(x.date.startsWith(sel) && x.product.toLowerCase().includes(q)){
+   h+=`<div class="item"><b>${x.product}</b> Qty:${x.qty}<br>
+   Sale ₹${x.sale} | Profit ₹${x.profit}<br>
+   <button class="smallbtn" onclick="editSale(${i})">✏️ Edit</button>
+   <button class="smallbtn" onclick="delSale(${i})">🗑️ Delete</button></div>`;
+  }
+ });
+
+ let best='No Data',bq=0;
+ for(let k in qtyMap){if(qtyMap[k]>bq){bq=qtyMap[k];best=k+' ('+bq+')';}}
+ let prof='No Data',bp=0;
+ for(let k in profitMap){if(profitMap[k]>bp){bp=profitMap[k];prof=k+' (₹'+bp+')';}}
+
+ todaySale.innerText='₹'+ts;
+ todayProfit.innerText='₹'+tp;
+ totalSales.innerText='₹'+totalS;
+ totalProfit.innerText='₹'+totalP;
+ topSelling.innerText=best;
+ topProfit.innerText=prof;
+ history.innerHTML=h||'No Sales';
+}
+render();
+</script>
+</body>
+</html>
