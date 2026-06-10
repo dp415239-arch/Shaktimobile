@@ -3,325 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KDR AI BOOKS - Ultra Ledger Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>KDR AI BOOKS - Custom Mobile Ledger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
         :root {
-            --bg-body-dark: #070a13;
-            --bg-sidebar-dark: #0d121f;
-            --bg-card-dark: #121826;
-            --border-standard: rgba(255, 255, 255, 0.05);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --bg-body: #070a13;
+            --bg-card: #121826;
+            --border-line: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
             --accent-cyan: #38bdf8;
             --accent-green: #10b981;
-            --accent-orange: #f97316;
-            --accent-purple: #a855f7;
             --accent-rose: #f43f5e;
-            
-            --brand-flipkart: #2874f0;
-            --brand-amazon: #ff9900;
-            --brand-meesho: #f43397;
+            --accent-orange: #f97316;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-user-select: none; user-select: none; }
-        body { background-color: var(--bg-body-dark); color: var(--text-primary); min-height: 100vh; width: 100vw; overflow-x: hidden; padding-bottom: 40px; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; width: 100vw; overflow-x: hidden; padding-bottom: 30px; }
 
-        /* TOPBAR */
-        .mobile-topbar-wrapper { background-color: var(--bg-sidebar-dark); border-bottom: 1px solid var(--border-standard); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; height: 60px; }
-        .brand-node-wrap { display: flex; align-items: center; gap: 10px; }
-        .brand-logo-cube { background: linear-gradient(135deg, #0284c7, #0369a1); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; }
-        .brand-text h2 { font-size: 0.95rem; font-weight: 700; color: white; }
-        .brand-text p { font-size: 0.6rem; color: var(--text-muted); }
-        .system-pill-node { background: rgba(56,189,248,0.1); color: var(--accent-cyan); padding: 5px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; }
+        /* HEADER */
+        .app-mobile-header { background-color: #0d121f; border-bottom: 1px solid var(--border-line); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; height: 60px; }
+        .app-brand-title h2 { font-size: 0.95rem; font-weight: 700; color: white; }
+        .app-brand-title p { font-size: 0.6rem; color: var(--text-sub); }
+        .status-pill { background: rgba(56,189,248,0.1); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; }
 
-        .app-scroller-view-deck { padding: 14px; display: flex; flex-direction: column; gap: 16px; width: 100%; }
+        .app-container { padding: 12px; display: flex; flex-direction: column; gap: 14px; width: 100%; }
 
-        /* SMART IMPORTER */
-        .sheet-importer-touch-card { background: linear-gradient(135deg, #131d35, #121826); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 16px; text-align: center; }
-        .sheet-importer-touch-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; }
-        .sheet-importer-touch-card p { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 14px; }
-        .importer-flex-controls { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .mobile-select-element, .mobile-input-element { background-color: var(--bg-body-dark); color: white; border: 1px solid var(--border-standard); padding: 14px; border-radius: 8px; font-size: 0.85rem; outline: none; width: 100%; display: block; }
-        .mobile-touch-upload-label { background-color: #0284c7; color: white; padding: 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; }
-        #hidden-file-input-field { display: none !important; }
+        /* CSV IMPORTER */
+        .csv-importer-box { background: linear-gradient(135deg, #131d35, #121826); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 14px; text-align: center; }
+        .csv-importer-box h3 { font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 4px; }
+        .csv-importer-box p { font-size: 0.7rem; color: var(--text-sub); margin-bottom: 12px; }
+        .upload-touch-btn { background-color: #0284c7; color: white; padding: 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; }
+        #hidden-csv-file { display: none !important; }
 
-        /* KPI TILES */
-        .kpi-vertical-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .kpi-card-tile { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 10px; padding: 14px; position: relative; }
-        .kpi-card-tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
-        .tile-ord::before { background-color: var(--accent-cyan); }
-        .tile-sal::before { background-color: var(--accent-green); }
-        .tile-exp::before { background-color: var(--accent-rose); }
-        .tile-sup::before { background-color: var(--accent-orange); }
-        .tile-meta-lbl { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
-        .tile-numeric-val { font-size: 1.25rem; font-weight: 700; margin-top: 6px; color: white; }
+        /* KPI COUNTERS */
+        .kpi-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .kpi-tile { background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 10px; padding: 12px; position: relative; }
+        .kpi-tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+        .tile-sales::before { background-color: var(--accent-green); }
+        .tile-orders::before { background-color: var(--accent-cyan); }
+        .tile-expense::before { background-color: var(--accent-rose); }
+        .tile-supplier::before { background-color: var(--accent-orange); }
+        .tile-lbl { font-size: 0.65rem; font-weight: 600; color: var(--text-sub); text-transform: uppercase; }
+        .tile-val { font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: white; }
 
-        /* CHANNELS PROGRESS BARS */
-        .section-header-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-top: 5px; display: flex; align-items: center; gap: 6px; }
-        .channels-vertical-stack { display: flex; flex-direction: column; gap: 10px; }
-        .channel-horizontal-strip { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-        .channel-strip-header-row { display: flex; justify-content: space-between; align-items: center; }
-        .channel-meta-brand-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: white; }
-        .channel-logo-avatar { width: 18px; height: 18px; border-radius: 3px; background: white; object-fit: cover; }
-        .channel-strip-amount-lbl { font-size: 1.05rem; font-weight: 700; color: white; }
-        .channel-progress-track { width: 100%; height: 4px; background-color: rgba(255,255,255,0.04); border-radius: 2px; overflow: hidden; }
-        .channel-progress-fill-line { height: 100%; width: 0%; transition: width 0.3s ease; }
-        .channel-strip-pct-lbl { font-size: 0.65rem; color: var(--text-muted); text-align: right; }
+        /* CUSTOM FORMS */
+        .section-header { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .custom-form-panel { background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 12px; padding: 14px; }
+        .form-grid-stack { display: flex; flex-direction: column; gap: 10px; }
+        .input-group-block { display: flex; flex-direction: column; gap: 4px; }
+        .input-group-block label { font-size: 0.72rem; color: var(--text-sub); font-weight: 500; }
+        
+        .mobile-select, .mobile-input { background-color: var(--bg-body); color: white; border: 1px solid var(--border-line); padding: 12px; border-radius: 8px; font-size: 0.82rem; outline: none; width: 100%; }
+        
+        .btn-submit-trigger { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; width: 100%; text-transform: uppercase; cursor: pointer; }
+        .btn-submit-trigger.expense-theme { background: linear-gradient(135deg, #b91c1c, #991b1b); }
+        .btn-submit-trigger.supplier-theme { background: linear-gradient(135deg, #c2410c, #9a3412); }
 
-        /* FORMS CONTAINER */
-        .form-panel-container { background-color: var(--bg-card-dark); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 16px; }
-        .form-fields-vertical-stack { display: flex; flex-direction: column; gap: 12px; }
-        .form-input-node-block { display: flex; flex-direction: column; gap: 5px; }
-        .form-input-node-block label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
-        .btn-touch-submit-trigger { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; width: 100%; text-transform: uppercase; cursor: pointer; }
-        .btn-touch-submit-trigger.expense-btn { background: linear-gradient(135deg, #b91c1c, #991b1b); }
-        .btn-touch-submit-trigger.supplier-btn { background: linear-gradient(135deg, #c2410c, #9a3412); }
+        /* MULTI-LEDGER TABLES */
+        .ledger-box-panel { background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 12px; padding: 12px; }
+        .table-scroll-frame { overflow-x: auto; width: 100%; border-radius: 6px; border: 1px solid var(--border-line); background-color: rgba(0,0,0,0.1); max-height: 220px; }
+        .ledger-data-grid { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.72rem; min-width: 380px; }
+        .ledger-data-grid th { color: var(--text-sub); background: #0f1423; padding: 10px; font-weight: 600; text-transform: uppercase; font-size: 0.62rem; border-bottom: 1px solid var(--border-line); position: sticky; top: 0; }
+        .ledger-data-grid td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #fff; }
+        
+        .btn-row-delete { background: transparent; border: none; color: var(--accent-rose); font-size: 0.85rem; cursor: pointer; padding: 4px 8px; }
+        .badge-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.58rem; font-weight: 700; color: white; text-transform: uppercase; }
 
-        /* TABLES & LEDGERS */
-        .master-ledger-card-panel { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 12px; padding: 14px; }
-        .search-mechanism-input-wrap { position: relative; margin-bottom: 12px; }
-        .search-mechanism-input-wrap input { width: 100%; background-color: var(--bg-body-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 12px 12px 12px 35px; color: white; outline: none; font-size: 0.8rem; }
-        .search-mechanism-input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; }
-        .mobile-table-scroll-container-frame { overflow-x: auto; width: 100%; border-radius: 6px; border: 1px solid var(--border-standard); background-color: rgba(0,0,0,0.1); max-height: 250px; }
-        .mobile-master-ledger-data-grid { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem; min-width: 400px; }
-        .mobile-master-ledger-data-grid th { color: var(--text-secondary); background: #0f1423; padding: 12px 10px; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; border-bottom: 1px solid var(--border-standard); position: sticky; top: 0; }
-        .mobile-master-ledger-data-grid td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #fff; }
-        .platform-badge-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; color: white; text-transform: uppercase; }
-        .btn-touch-action-row-delete { background: transparent; border: none; color: var(--accent-rose); padding: 6px 10px; font-size: 0.9rem; cursor: pointer; }
-
-        .persistent-system-footer-panel { background-color: var(--bg-sidebar-dark); border-top: 1px solid var(--border-standard); padding: 12px; font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+        .footer-info { font-size: 0.65rem; color: #64748b; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="mobile-topbar-wrapper">
-        <div class="brand-node-wrap">
-            <div class="brand-logo-cube"><i class="fa-solid fa-calculator"></i></div>
-            <div class="brand-text">
-                <h2>KDR AI BOOKS</h2>
-                <p>Multi-Ledger Sync Enabled</p>
-            </div>
+    <div class="app-mobile-header">
+        <div class="app-brand-title">
+            <h2>KDR AI BOOKS</h2>
+            <p>Custom Layout v7.5 Active</p>
         </div>
-        <div class="system-pill-node">SECURE V7.0</div>
+        <div class="status-pill">MOBILE SYNC</div>
     </div>
 
-    <div class="app-scroller-view-deck">
+    <div class="app-container">
 
-        <div class="sheet-importer-touch-card">
-            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Smart Sales Sync</h3>
-            <p>Flipkart, Amazon ya Meesho ki CSV report upload karein</p>
-            <div class="importer-flex-controls">
-                <select id="import-dropdown-platform-selector" class="mobile-select-element">
-                    <option value="Flipkart">Flipkart Report</option>
-                    <option value="Amazon">Amazon Report</option>
-                    <option value="Meesho">Meesho Report</option>
-                </select>
-                <label for="hidden-file-input-field" class="mobile-touch-upload-label" id="lbl-touch-file-trigger">
-                    <i class="fa-solid fa-file-csv"></i> Select Sales CSV File
-                </label>
-                <input type="file" id="hidden-file-input-field">
-            </div>
-            <div id="parse-output-status-alert" style="font-size: 0.75rem; margin-top: 12px; font-weight: 600; color: var(--accent-green);"></div>
+        <div class="csv-importer-box">
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Fast Sales Sheet Sync</h3>
+            <p>Flipkart / Amazon ki CSV file load karke automatic total karein</p>
+            <label for="hidden-csv-file" class="upload-touch-btn" id="lbl-file-trigger">
+                <i class="fa-solid fa-file-csv"></i> Upload Orders Report
+            </label>
+            <input type="file" id="hidden-csv-file">
+            <div id="parse-alert" style="font-size: 0.7rem; margin-top: 8px; font-weight: 600; color: var(--accent-green);"></div>
         </div>
 
-        <div class="kpi-vertical-grid-layout">
-            <div class="kpi-card-tile tile-ord">
-                <div class="tile-meta-lbl">Total Orders</div>
-                <div class="tile-numeric-val" id="kpi-orders-count">0</div>
+        <div class="kpi-grid-layout">
+            <div class="kpi-tile tile-sales">
+                <div class="tile-lbl">Total Sales</div>
+                <div class="tile-val" id="kpi-sales" style="color:var(--accent-green)">₹0</div>
             </div>
-            <div class="kpi-card-tile tile-sal">
-                <div class="tile-meta-lbl">Sales Revenue</div>
-                <div class="tile-numeric-val" id="kpi-sales-amt" style="color:var(--accent-green)">₹0</div>
+            <div class="kpi-tile tile-orders">
+                <div class="tile-lbl">Total Orders</div>
+                <div class="tile-val" id="kpi-orders">0</div>
             </div>
-            <div class="kpi-card-tile tile-exp">
-                <div class="tile-meta-lbl">Total Expenses</div>
-                <div class="tile-numeric-val" id="kpi-expense-amt" style="color:var(--accent-rose)">₹0</div>
+            <div class="kpi-tile tile-expense">
+                <div class="tile-lbl">Total Expense</div>
+                <div class="tile-val" id="kpi-expense" style="color:var(--accent-rose)">₹0</div>
             </div>
-            <div class="kpi-card-tile tile-sup">
-                <div class="tile-meta-lbl">Supplier Payable</div>
-                <div class="tile-numeric-val" id="kpi-supplier-amt" style="color:var(--accent-orange)">₹0</div>
+            <div class="kpi-tile tile-supplier">
+                <div class="tile-lbl">Supplier Payable</div>
+                <div class="tile-val" id="kpi-supplier" style="color:var(--accent-orange)">₹0</div>
             </div>
         </div>
 
-        <div class="section-header-title"><i class="fa-solid fa-chart-pie"></i> Marketplace Channel Split</div>
-        <div class="channels-vertical-stack">
-            <div class="channel-horizontal-strip">
-                <div class="channel-strip-header-row">
-                    <div class="channel-meta-brand-wrap"><img src="https://cb-thumbnails.s3.ap-south-1.amazonaws.com/flipkart_logo.png" class="channel-logo-avatar" alt="FK"> Flipkart</div>
-                    <div class="channel-strip-amount-lbl" id="strip-val-flipkart">₹0</div>
-                </div>
-                <div class="channel-progress-track"><div id="strip-bar-flipkart" class="channel-progress-fill-line" style="background-color: var(--brand-flipkart);"></div></div>
-                <div class="channel-strip-pct-lbl" id="strip-pct-flipkart">0% weight</div>
-            </div>
-            <div class="channel-horizontal-strip">
-                <div class="channel-strip-header-row">
-                    <div class="channel-meta-brand-wrap"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" class="channel-logo-avatar" alt="AMZ"> Amazon</div>
-                    <div class="channel-strip-amount-lbl" id="strip-val-amazon">₹0</div>
-                </div>
-                <div class="channel-progress-track"><div id="strip-bar-amazon" class="channel-progress-fill-line" style="background-color: var(--brand-amazon);"></div></div>
-                <div class="channel-strip-pct-lbl" id="strip-pct-amazon">0% weight</div>
-            </div>
-            <div class="channel-horizontal-strip">
-                <div class="channel-strip-header-row">
-                    <div class="channel-meta-brand-wrap"><img src="https://cdn.iconscout.com/icon/free/png-256/free-meesho-logo-icon-download-in-svg-png-gif-formats--brand-social-media-pack-logos-icons-1785501.png?f=webp" class="channel-logo-avatar" alt="MS"> Meesho</div>
-                    <div class="channel-strip-amount-lbl" id="strip-val-meesho">₹0</div>
-                </div>
-                <div class="channel-progress-track"><div id="strip-bar-meesho" class="channel-progress-fill-line" style="background-color: var(--brand-meesho);"></div></div>
-                <div class="channel-strip-pct-lbl" id="strip-pct-meesho">0% weight</div>
-            </div>
-        </div>
-
-        <div class="form-panel-container">
-            <div class="section-header-title" style="color:var(--accent-cyan); margin-bottom:10px;"><i class="fa-solid fa-plus"></i> Add Direct Sales Order</div>
-            <form id="sales-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); insertSalesOrder();">
-                <div class="form-input-node-block">
-                    <label>Platform Channel</label>
-                    <select id="sales-channel" class="mobile-select-element">
+        <div class="custom-form-panel">
+            <div class="section-header" style="color:var(--accent-cyan); margin-bottom:8px;"><i class="fa-solid fa-cart-plus"></i> Add Sales Order</div>
+            <form id="form-sales" class="form-grid-stack" onsubmit="event.preventDefault(); addSalesEntry();">
+                <div class="input-group-block">
+                    <label>Platform/Marketplace</label>
+                    <select id="sales-platform" class="mobile-select">
                         <option value="Flipkart">Flipkart</option>
                         <option value="Amazon">Amazon</option>
                         <option value="Meesho">Meesho</option>
                     </select>
                 </div>
-                <div class="form-input-node-block">
-                    <label>Product SKU / Description</label>
-                    <input type="text" id="sales-sku" class="mobile-input-element" placeholder="e.g. Premium Watch Pack" required>
+                <div class="input-group-block">
+                    <label>Product SKU / Details</label>
+                    <input type="text" id="sales-sku" class="mobile-input" placeholder="e.g. Nexus Fan Special" required>
                 </div>
-                <div class="form-input-node-block">
-                    <label>Order Value (₹)</label>
-                    <input type="number" id="sales-amount" class="mobile-input-element" placeholder="0" min="1" required>
+                <div class="input-group-block">
+                    <label>Invoice Value (₹)</label>
+                    <input type="number" id="sales-amt" class="mobile-input" placeholder="0" min="1" required>
                 </div>
-                <button type="submit" class="btn-touch-submit-trigger">Sync Sales Order</button>
+                <button type="submit" class="btn-submit-trigger">Save Sales Entry</button>
             </form>
         </div>
 
-        <div class="form-panel-container" style="border-color: rgba(244, 63, 94, 0.2);">
-            <div class="section-header-title" style="color:var(--accent-rose); margin-bottom:10px;"><i class="fa-solid fa-wallet"></i> Add Company Expense</div>
-            <form id="expense-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); insertExpenseRow();">
-                <div class="form-input-node-block">
-                    <label>Expense Name / Reason</label>
-                    <input type="text" id="exp-name" class="mobile-input-element" placeholder="e.g. Office Rent, Advertisement, Packing Box" required>
+        <div class="custom-form-panel" style="border-color: rgba(244, 63, 94, 0.2);">
+            <div class="section-header" style="color:var(--accent-rose); margin-bottom:8px;"><i class="fa-solid fa-wallet"></i> Expense Name & Cost</div>
+            <form id="form-expense" class="form-grid-stack" onsubmit="event.preventDefault(); addExpenseEntry();">
+                <div class="input-group-block">
+                    <label>Expense Name (Reason)</label>
+                    <input type="text" id="exp-name" class="mobile-input" placeholder="e.g. Office Rent, Petrol, Chai-Nashta" required>
                 </div>
-                <div class="form-input-node-block">
-                    <label>Expense Cost Amount (₹)</label>
-                    <input type="number" id="exp-amount" class="mobile-input-element" placeholder="0" min="1" required>
+                <div class="input-group-block">
+                    <label>Expense Amount (₹)</label>
+                    <input type="number" id="exp-amt" class="mobile-input" placeholder="0" min="1" required>
                 </div>
-                <button type="submit" class="btn-touch-submit-trigger expense-btn">Book Expense Log</button>
+                <button type="submit" class="btn-submit-trigger expense-theme">Add Expense Log</button>
             </form>
         </div>
 
-        <div class="form-panel-container" style="border-color: rgba(249, 115, 22, 0.2);">
-            <div class="section-header-title" style="color:var(--accent-orange); margin-bottom:10px;"><i class="fa-solid fa-truck-ramp-box"></i> Supplier Payable Ledger</div>
-            <form id="supplier-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); insertSupplierRow();">
-                <div class="form-input-node-block">
+        <div class="custom-form-panel" style="border-color: rgba(249, 115, 22, 0.2);">
+            <div class="section-header" style="color:var(--accent-orange); margin-bottom:8px;"><i class="fa-solid fa-truck-ramp-box"></i> Supplier Balance Ledger</div>
+            <form id="form-supplier" class="form-grid-stack" onsubmit="event.preventDefault(); addSupplierEntry();">
+                <div class="input-group-block">
                     <label>Supplier Name</label>
-                    <input type="text" id="sup-name" class="mobile-input-element" placeholder="e.g. Laxmi Fabrics, Balaji Traders" required>
+                    <input type="text" id="sup-name" class="mobile-input" placeholder="e.g. Balaji Corp, Laxmi Traders" required>
                 </div>
-                <div class="form-input-node-block">
-                    <label>Transaction Type</label>
-                    <select id="sup-type" class="mobile-select-element">
-                        <option value="Bill">New Pending Bill (Udhari Jodein +)</option>
-                        <option value="Pay">Jama Kiya Amount (Udhari Minus -)</option>
-                    </select>
+                <div class="input-group-block">
+                    <label>Payable Amount (+ Bill Udhari)</label>
+                    <input type="number" id="sup-payable" class="mobile-input" placeholder="0" value="0">
                 </div>
-                <div class="form-input-node-block">
-                    <label>Transaction Amount (₹)</label>
-                    <input type="number" id="sup-amount" class="mobile-input-element" placeholder="0" min="1" required>
+                <div class="input-group-block">
+                    <label>Received/Paid Amount (- Jama Diya)</label>
+                    <input type="number" id="sup-received" class="mobile-input" placeholder="0" value="0">
                 </div>
-                <button type="submit" class="btn-touch-submit-trigger supplier-btn">Update Supplier Balance</button>
+                <button type="submit" class="btn-submit-trigger supplier-theme">Update Supplier Ledger</button>
             </form>
         </div>
 
-        <div class="master-ledger-card-panel">
-            <div class="section-header-title" style="margin-bottom:10px; color:var(--accent-cyan);"><i class="fa-solid fa-list"></i> Sales Consolidated Ledger</div>
-            <div class="mobile-table-scroll-container-frame">
-                <table class="mobile-master-ledger-data-grid">
+        <div class="ledger-box-panel">
+            <div class="section-header" style="margin-bottom:8px; color:var(--accent-cyan);"><i class="fa-solid fa-list-check"></i> Sales Ledger Logs</div>
+            <div class="table-scroll-frame">
+                <table class="ledger-data-grid">
                     <thead>
                         <tr>
                             <th>Order ID</th>
                             <th>Market</th>
-                            <th>SKU Description</th>
+                            <th>SKU/Details</th>
                             <th>Amount</th>
                             <th style="text-align:center;">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="sales-tbody"></tbody>
+                    <tbody id="tbody-sales"></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="master-ledger-card-panel">
-            <div class="section-header-title" style="margin-bottom:10px; color:var(--accent-rose);"><i class="fa-solid fa-receipt"></i> Company Expenses Log</div>
-            <div class="mobile-table-scroll-container-frame">
-                <table class="mobile-master-ledger-data-grid">
+        <div class="ledger-box-panel">
+            <div class="section-header" style="margin-bottom:8px; color:var(--accent-rose);"><i class="fa-solid fa-receipt"></i> Expense Ledger Logs</div>
+            <div class="table-scroll-frame">
+                <table class="ledger-data-grid">
                     <thead>
                         <tr>
-                            <th>Expense Title Head</th>
+                            <th>Expense Name</th>
                             <th>Cost Value</th>
                             <th style="text-align:center;">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="expense-tbody"></tbody>
+                    <tbody id="tbody-expenses"></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="master-ledger-card-panel">
-            <div class="section-header-title" style="margin-bottom:10px; color:var(--accent-orange);"><i class="fa-solid fa-handshake"></i> Supplier Khata Ledger</div>
-            <div class="mobile-table-scroll-container-frame">
-                <table class="mobile-master-ledger-data-grid">
+        <div class="ledger-box-panel">
+            <div class="section-header" style="margin-bottom:8px; color:var(--accent-orange);"><i class="fa-solid fa-handshake"></i> Supplier Account Details</div>
+            <div class="table-scroll-frame">
+                <table class="ledger-data-grid">
                     <thead>
                         <tr>
                             <th>Supplier Name</th>
-                            <th>Type</th>
-                            <th>Amount Traced</th>
+                            <th>Payable (+)</th>
+                            <th>Received (-)</th>
+                            <th>Final Due Balance</th>
                             <th style="text-align:center;">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="supplier-tbody"></tbody>
+                    <tbody id="tbody-suppliers"></tbody>
                 </table>
             </div>
         </div>
 
-    </div>
-
-    <div class="persistent-system-footer-panel">
-        KDR AI Books Engine • Local Browser Encryption Active
+        <div class="footer-info">KDR AI Books v7.5 • Database Cached Securely</div>
     </div>
 
     <script>
-        // Separate Database Lists Array Modules
-        let dbSales = JSON.parse(localStorage.getItem('kdr_v7_sales')) || [
-            { id: 'OD3377933255', channel: 'Flipkart', sku: 'KDR Nexus Fan Silent', amount: 68750 },
-            { id: 'AMZ-90432104', channel: 'Amazon', sku: 'KDR Hand Wash Premium', amount: 125430 }
+        // Data Arrays from LocalStorage or Defaults
+        let listSales = JSON.parse(localStorage.getItem('kdr_m_sales')) || [
+            { id: 'OD33779332', market: 'Flipkart', sku: 'KDR Nexus Fan', amount: 68750 }
         ];
 
-        let dbExpenses = JSON.parse(localStorage.getItem('kdr_v7_expenses')) || [
-            { name: 'Office Room Rent Charges', amount: 15000 },
-            { name: 'Cardboard Packing Material Box Bulk', amount: 4500 }
+        let listExpenses = JSON.parse(localStorage.getItem('kdr_m_expenses')) || [
+            { name: 'Office Rent Charges', amount: 15000 }
         ];
 
-        let dbSuppliers = JSON.parse(localStorage.getItem('kdr_v7_suppliers')) || [
-            { name: 'Balaji Paper Mill Corp', type: 'Bill', amount: 25000 },
-            { name: 'Balaji Paper Mill Corp', type: 'Pay', amount: 10000 } // This will act as minus (-) dynamically
+        let listSuppliers = JSON.parse(localStorage.getItem('kdr_m_suppliers')) || [
+            { name: 'Balaji Paper Corp', payable: 25000, received: 10000, balance: 15000 }
         ];
 
-        function formatINR(val) {
-            return '₹' + Number(val).toLocaleString('en-IN');
+        function moneyFormat(num) {
+            return '₹' + Number(num).toLocaleString('en-IN');
         }
 
-        // CSV Automated File Reader Pipeline Integration
-        document.getElementById('hidden-file-input-field').addEventListener('change', function(e) {
+        // CSV Automated Import Pipeline
+        document.getElementById('hidden-csv-file').addEventListener('change', function(e) {
             const file = e.target.files[0];
-            const activeMarket = document.getElementById('import-dropdown-platform-selector').value;
+            const platform = document.getElementById('sales-platform').value;
             if(!file) return;
 
-            document.getElementById('parse-output-status-alert').innerText = "Parsing Data Columns Matrix...";
+            document.getElementById('parse-alert').innerText = "Scanning Columns Matrix...";
 
             Papa.parse(file, {
                 header: true,
@@ -331,160 +263,143 @@
                     res.data.forEach(row => {
                         let amt = parseFloat(row['Total Amount'] || row['Final Value'] || row['Order Value'] || row['amount'] || row['price']);
                         let orderId = row['Order ID'] || row['Sub Order Id'] || "ID-" + Math.floor(10000 + Math.random()*90000);
-                        let sku = row['Product Name'] || row['SKU ID'] || row['item_name'] || `${activeMarket} Imported Item`;
+                        let sku = row['Product Name'] || row['SKU ID'] || row['item_name'] || `Imported Item`;
 
                         if(!isNaN(amt) && amt > 0) {
-                            dbSales.unshift({ id: orderId, channel: activeMarket, sku: sku, amount: amt });
+                            listSales.unshift({ id: orderId, market: platform, sku: sku, amount: amt });
                             count++;
                         }
                     });
-                    document.getElementById('parse-output-status-alert').innerText = `🎉 Loaded ${count} Orders via Sheet!`;
-                    syncMasterCoreEngine();
+                    document.getElementById('parse-alert').innerText = `🎉 Loaded ${count} Orders via CSV!`;
+                    recalculateLedgerEngine();
                 }
             });
         });
 
-        // Insertion Functions
-        function insertSalesOrder() {
-            const ch = document.getElementById('sales-channel').value;
+        // Add Handlers
+        function addSalesEntry() {
+            const p = document.getElementById('sales-platform').value;
             const sku = document.getElementById('sales-sku').value;
-            const amt = parseFloat(document.getElementById('sales-amount').value);
+            const amt = parseFloat(document.getElementById('sales-amt').value);
 
             if(!isNaN(amt) && amt > 0) {
-                dbSales.unshift({ id: 'TXN-'+Math.floor(100000+Math.random()*900000), channel: ch, sku: sku, amount: amt });
+                listSales.unshift({ id: 'TXN-'+Math.floor(10000+Math.random()*90000), market: p, sku: sku, amount: amt });
                 document.getElementById('sales-sku').value = '';
-                document.getElementById('sales-amount').value = '';
-                syncMasterCoreEngine();
+                document.getElementById('sales-amt').value = '';
+                recalculateLedgerEngine();
             }
         }
 
-        function insertExpenseRow() {
+        function addExpenseEntry() {
             const name = document.getElementById('exp-name').value;
-            const amt = parseFloat(document.getElementById('exp-amount').value);
+            const amt = parseFloat(document.getElementById('exp-amt').value);
 
             if(!isNaN(amt) && amt > 0) {
-                dbExpenses.unshift({ name: name, amount: amt });
+                listExpenses.unshift({ name: name, amount: amt });
                 document.getElementById('exp-name').value = '';
-                document.getElementById('exp-amount').value = '';
-                syncMasterCoreEngine();
+                document.getElementById('exp-amt').value = '';
+                recalculateLedgerEngine();
             }
         }
 
-        function insertSupplierRow() {
+        function addSupplierEntry() {
             const name = document.getElementById('sup-name').value;
-            const type = document.getElementById('sup-type').value;
-            const amt = parseFloat(document.getElementById('sup-amount').value);
+            const payable = parseFloat(document.getElementById('sup-payable').value) || 0;
+            const received = parseFloat(document.getElementById('sup-received').value) || 0;
 
-            if(!isNaN(amt) && amt > 0) {
-                dbSuppliers.unshift({ name: name, type: type, amount: amt });
-                document.getElementById('sup-name').value = '';
-                document.getElementById('sup-amount').value = '';
-                syncMasterCoreEngine();
-            }
+            // Auto Calculations: Balance = Payable - Received
+            const computedBalance = payable - received;
+
+            listSuppliers.unshift({
+                name: name,
+                payable: payable,
+                received: received,
+                balance: computedBalance
+            });
+
+            document.getElementById('sup-name').value = '';
+            document.getElementById('sup-payable').value = '0';
+            document.getElementById('sup-received').value = '0';
+            recalculateLedgerEngine();
         }
 
-        // Deletion Routines
-        function deleteSales(idx) { if(confirm("Delete sales record?")) { dbSales.splice(idx,1); syncMasterCoreEngine(); } }
-        function deleteExpense(idx) { if(confirm("Delete expense log?")) { dbExpenses.splice(idx,1); syncMasterCoreEngine(); } }
-        function deleteSupplier(idx) { if(confirm("Delete supplier entry?")) { dbSuppliers.splice(idx,1); syncMasterCoreEngine(); } }
+        // Deletion Commands
+        function delSales(i) { if(confirm("Delete sales log?")) { listSales.splice(i,1); recalculateLedgerEngine(); } }
+        function delExpense(i) { if(confirm("Delete expense log?")) { listExpenses.splice(i,1); recalculateLedgerEngine(); } }
+        function delSupplier(i) { if(confirm("Delete supplier log?")) { listSuppliers.splice(i,1); recalculateLedgerEngine(); } }
 
-        // Core Calculation Engine Pipeline
-        function syncMasterCoreEngine() {
-            // 1. Sync Sales Table & Calculations
-            const salesTbody = document.getElementById('sales-tbody');
-            salesTbody.innerHTML = '';
-            let totalSales = 0;
-            let channelSums = { Flipkart: 0, Amazon: 0, Meesho: 0 };
-
-            dbSales.forEach((item, idx) => {
-                totalSales += Number(item.amount);
-                if(channelSums.hasOwnProperty(item.channel)) channelSums[item.channel] += Number(item.amount);
-
-                let badgColor = item.channel === 'Flipkart' ? 'var(--brand-flipkart)' : (item.channel === 'Amazon' ? 'var(--brand-amazon)' : 'var(--brand-meesho)');
+        // Master Calculations Engine
+        function recalculateLedgerEngine() {
+            // 1. Process Sales Table
+            const tSales = document.getElementById('tbody-sales');
+            tSales.innerHTML = '';
+            let grossSales = 0;
+            listSales.forEach((item, i) => {
+                grossSales += Number(item.amount);
+                let badgeClr = item.market === 'Flipkart' ? '#2874f0' : (item.market === 'Amazon' ? '#ff9900' : '#f43397');
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-family:'JetBrains Mono'; font-size:0.65rem;">${item.id}</td>
-                    <td><span class="platform-badge-pill" style="background-color:${badgColor}">${item.channel}</span></td>
-                    <td style="max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.sku}</td>
-                    <td style="color:var(--accent-cyan); font-weight:700;">${formatINR(item.amount)}</td>
-                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" onclick="deleteSales(${idx})"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td><span class="badge-pill" style="background-color:${badgeClr}">${item.market}</span></td>
+                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.sku}</td>
+                    <td style="color:var(--accent-cyan); font-weight:700;">${moneyFormat(item.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-row-delete" onclick="delSales(${i})"><i class="fa-solid fa-trash-can"></i></button></td>
                 `;
-                salesTbody.appendChild(tr);
+                tSales.appendChild(tr);
             });
 
-            // 2. Sync Expenses Table & Calculations
-            const expTbody = document.getElementById('expense-tbody');
-            expTbody.innerHTML = '';
-            let totalExpenses = 0;
-
-            dbExpenses.forEach((item, idx) => {
-                totalExpenses += Number(item.amount);
+            // 2. Process Expenses Table
+            const tExpenses = document.getElementById('tbody-expenses');
+            tExpenses.innerHTML = '';
+            let grossExpenses = 0;
+            listExpenses.forEach((item, i) => {
+                grossExpenses += Number(item.amount);
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight:500;">${item.name}</td>
-                    <td style="color:var(--accent-rose); font-weight:700;">${formatINR(item.amount)}</td>
-                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" onclick="deleteExpense(${idx})"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td style="color:var(--accent-rose); font-weight:700;">${moneyFormat(item.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-row-delete" onclick="delExpense(${i})"><i class="fa-solid fa-trash-can"></i></button></td>
                 `;
-                expTbody.appendChild(tr);
+                tExpenses.appendChild(tr);
             });
 
-            // 3. Sync Supplier Table & Smart Minus Calculation Engine
-            const supTbody = document.getElementById('supplier-tbody');
-            supTbody.innerHTML = '';
-            let totalSupplierPayable = 0;
-
-            dbSuppliers.forEach((item, idx) => {
-                // Agar 'Bill' hai toh udhari add (+) hogi, agar 'Pay' (Jama Kiya) hai toh udhari minus (-) hogi
-                if(item.type === 'Bill') {
-                    totalSupplierPayable += Number(item.amount);
-                } else {
-                    totalSupplierPayable -= Number(item.amount);
-                }
-
-                let typeLabel = item.type === 'Bill' ? 'PENDING BILL (+)' : 'JAMA KIYA (-)';
-                let typeColor = item.type === 'Bill' ? 'var(--accent-orange)' : 'var(--accent-green)';
-
+            // 3. Process Supplier Khata (Dynamic Minus)
+            const tSuppliers = document.getElementById('tbody-suppliers');
+            tSuppliers.innerHTML = '';
+            let netSupplierDue = 0;
+            listSuppliers.forEach((item, i) => {
+                netSupplierDue += Number(item.balance);
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight:500;">${item.name}</td>
-                    <td><span class="platform-badge-pill" style="background-color:${typeColor}">${typeLabel}</span></td>
-                    <td style="color:white; font-weight:700;">${formatINR(item.amount)}</td>
-                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" onclick="deleteSupplier(${idx})"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td style="font-weight:500; color:#fff;">${item.name}</td>
+                    <td style="color:var(--accent-orange); font-weight:600;">+ ${moneyFormat(item.payable)}</td>
+                    <td style="color:var(--accent-green); font-weight:600;">- ${moneyFormat(item.received)}</td>
+                    <td style="color:white; font-weight:700; background:rgba(255,255,255,0.03);">${moneyFormat(item.balance)}</td>
+                    <td style="text-align:center;"><button class="btn-row-delete" onclick="delSupplier(${i})"><i class="fa-solid fa-trash-can"></i></button></td>
                 `;
-                supTbody.appendChild(tr);
+                tSuppliers.appendChild(tr);
             });
 
-            // KPI Dashboard Counters Updates
-            document.getElementById('kpi-orders-count').innerText = dbSales.length;
-            document.getElementById('kpi-sales-amt').innerText = formatINR(totalSales);
-            document.getElementById('kpi-expense-amt').innerText = formatINR(totalExpenses);
-            document.getElementById('kpi-supplier-amt').innerText = formatINR(totalSupplierPayable);
+            // Sync Main Counters
+            document.getElementById('kpi-sales').innerText = moneyFormat(grossSales);
+            document.getElementById('kpi-orders').innerText = listSales.length;
+            document.getElementById('kpi-expense').innerText = moneyFormat(grossExpenses);
+            document.getElementById('kpi-supplier').innerText = moneyFormat(netSupplierDue);
 
-            // Channel Progress Strip Syncing Vector
-            Object.keys(channelSums).forEach(key => {
-                let amt = channelSums[key];
-                let lowKey = key.toLowerCase();
-                let pct = totalSales > 0 ? ((amt / totalSales) * 100).toFixed(1) : 0;
-                
-                document.getElementById(`strip-val-${lowKey}`).innerText = formatINR(amt);
-                document.getElementById(`strip-pct-${lowKey}`).innerText = `${pct}% share weight`;
-                document.getElementById(`strip-bar-${lowKey}`).style.width = `${pct}%`;
-            });
-
-            // LocalStorage Flush Cache Backup Sync
-            localStorage.setItem('kdr_v7_sales', JSON.stringify(dbSales));
-            localStorage.setItem('kdr_v7_expenses', JSON.stringify(dbExpenses));
-            localStorage.setItem('kdr_v7_suppliers', JSON.stringify(dbSuppliers));
+            // Sync Local Cache Storage
+            localStorage.setItem('kdr_m_sales', JSON.stringify(listSales));
+            localStorage.setItem('kdr_m_expenses', JSON.stringify(listExpenses));
+            localStorage.setItem('kdr_m_suppliers', JSON.stringify(listSuppliers));
         }
 
-        // Fast Touch Trigger Handler Simulation Linker
-        const labelNode = document.getElementById('lbl-touch-file-trigger');
-        const fileInpNode = document.getElementById('hidden-file-input-field');
-        labelNode.addEventListener('click', (e) => { e.preventDefault(); fileInpNode.click(); });
-        labelNode.addEventListener('touchstart', (e) => { e.preventDefault(); fileInpNode.click(); });
+        // Mobile Touch Response Linker
+        const lblRef = document.getElementById('lbl-file-trigger');
+        const fileRef = document.getElementById('hidden-csv-file');
+        lblRef.addEventListener('click', (e) => { e.preventDefault(); fileRef.click(); });
+        lblRef.addEventListener('touchstart', (e) => { e.preventDefault(); fileRef.click(); });
 
-        // Boot Init Code Execution
-        syncMasterCoreEngine();
+        // Init System Boot
+        recalculateLedgerEngine();
     </script>
 </body>
 </html>
