@@ -3,351 +3,698 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDR AI BOOKS - Auto Sheet Importer</title>
-    <!-- Fonts & Icons -->
+    <title>KDR AI BOOKS - Business Management Software</title>
+    <!-- Google Fonts & FontAwesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
+    <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PapaParse Library for reading CSV files instantly -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
         :root {
-            --bg-dark: #0b111e;
-            --bg-card: #111827;
+            --bg-dark-main: #0b111e;
             --bg-sidebar: #0f172a;
+            --bg-card: #111827;
+            --bg-input: #1f2937;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: rgba(255, 255, 255, 0.05);
-            --color-amazon: #ff9900;
-            --color-flipkart: #2874f0;
-            --color-meesho: #f43397;
-            --color-website: #10b981;
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-orange: #f97316;
+            --accent-purple: #a855f7;
+            
+            /* Channels Branding Colors */
+            --ch-amazon: #ff9900;
+            --ch-flipkart: #2874f0;
+            --ch-meesho: #f43397;
+            --ch-website: #10b981;
+            --ch-retail: #ec4899;
+            --ch-distributor: #3b82f6;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
-
-        /* --- TOPBAR --- */
-        .topbar { background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-size: 1.1rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
-        .date-badge { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; }
-
-        .container { padding: 15px; display: flex; flex-direction: column; gap: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
-
-        /* --- AUTOMATIC IMPORT CARD --- */
-        .import-card {
-            background: linear-gradient(135deg, #1e293b, #111827);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
-        .import-title { font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: #38bdf8; }
-        .import-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 15px; }
-        
-        .file-input-wrapper {
+
+        body {
+            background-color: var(--bg-dark-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- LEFT SIDEBAR PANEL --- */
+        .sidebar {
+            width: 240px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
+            padding: 15px;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .brand-logo {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 20px;
+            padding: 5px;
         }
-        .custom-file-upload {
-            background-color: #0284c7;
-            color: white;
-            padding: 10px 20px;
+        .brand-logo span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .quick-actions-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin: 25px 0 10px 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-quick-add {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            width: 100%;
+            padding: 10px;
             border-radius: 6px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            display: inline-flex;
+            text-align: left;
+            display: flex;
             align-items: center;
-            gap: 8px;
-            transition: 0.2s;
+            gap: 10px;
         }
-        .custom-file-upload:hover { background-color: #0369a1; }
-        #csv-file-input { display: none; }
 
-        .platform-select {
-            background-color: #0b111e;
-            color: white;
+        /* --- MAIN WORKSPACE AREA --- */
+        .workspace {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header Navigation Panel */
+        .top-navbar {
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        .global-search-container {
+            position: relative;
+            width: 380px;
+        }
+        .global-search-container input {
+            width: 100%;
+            background-color: var(--bg-dark-main);
             border: 1px solid var(--border-color);
-            padding: 8px 12px;
             border-radius: 6px;
+            padding: 8px 12px 8px 35px;
+            color: white;
             font-size: 0.85rem;
             outline: none;
-            width: 200px;
-            margin-bottom: 5px;
+        }
+        .global-search-container i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
 
-        /* --- KPI GRID --- */
-        .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .kpi-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; }
-        .kpi-meta { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .kpi-num { font-size: 1.4rem; font-weight: 700; margin-top: 5px; }
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.85rem;
+        }
 
-        /* --- CHANNEL CARDS --- */
-        .channel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .channel-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; }
-        .channel-header { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
-        .channel-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .channel-amt { font-size: 1.2rem; font-weight: 700; margin: 8px 0 4px 0; }
-        .progress-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; transition: 0.3s; }
+        /* Dashboard Scrolled Content Pane */
+        .content-scroller {
+            flex-grow: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
 
-        /* --- CHART & TABLE --- */
-        .section-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; }
-        .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; color: var(--text-muted); text-transform: uppercase; }
+        .dashboard-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dashboard-header-row h1 { font-size: 1.4rem; font-weight: 700; }
+        .dashboard-header-row p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+        .date-picker-badge {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- 4 CORE METRIC CARDS --- */
+        .kpi-row-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .kpi-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; display: flex; justify-content: space-between; }
+        .kpi-value { font-size: 1.7rem; font-weight: 700; margin: 8px 0; color: #fff; }
+        .kpi-subtext { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        .trend-positive { color: var(--accent-green); }
+        .trend-negative { color: #f43f5e; }
+
+        /* --- CHANNEL SALES HORIZONTAL WIDGETS --- */
+        .channels-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+        }
+
+        .channel-widget-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .channel-info { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .channel-ico-box { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; font-weight: 700; }
+        .channel-money { font-size: 1.15rem; font-weight: 700; color: #fff; margin-top: 2px; }
         
-        .table-wrapper { overflow-x: auto; border-radius: 8px; background-color: #0b111e; }
-        .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; min-width: 500px; }
-        .data-table th { color: var(--text-muted); padding: 12px 10px; border-bottom: 1px solid var(--border-color); font-size: 0.7rem; text-transform: uppercase; }
-        .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .channel-progress-container { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+        .channel-progress-fill { height: 100%; width: 0%; transition: width 0.4s ease; }
+        .channel-percent-lbl { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
 
-        /* Mobile Responsive adjustments */
-        @media (max-width: 768px) {
-            .kpi-grid { grid-template-columns: 1fr; gap: 10px; }
-            .channel-grid { grid-template-columns: 1fr; gap: 10px; }
+        /* --- EXTRA KPI MIDSECTION --- */
+        .mid-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
+        .mid-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .mid-card-left { display: flex; align-items: center; gap: 15px; }
+        .mid-icon-square { width: 35px; height: 35px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+
+        /* --- SPLIT ANALYTICS LAYOUT --- */
+        .analytics-split-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.2fr;
+            gap: 20px;
+        }
+
+        .section-card-wrapper {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .section-card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Best Selling Horizontal Rows */
+        .product-ranking-list { display: flex; flex-direction: column; gap: 12px; }
+        .product-ranking-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .product-bar-track { width: 100px; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin: 0 10px; flex-grow: 1; }
+        .product-bar-fill { height: 100%; background-color: var(--accent-blue); }
+
+        /* --- DYNAMIC FORM PANEL --- */
+        .form-grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .input-wrapper-field { display: flex; flex-direction: column; gap: 5px; }
+        .input-wrapper-field label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .input-element {
+            background-color: var(--bg-dark-main);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.85rem;
+        }
+        .input-element:focus { border-color: var(--accent-blue); }
+        .btn-submit-order {
+            grid-column: span 2;
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            transition: opacity 0.2s;
+        }
+        .btn-submit-order:hover { opacity: 0.9; }
+
+        /* --- FOOTER STATUS BAR --- */
+        .footer-status-bar {
+            background-color: var(--bg-sidebar);
+            border-top: 1px solid var(--border-color);
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .footer-item-group { display: flex; gap: 30px; }
+        .footer-value { color: white; font-weight: 600; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- TOP NAV BAR -->
-    <div class="topbar">
-        <div class="brand"><i class="fa-solid fa-bolt"></i> KDR AI BOOKS - AUTO SYNC</div>
-        <div class="date-badge" id="live-clock">07 June 2026</div>
+    <!-- SIDEBAR PANEL -->
+    <div class="sidebar">
+        <div class="brand-logo">
+            <i class="fa-solid fa-cube" style="font-size: 1.4rem;"></i>
+            <div>KDR AI BOOKS<span>Business Management Software</span></div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-cart-shopping"></i> Sales</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-bag-shopping"></i> Purchase</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-users"></i> Parties</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-wallet"></i> Accounts</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Reports</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-robot"></i> AI Assistant <span style="background:#10b981; color:#000; font-size:0.6rem; padding:1px 4px; border-radius:3px; margin-left:5px; font-weight:700;">New</span></a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-folder-open"></i> Documents</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-sliders"></i> Settings</a></li>
+        </ul>
+
+        <div class="quick-actions-title">Quick Actions</div>
+        <button class="btn-quick-add" onclick="document.getElementById('inp-amount').focus()"><i class="fa-solid fa-plus-circle"></i> + Sale Order</button>
     </div>
 
-    <div class="container">
-
-        <!-- 100% AUTOMATIC IMPORT BOX -->
-        <div class="import-card">
-            <div class="import-title"><i class="fa-solid fa-file-excel"></i> Automatic Order Sheet Importer</div>
-            <div class="import-subtitle">Meesho, Amazon, ya Flipkart se download ki hui Order Report (.csv) file select karein. System automatic saare orders jod dega.</div>
-            
-            <div class="file-input-wrapper">
-                <!-- Select channel type -->
-                <select id="import-platform-type" class="platform-select">
-                    <option value="Meesho">Meesho Report (.csv)</option>
-                    <option value="Amazon">Amazon Report (.csv)</option>
-                    <option value="Flipkart">Flipkart Report (.csv)</option>
-                </select>
-
-                <!-- File input -->
-                <label for="csv-file-input" class="custom-file-upload">
-                    <i class="fa-solid fa-upload"></i> Upload Order Sheet
-                </label>
-                <input type="file" id="csv-file-input" accept=".csv">
-                <div id="file-status" style="font-size: 0.75rem; color:#10b981; font-weight:500; margin-top:5px;"></div>
+    <!-- MAIN RIGHT WORKSPACE CONTAINER -->
+    <div class="workspace">
+        <!-- Top Sticky Global Navigation Bar -->
+        <div class="top-navbar">
+            <div class="global-search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Global Search... (Ctrl + K)">
+            </div>
+            <div class="top-nav-right">
+                <i class="fa-regular fa-bell" style="position:relative; cursor:pointer;"><span style="background:#ef4444; width:6px; height:6px; border-radius:50%; position:absolute; top:-2px; right:-2px;"></span></i>
+                <i class="fa-regular fa-circle-question" style="cursor:pointer;"></i>
+                <div style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <span style="font-size:0.75rem; color:var(--text-muted)">KDR AI Books Pvt. Ltd.<br><strong style="color:white;">2025-26</strong></span>
+                    <div style="background:#38bdf8; color:#000; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">KA</div>
+                </div>
             </div>
         </div>
 
-        <!-- MAIN PERFORMANCE KPI CARDS -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-meta">Total Uploaded Orders</div>
-                <div class="kpi-num id-count" id="ui-total-orders">0</div>
+        <!-- Dashboard Variable Content Scroller Panel -->
+        <div class="content-scroller">
+            <div class="dashboard-header-row">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Welcome back! Here is your business overview.</p>
+                </div>
+                <div class="date-picker-badge">
+                    <span id="live-widget-date">07 June 2026</span>
+                    <i class="fa-regular fa-calendar" style="color: var(--accent-blue);"></i>
+                </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-meta">Total Sales Amount</div>
-                <div class="kpi-num" id="ui-total-sales" style="color:#38bdf8;">₹0</div>
+
+            <!-- 4 PRIMARY METRIC ROW GRIDS -->
+            <div class="kpi-row-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Orders Today <i class="fa-solid fa-box" style="color:var(--accent-blue)"></i></div>
+                    <div class="kpi-value" id="val-orders-count">145</div>
+                    <div class="kpi-subtext trend-positive"><i class="fa-solid fa-chart-line"></i> +12.5% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Sales Today <i class="fa-solid fa-indian-rupee-sign" style="color:var(--accent-green)"></i></div>
+                    <div class="kpi-value" id="val-sales-amount">₹2,45,680</div>
+                    <div class="kpi-subtext trend-positive"><i class="fa-solid fa-chart-line"></i> +18.3% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Returns Today <i class="fa-solid fa-rotate-left" style="color:var(--accent-orange)"></i></div>
+                    <div class="kpi-value" style="color:#f43f5e">₹18,750</div>
+                    <div class="kpi-subtext trend-negative"><i class="fa-solid fa-arrow-trend-down"></i> -4.2% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Profit Today <i class="fa-solid fa-wallet" style="color:var(--accent-purple)"></i></div>
+                    <div class="kpi-value" style="color:var(--accent-green);" id="val-profit-amount">₹48,750</div>
+                    <div class="kpi-subtext trend-positive"><i class="fa-solid fa-chart-line"></i> +15.7% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
+                </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-meta">Estimated Profit Margin</div>
-                <div class="kpi-num" id="ui-total-profit" style="color:#10b981;">₹0</div>
+
+            <!-- CHANNELS GRIDS BREAKDOWN -->
+            <div style="font-size:0.8rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:-10px;">Sales by Channel (Today)</div>
+            <div class="channels-grid-layout">
+                <!-- Amazon -->
+                <div class="channel-widget-card">
+                    <div class="channel-info"><div class="channel-ico-box" style="background-color: var(--ch-amazon);"><i class="fa-brands fa-amazon"></i></div> Amazon</div>
+                    <div class="channel-money" id="ch-val-amazon">₹1,25,430</div>
+                    <div class="channel-progress-container"><div id="ch-bar-amazon" class="channel-progress-fill" style="background-color: var(--ch-amazon);"></div></div>
+                    <div class="channel-percent-lbl" id="ch-pct-amazon">51.06%</div>
+                </div>
+                <!-- Flipkart -->
+                <div class="channel-widget-card">
+                    <div class="channel-info"><div class="channel-ico-box" style="background-color: var(--ch-flipkart);">F</div> Flipkart</div>
+                    <div class="channel-money" id="ch-val-flipkart">₹68,750</div>
+                    <div class="channel-progress-container"><div id="ch-bar-flipkart" class="channel-progress-fill" style="background-color: var(--ch-flipkart);"></div></div>
+                    <div class="channel-percent-lbl" id="ch-pct-flipkart">28.01%</div>
+                </div>
+                <!-- Meesho -->
+                <div class="channel-widget-card">
+                    <div class="channel-info"><div class="channel-ico-box" style="background-color: var(--ch-meesho);">M</div> Meesho</div>
+                    <div class="channel-money" id="ch-val-meesho">₹28,940</div>
+                    <div class="channel-progress-container"><div id="ch-bar-meesho" class="channel-progress-fill" style="background-color: var(--ch-meesho);"></div></div>
+                    <div class="channel-percent-lbl" id="ch-pct-meesho">11.78%</div>
+                </div>
+                <!-- Website -->
+                <div class="channel-widget-card">
+                    <div class="channel-info"><div class="channel-ico-box" style="background-color: var(--ch-website);"><i class="fa-solid fa-globe"></i></div> Website</div>
+                    <div class="channel-money" id="ch-val-website">₹12,450</div>
+                    <div class="channel-progress-container"><div id="ch-bar-website" class="channel-progress-fill" style="background-color: var(--ch-website);"></div></div>
+                    <div class="channel-percent-lbl" id="ch-pct-website">5.09%</div>
+                </div>
+                <!-- Retail -->
+                <div class="channel-widget-card">
+                    <div class="channel-info"><div class="channel-ico-box" style="background-color: var(--ch-retail);"><i class="fa-solid fa-store"></i></div> Retail</div>
+                    <div class="channel-money" id="ch-val-retail">₹6,110</div>
+                    <div class="channel-progress-container"><div id="ch-bar-retail" class="channel-progress-fill" style="background-color: var(--ch-retail);"></div></div>
+                    <div class="channel-percent-lbl" id="ch-pct-retail">2.48%</div>
+                </div>
+                <!-- Distributor -->
+                <div class="channel-widget-card">
+                    <div class="channel-info"><div class="channel-ico-box" style="background-color: var(--ch-distributor);"><i class="fa-solid fa-truck-field"></i></div> Distributor</div>
+                    <div class="channel-money" id="ch-val-distributor">₹4,000</div>
+                    <div class="channel-progress-container"><div id="ch-bar-distributor" class="channel-progress-fill" style="background-color: var(--ch-distributor);"></div></div>
+                    <div class="channel-percent-lbl" id="ch-pct-distributor">1.63%</div>
+                </div>
+            </div>
+
+            <!-- MID LEVEL SUB METRICS CARDS -->
+            <div class="mid-kpi-grid">
+                <div class="mid-card">
+                    <div class="mid-card-left">
+                        <div class="mid-icon-square" style="background:rgba(56,189,248,0.1); color:var(--accent-blue);"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <div><p style="font-size:0.75rem; color:var(--text-muted);">Total Outstanding</p><strong style="font-size:1.1rem;" id="mid-outstanding">₹7,85,430</strong></div>
+                    </div>
+                    <i class="fa-solid fa-angle-right" style="color:var(--text-muted); font-size:0.8rem;"></i>
+                </div>
+                <div class="mid-card">
+                    <div class="mid-card-left">
+                        <div class="mid-icon-square" style="background:rgba(16,185,129,0.1); color:var(--accent-green);"><i class="fa-solid fa-file-invoice"></i></div>
+                        <div><p style="font-size:0.75rem; color:var(--text-muted);">Pending Collections</p><strong style="font-size:1.1rem;" id="mid-pending">₹3,45,680</strong></div>
+                    </div>
+                    <i class="fa-solid fa-angle-right" style="color:var(--text-muted); font-size:0.8rem;"></i>
+                </div>
+                <div class="mid-card">
+                    <div class="mid-card-left">
+                        <div class="mid-icon-square" style="background:rgba(249,115,22,0.1); color:var(--accent-orange);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div><p style="font-size:0.75rem; color:var(--text-muted);">Low Stock Items</p><strong style="font-size:1.1rem; color:var(--accent-orange);">23 Items</strong></div>
+                    </div>
+                    <i class="fa-solid fa-angle-right" style="color:var(--text-muted); font-size:0.8rem;"></i>
+                </div>
+                <div class="mid-card">
+                    <div class="mid-card-left">
+                        <div class="mid-icon-square" style="background:rgba(244,63,94,0.1); color:#f43f5e;"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div><p style="font-size:0.75rem; color:var(--text-muted);">Expiry Alerts</p><strong style="font-size:1.1rem; color:#f43f5e;">17 Items</strong></div>
+                    </div>
+                    <i class="fa-solid fa-angle-right" style="color:var(--text-muted); font-size:0.8rem;"></i>
+                </div>
+            </div>
+
+            <!-- ANALYTICS SPLIT SECTION (CHARTS & WORK FORM) -->
+            <div class="analytics-split-block">
+                <!-- Sales Line graph -->
+                <div class="section-card-wrapper">
+                    <div class="section-card-title">Sales Trend (This Month)</div>
+                    <div style="height:150px; position:relative;"><canvas id="chart-sales-trend"></canvas></div>
+                </div>
+
+                <!-- Profit Line graph -->
+                <div class="section-card-wrapper">
+                    <div class="section-card-title">Profit Trend (This Month)</div>
+                    <div style="height:150px; position:relative;"><canvas id="chart-profit-trend"></canvas></div>
+                </div>
+
+                <!-- 100% Working Live Entry Adding Form Box -->
+                <div class="section-card-wrapper" style="border: 1px solid rgba(56,189,248,0.25);">
+                    <div class="section-card-title" style="color:var(--accent-blue); font-weight:700;"><i class="fa-solid fa-circle-plus"></i> Live Order Add Sync</div>
+                    <form id="order-entry-form" class="form-grid-inputs">
+                        <div class="input-wrapper-field">
+                            <label>Marketplace Channel</label>
+                            <select id="inp-channel" class="input-element" required>
+                                <option value="Amazon">Amazon</option>
+                                <option value="Flipkart">Flipkart</option>
+                                <option value="Meesho">Meesho</option>
+                                <option value="Website">Website</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Distributor">Distributor</option>
+                            </select>
+                        </div>
+                        <div class="input-wrapper-field">
+                            <label>Order Amount (₹)</label>
+                            <input type="number" id="inp-amount" class="input-element" placeholder="0" min="1" required>
+                        </div>
+                        <button type="submit" class="btn-submit-order">Update Live Dashboard Metrics</button>
+                    </form>
+
+                    <!-- Best Selling products horizontal meters wrapper -->
+                    <div class="section-card-title" style="margin-top:20px; margin-bottom:10px;">Top 5 Best Selling Products</div>
+                    <div class="product-ranking-list">
+                        <div class="product-ranking-item"><span>1. KDR Wet Wipes</span><div class="product-bar-track"><div class="product-bar-fill" style="width: 95%;"></div></div><strong>₹2,45,650</strong></div>
+                        <div class="product-ranking-item"><span>2. KDR Hand Wash</span><div class="product-bar-track"><div class="product-bar-fill" style="width: 65%;"></div></div><strong>₹1,25,430</strong></div>
+                        <div class="product-ranking-item"><span>3. KDR Disinfectant</span><div class="product-bar-track"><div class="product-bar-fill" style="width: 45%;"></div></div><strong>₹98,750</strong></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- INDIVIDUAL CHANNELS SHARE OVERVIEW -->
-        <div class="channel-grid">
-            <!-- Meesho Card -->
-            <div class="channel-card">
-                <div class="channel-header"><div class="channel-dot" style="background:var(--color-meesho);"></div> Meesho Share</div>
-                <div class="channel-amt" id="share-amt-meesho">₹0</div>
-                <div class="progress-bar"><div class="progress-fill" id="share-bar-meesho" style="background:var(--color-meesho);"></div></div>
+        <!-- FOOTER STATUS METRIC BAR -->
+        <div class="footer-status-bar">
+            <div class="footer-item-group">
+                <div>Total Products: <span class="footer-value" id="foot-products">568</span></div>
+                <div>Total Parties: <span class="footer-value" id="foot-parties">324</span></div>
+                <div>Total Users: <span class="footer-value" id="foot-users">8</span></div>
+                <div>Total Stock Value: <span class="footer-value" id="foot-stock">₹12,45,680</span></div>
             </div>
-            <!-- Amazon Card -->
-            <div class="channel-card">
-                <div class="channel-header"><div class="channel-dot" style="background:var(--color-amazon);"></div> Amazon Share</div>
-                <div class="channel-amt" id="share-amt-amazon">₹0</div>
-                <div class="progress-bar"><div class="progress-fill" id="share-bar-amazon" style="background:var(--color-amazon);"></div></div>
-            </div>
-            <!-- Flipkart Card -->
-            <div class="channel-card">
-                <div class="channel-header"><div class="channel-dot" style="background:var(--color-flipkart);"></div> Flipkart Share</div>
-                <div class="channel-amt" id="share-amt-flipkart">₹0</div>
-                <div class="progress-bar"><div class="progress-fill" id="share-bar-flipkart" style="background:var(--color-flipkart);"></div></div>
-            </div>
+            <div><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-green); margin-right:5px;"></i> Last Backup: <span class="footer-value" id="foot-backup-time">07-06-2026 02:30 PM</span></div>
         </div>
-
-        <!-- PERFORMANCE CHART -->
-        <div class="section-card">
-            <div class="card-title">Live Channel Sales Comparison</div>
-            <div style="height: 180px; position: relative;">
-                <canvas id="channelChart"></canvas>
-            </div>
-        </div>
-
-        <!-- LIVE IMPORTED ORDERS LIST VIEW -->
-        <div class="section-card">
-            <div class="card-title">Imported Sheet Raw Logs (Recent 20 Orders)</div>
-            <div class="table-wrapper">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Platform Channel</th>
-                            <th>Sale Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="imported-rows-container">
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No sheets imported yet. Select a file above!</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
-    <!-- BRAIN CORE ENGINE SCRIPT -->
+    <!-- MAIN ENGINE DATA HANDLER OPERATIONS SCRIPT -->
     <script>
-        // Memory database array to store sheet data dynamically
-        let importedOrdersList = JSON.parse(localStorage.getItem('auto_orders_db')) || [];
+        // Initial exact matching state values directly cloned from image reference blueprint
+        let coreMetricsState = {
+            Amazon: 125430,
+            Flipkart: 68750,
+            Meesho: 28940,
+            Website: 12450,
+            Retail: 6110,
+            Distributor: 4000,
+            baseOrdersCount: 145,
+            outstanding: 785430,
+            pending: 345680
+        };
 
-        function formatINR(val) {
-            return '₹' + Number(val).toLocaleString('en-IN');
+        // Load cached memory or use initial reference specifications
+        let savedState = JSON.parse(localStorage.getItem('kdr_ai_books_db'));
+        if (savedState) { coreMetricsState = savedState; }
+
+        function formatToINR(value) {
+            return '₹' + Number(value).toLocaleString('en-IN');
         }
 
-        // CSV File reader algorithm listener
-        document.getElementById('csv-file-input').addEventListener('change', function(e) {
-            const selectedFile = e.target.files[0];
-            const platform = document.getElementById('import-platform-type').value;
-            
-            if (!selectedFile) return;
+        // Live processing UI updating engine routine
+        function computeAndRefreshDashboard() {
+            // Aggregate entire absolute channel sales totals
+            let grandTotalSalesSum = 
+                coreMetricsState.Amazon + 
+                coreMetricsState.Flipkart + 
+                coreMetricsState.Meesho + 
+                coreMetricsState.Website + 
+                coreMetricsState.Retail + 
+                coreMetricsState.Distributor;
 
-            document.getElementById('file-status').innerText = "Processing sheet file...";
+            // Compute structural percentage maps
+            Object.keys(coreMetricsState).forEach(key => {
+                if(key !== 'baseOrdersCount' && key !== 'outstanding' && key !== 'pending') {
+                    let itemAmt = coreMetricsState[key];
+                    let calculatedPct = grandTotalSalesSum > 0 ? ((itemAmt / grandTotalSalesSum) * 100).toFixed(2) : 0;
 
-            // PapaParse engine reads the text data stream from excel csv instantly
-            Papa.parse(selectedFile, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    let parsedCount = 0;
-                    
-                    results.data.forEach(row => {
-                        let detectedAmount = 0;
-                        let detectedOrderId = "ID-" + Math.floor(100000 + Math.random() * 900000);
-
-                        // Dynamic Header Scanning System: Yeh Amazon, Meesho aur Flipkart ke files ke columns ko auto-read karta hai
-                        // 1. Check mapping for Price / Amount column names
-                        if(row['Total Amount']) detectedAmount = parseFloat(row['Total Amount']);
-                        else if(row['Product Price']) detectedAmount = parseFloat(row['Product Price']);
-                        else if(row['Order Amount']) detectedAmount = parseFloat(row['Order Amount']);
-                        else if(row['price']) detectedAmount = parseFloat(row['price']);
-                        else if(row['amount']) detectedAmount = parseFloat(row['amount']);
-                        else if(row['Sale Price']) detectedAmount = parseFloat(row['Sale Price']);
-                        
-                        // 2. Check mapping for Order Identification numbers
-                        if(row['Order ID']) detectedOrderId = row['Order ID'];
-                        else if(row['Sub Order Id']) detectedOrderId = row['Sub Order Id'];
-                        else if(row['order_id']) detectedOrderId = row['order_id'];
-
-                        // If valid transaction entry discovered, add it to database
-                        if(!isNaN(detectedAmount) && detectedAmount > 0) {
-                            importedOrdersList.unshift({
-                                id: detectedOrderId,
-                                channel: platform,
-                                amount: detectedAmount
-                            });
-                            parsedCount++;
-                        }
-                    });
-
-                    document.getElementById('file-status').innerText = `🎉 Successfully imported ${parsedCount} orders from ${platform} sheet!`;
-                    calculateMetricsAndRender();
+                    // Push value strings onto widgets
+                    document.getElementById(`ch-val-${key.toLowerCase()}`).innerText = formatToINR(itemAmt);
+                    document.getElementById(`ch-pct-${key.toLowerCase()}`).innerText = `${calculatedPct}%`;
+                    document.getElementById(`ch-bar-${key.toLowerCase()}`).style.width = `${calculatedPct}%`;
                 }
             });
+
+            // Update main core visual summary counters indicators
+            document.getElementById('val-sales-amount').innerText = formatToINR(grandTotalSalesSum);
+            document.getElementById('val-orders-count').innerText = coreMetricsState.baseOrdersCount;
+            
+            // Derive static profit valuation tracking safely (~19.84% ratio projection)
+            let derivedProfit = Math.round(grandTotalSalesSum * 0.1984);
+            document.getElementById('val-profit-amount').innerText = formatToINR(derivedProfit);
+
+            // Left inner static rows synchronization mapping blocks
+            document.getElementById('mid-outstanding').innerText = formatToINR(coreMetricsState.outstanding);
+            document.getElementById('mid-pending').innerText = formatToINR(coreMetricsState.pending);
+
+            // Sync structural changes instantly into local persistence layer
+            localStorage.setItem('kdr_ai_books_db', JSON.stringify(coreMetricsState));
+
+            // Reload chart data paths dynamically
+            salesTrendChart.data.datasets[0].data = [80000, 150000, 110000, 180000, 140000, grandTotalSalesSum / 1.5, grandTotalSalesSum];
+            salesTrendChart.update();
+
+            profitTrendChart.data.datasets[0].data = [15000, 28000, 22000, 35000, 29000, derivedProfit * 0.8, derivedProfit];
+            profitTrendChart.update();
+        }
+
+        // Form processing workflow interceptor listener
+        document.getElementById('order-entry-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const targetChannelKey = document.getElementById('inp-channel').value;
+            const operationalInpValue = parseFloat(document.getElementById('inp-amount').value);
+
+            if(!isNaN(operationalInpValue) && operationalInpValue > 0) {
+                // Increment target state records maps
+                coreMetricsState[targetChannelKey] += operationalInpValue;
+                coreMetricsState.baseOrdersCount += 1; // Auto increment order item count parameter
+                
+                // Scale cash balances metrics context tracking rows shifts
+                coreMetricsState.outstanding += Math.round(operationalInpValue * 0.3);
+                coreMetricsState.pending += Math.round(operationalInpValue * 0.2);
+
+                computeAndRefreshDashboard();
+
+                // Clear input form field parameters securely
+                document.getElementById('inp-amount').value = "";
+                document.getElementById('inp-amount').blur();
+            }
         });
 
-        // Main calculations and display updater loop matrix
-        function calculateMetricsAndRender() {
-            let totalSalesSum = 0;
-            let channelSums = { Meesho: 0, Amazon: 0, Flipkart: 0 };
-
-            // Reset table container layout
-            const tbody = document.getElementById('imported-rows-container');
-            tbody.innerHTML = "";
-
-            if(importedOrdersList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding:20px;">No sheets imported yet. Select a file above!</td></tr>`;
-                return;
-            }
-
-            // Loop records to find mathematical totals
-            importedOrdersList.forEach((order, index) => {
-                totalSalesSum += order.amount;
-                if(channelSums.hasOwnProperty(order.channel)) {
-                    channelSums[order.channel] += order.amount;
-                }
-
-                // Show only top 20 recent rows to prevent memory lags on phone screens
-                if(index < 20) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="font-family:monospace; color:#fff;">${order.id}</td>
-                        <td><span style="font-weight:600;">${order.channel}</span></td>
-                        <td style="color:#38bdf8; font-weight:600;">${formatINR(order.amount)}</td>
-                        <td style="color:#10b981;"><i class="fa-solid fa-circle-check"></i> Auto Synced</td>
-                    `;
-                    tbody.appendChild(tr);
-                }
-            });
-
-            // Update Global Metrics Cards Numbers view parameters
-            document.getElementById('ui-total-orders').innerText = importedOrdersList.length;
-            document.getElementById('ui-total-sales').innerText = formatINR(totalSalesSum);
-            document.getElementById('ui-total-profit').innerText = formatINR(Math.round(totalSalesSum * 0.22)); // Estimating general 22% average margins profit
-
-            // Update Progress Share Indicators layout path bars
-            Object.keys(channelSums).forEach(platformKey => {
-                const platformAmt = channelSums[platformKey];
-                const percentageShare = totalSalesSum > 0 ? ((platformAmt / totalSalesSum) * 100).toFixed(1) : 0;
-                
-                document.getElementById(`share-amt-${platformKey.toLowerCase()}`).innerText = `${formatINR(platformAmt)} (${percentageShare}%)`;
-                document.getElementById(`share-bar-${platformKey.toLowerCase()}`).style.width = `${percentageShare}%`;
-            });
-
-            // Save records inside backup memory state
-            localStorage.setItem('auto_orders_db', JSON.stringify(importedOrdersList));
-
-            // Sync visual representation bars parameters charts framework
-            channelChart.data.datasets[0].data = [channelSums.Meesho, channelSums.Amazon, channelSums.Flipkart];
-            channelChart.update();
-        }
-
-        // Live Ticking Clock functionality path tracer block
+        // Initialize clock parameters fields loop tracking timer
         setInterval(() => {
-            const clock = new Date();
-            document.getElementById('live-clock').innerText = clock.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + " | " + clock.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
+            const clockObj = new Date();
+            const fmtDate = clockObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            const fmtTime = clockObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            
+            document.getElementById('live-widget-date').innerText = fmtDate;
+            document.getElementById('foot-backup-time').innerText = `${clockObj.toLocaleDateString('en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}).replace(/\//g, '-')}, ${fmtTime}`;
         }, 1000);
 
-        // Chart setup block allocation initialization configuration routing
-        const chartCtx = document.getElementById('channelChart').getContext('2d');
-        const channelChart = new Chart(chartCtx, {
-            type: 'bar',
+        // --- CHART CONFIGURATION MAPS INITIALIZATION (MATCHING BLUE/GREEN GRAPH PATHS) ---
+        const salesTrendCtx = document.getElementById('chart-sales-trend').getContext('2d');
+        const salesTrendChart = new Chart(salesTrendCtx, {
+            type: 'line',
             data: {
-                labels: ['Meesho', 'Amazon', 'Flipkart'],
+                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current'],
                 datasets: [{
-                    data: [0, 0, 0],
-                    backgroundColor: ['#f43397', '#ff9900', '#2874f0'],
-                    borderRadius: 6,
-                    barPercentage: 0.4
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#0284c7',
+                    backgroundColor: 'rgba(2, 132, 199, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 2
                 }]
             },
             options: {
@@ -355,14 +702,40 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } },
-                    x: { ticks: { color: '#9ca3af' } }
+                    y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#6b7280', font: { size: 9 } } },
+                    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 9 } } }
                 }
             }
         });
 
-        // Initialize display configuration matrix workflow pipeline
-        calculateMetricsAndRender();
+        const profitTrendCtx = document.getElementById('chart-profit-trend').getContext('2d');
+        const profitTrendChart = new Chart(profitTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current'],
+                datasets: [{
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#6b7280', font: { size: 9 } } },
+                    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Launch app on load sequence command execution
+        computeAndRefreshDashboard();
     </script>
 </body>
 </html>
