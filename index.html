@@ -34,6 +34,22 @@ button{background:linear-gradient(135deg,#2563eb,#9333ea);color:#fff}
 <div class="card"><div>Total Profit</div><div id="totalProfit" class="big">₹0</div></div>
 </div>
 
+ <div class="grid">
+<div class="card">
+<div>Today Expense</div>
+<div id="todayExpense" class="big">₹0</div>
+</div>
+
+<div class="card">
+<div>Cash In Hand</div>
+<div id="cashInHand" class="big">₹0</div>
+</div>
+</div>
+
+<div class="card">
+<div>Supplier Payable</div>
+<div id="supplierPayable" class="big">₹0</div>
+</div>
 <div class="card">🏆 Top Selling Product<br><b id="topSelling">No Data</b></div>
 <div class="card">💰 Most Profitable Product<br><b id="topProfit">No Data</b></div>
 
@@ -132,12 +148,17 @@ function render(){
  for(let k in profitMap){if(profitMap[k]>bp){bp=profitMap[k];prof=k+' (₹'+bp+')';}}
 
  todaySale.innerText='₹'+ts;
- todayProfit.innerText='₹'+tp;
- totalSales.innerText='₹'+totalS;
- totalProfit.innerText='₹'+totalP;
- topSelling.innerText=best;
- topProfit.innerText=prof;
- history.innerHTML=h||'No Sales';
+todayProfit.innerText='₹'+tp;
+totalSales.innerText='₹'+totalS;
+totalProfit.innerText='₹'+totalP;
+
+todayExpense.innerText='₹0';
+cashInHand.innerText='₹'+(totalS-totalP);
+supplierPayable.innerText='₹0';
+
+topSelling.innerText=best;
+topProfit.innerText=prof;
+history.innerHTML=h||'No Sales';
 }
 render();
 </script>
