@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHAKTI MOBILE - Data Recovered Dashboard</title>
+    <title>SHAKTI MOBILE - Live Sync Dashboard</title>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome for Icons -->
@@ -146,7 +146,7 @@
             <button onclick="openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">💸 Expense</p>
             </button>
-            <button onclick="document.getElementById('analyticsChart').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="document.getElementById('reportSection').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">📊 View Report</p>
             </button>
         </div>
@@ -208,7 +208,7 @@
         </div>
 
         <!-- Filter & Analytics Section -->
-        <div class="card-bg p-4 rounded-xl mb-4">
+        <div id="reportSection" class="card-bg p-4 rounded-xl mb-4">
             <label class="block text-xs text-gray-400 uppercase mb-2">Select Filter Month</label>
             <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4">
                 <option value="June 2026">June 2026</option>
@@ -437,17 +437,28 @@
             window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
                 if (docSnap.exists()) {
                     let c = docSnap.data();
-                    salesData = c.salesData || []; expenseData = c.expenseData || []; inventory = c.inventory || {}; udhaarData = c.udhaarData || [];
                     
-                    // ================= AUTO REPAIR METHOD (RECOVERS OLD MISMATCHED DATA FORMATS) =================
-                    let repaired = false;
-                    for (const [key, val] of Object.entries(inventory)) {
-                        if (typeof val === 'number') { // Converts old stock formats to objects safely
+                    // FIXED: Dynamic structure merge to prevent data loss
+                    salesData = c.salesData || []; 
+                    expenseData = c.expenseData || []; 
+                    udhaarData = c.udhaarData || [];
+                    
+                    let rawInventory = c.inventory || {};
+                    inventory = {};
+
+                    // FORCE CONVERT OLD DATA STRUCUTRE TO PREVENT DISAPPEARING
+                    for (const [key, val] of Object.entries(rawInventory)) {
+                        if (typeof val === 'number') {
                             inventory[key] = { qty: val, price: 0, brand: "", imei: "" };
-                            repaired = true;
+                        } else if (val && typeof val === 'object') {
+                            inventory[key] = {
+                                qty: val.qty !== undefined ? val.qty : (val.count || 0),
+                                price: val.price || 0,
+                                brand: val.brand || "",
+                                imei: val.imei || ""
+                            };
                         }
                     }
-                    if(repaired) { syncToCloud(); }
                 }
                 updateDashboardUI();
             });
@@ -618,14 +629,7 @@
             let val = 0;
 
             for (const [model, data] of Object.entries(inventory)) {
-                let count = 0; let price = 0; let brand = ""; let imei = "";
-                
-                if (data && typeof data === 'object') {
-                    count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || "";
-                } else if (typeof data === 'number') {
-                    count = data;
-                }
-                
+                let count = data.qty || 0; let price = data.price || 0; let brand = data.brand || ""; let imei = data.imei || "";
                 val += (count * price);
 
                 let match = false;
@@ -641,11 +645,11 @@
                             <div><span class="text-[10px] text-blue-400 font-bold uppercase">${brand || 'Generic'}</span> <p class="font-bold text-gray-200">${model}</p></div>
                             <div class="flex items-center gap-1">
                                 <span class="bg-slate-900 px-2 py-0.5 rounded font-mono">${count} Left</span>
-                                <button onclick="openEditStock('${model}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deleteStockItem('${model}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="openEditStock('${model.replace(/'/g, "\\'")}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
-                        <p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Value: ₹${count * price}</p>
+                        <p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Total Value: ₹${count * price}</p>
                     `;
                     container.appendChild(div);
                 }
