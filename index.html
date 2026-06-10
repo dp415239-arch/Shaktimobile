@@ -2,35 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDR AI BOOKS - Business Management Software Suite</title>
-    <!-- Fonts & Premium FontAwesome Icons -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KDR AI BOOKS - Touch Screen Verified ERP</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ChartJS Framework for Projections -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PapaParse Library for Instant Automated Sheet Reading -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
         :root {
-            --bg-body-main: #070a13;
-            --bg-sidebar: #0d121f;
-            --bg-card: #121826;
-            --bg-input: #1a2236;
+            --bg-body-dark: #070a13;
+            --bg-sidebar-dark: #0d121f;
+            --bg-card-dark: #121826;
+            --bg-input-dark: #1a2236;
             --border-standard: rgba(255, 255, 255, 0.05);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            
-            /* Theme Accents */
             --accent-cyan: #38bdf8;
             --accent-green: #10b981;
             --accent-orange: #f97316;
             --accent-purple: #a855f7;
             --accent-rose: #f43f5e;
             
-            /* Channels Strict Color Matrix */
+            /* Channels Branding Strict Colors */
             --brand-amazon: #ff9900;
             --brand-flipkart: #2874f0;
             --brand-meesho: #f43397;
@@ -44,768 +39,622 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
+            -webkit-user-select: none; /* Disables accidental selection text highlights during scrolling */
+            user-select: none;
         }
 
         body {
-            background-color: var(--bg-body-main);
+            background-color: var(--bg-body-dark);
             color: var(--text-primary);
-            display: flex;
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
-            overflow: hidden;
+            overflow-x: hidden;
+            padding-bottom: 40px;
         }
 
-        /* --- SIDEBAR DESKTOP VIEW LAYOUT --- */
-        .sidebar {
-            width: 250px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-standard);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            height: 100%;
-        }
-
-        .brand-header {
-            padding: 20px;
+        /* --- STICKY MOBILE NAVIGATION TOPBAR --- */
+        .mobile-topbar-wrapper {
+            background-color: var(--bg-sidebar-dark);
             border-bottom: 1px solid var(--border-standard);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-cube-logo {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);
-        }
-
-        .brand-text h2 { font-size: 0.95rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
-        .brand-text span { font-size: 0.65rem; color: var(--text-muted); display: block; }
-
-        .sidebar-links-stack {
-            list-style: none;
-            padding: 15px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .nav-item a {
-            display: flex;
-            align-items: center;
-            padding: 10px 14px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border-radius: 6px;
-            gap: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-item.active a, .nav-item a:hover {
-            background-color: rgba(56, 189, 248, 0.08);
-            color: var(--accent-cyan);
-        }
-
-        .nav-item i { font-size: 1rem; width: 20px; text-align: center; color: var(--text-muted); }
-        .nav-item a:hover i, .nav-item.active i { color: var(--accent-cyan); }
-
-        .divider-label {
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin: 20px 0 6px 14px;
-        }
-
-        .badge-new { background-color: var(--accent-green); color: #000; font-size: 0.6rem; font-weight: 700; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; margin-left: auto; }
-
-        .sidebar-footer {
-            padding: 15px;
-            border-top: 1px solid var(--border-standard);
-        }
-
-        .btn-add-sale-popup {
-            width: 100%;
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--accent-green);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 11px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        /* --- MAIN DASHBOARD INTERFACE --- */
-        .main-workspace {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .top-navbar {
-            height: 65px;
-            background-color: var(--bg-sidebar);
-            border-bottom: 1px solid var(--border-standard);
-            padding: 0 30px;
+            padding: 14px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            height: 60px;
         }
 
-        .search-container-box {
-            position: relative;
-            width: 400px;
-        }
-        .search-container-box input {
-            width: 100%;
-            background-color: var(--bg-body-main);
-            border: 1px solid var(--border-standard);
-            border-radius: 6px;
-            padding: 9px 14px 9px 40px;
-            color: white;
-            font-size: 0.85rem;
-            outline: none;
-        }
-        .search-container-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .brand-node-wrap { display: flex; align-items: center; gap: 10px; }
+        .brand-logo-cube { background: linear-gradient(135deg, #0284c7, #0369a1); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; }
+        .brand-text h2 { font-size: 0.95rem; font-weight: 700; color: white; }
+        .brand-text p { font-size: 0.6rem; color: var(--text-muted); }
 
-        .scroller-content-pane {
-            flex-grow: 1;
-            padding: 25px;
-            overflow-y: auto;
+        .system-pill-node { background: rgba(56,189,248,0.1); color: var(--accent-cyan); padding: 5px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; }
+
+        /* --- MOBILE LAYOUT SCROLL CONTAINER --- */
+        .app-scroller-view-deck {
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 16px;
+            width: 100%;
         }
 
-        .view-header-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .view-header-title-row h1 { font-size: 1.5rem; font-weight: 700; color: white; }
-        .view-header-title-row p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
-
-        .calendar-badge {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-standard);
-            padding: 10px 16px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            color: white;
-            font-weight: 500;
-        }
-
-        /* --- FILE AUTO IMPORTER CARD PANEL --- */
-        .auto-importer-wrapper {
+        /* --- AUTOMATED SHEET IMPORT INTERACTIVE COMPONENT --- */
+        .sheet-importer-touch-card {
             background: linear-gradient(135deg, #131d35, #121826);
             border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 8px;
-            padding: 18px;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .sheet-importer-touch-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; }
+        .sheet-importer-touch-card p { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 14px; }
+
+        .importer-flex-controls {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
         }
 
-        .importer-meta-left h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); }
-        .importer-meta-left p { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
-
-        .importer-controls-right { display: flex; align-items: center; gap: 12px; }
-        .btn-upload-label { background-color: #0284c7; color: white; padding: 10px 18px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; }
-        #hidden-sheet-file-input { display: none; }
-
-        /* --- 4 PRIMARY METRIC ROW GRIDS --- */
-        .kpi-metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .kpi-metric-card-block {
-            background-color: var(--bg-card);
+        .mobile-select-element, .mobile-input-element {
+            background-color: var(--bg-body-dark);
+            color: white;
             border: 1px solid var(--border-standard);
+            padding: 14px;
             border-radius: 8px;
-            padding: 20px;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+            display: block;
+        }
+
+        /* Fixed Touch target upload label trigger */
+        .mobile-touch-upload-label {
+            background-color: #0284c7;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+        }
+        #hidden-file-input-field { display: none !important; position: absolute; visibility: hidden; }
+
+        /* --- KPI TILES GRID --- */
+        .kpi-vertical-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .kpi-card-tile {
+            background-color: var(--bg-card-dark);
+            border: 1px solid var(--border-standard);
+            border-radius: 10px;
+            padding: 14px;
             position: relative;
         }
-        .kpi-metric-card-block::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-        .theme-ord::before { background-color: var(--accent-cyan); }
-        .theme-sal::before { background-color: var(--accent-green); }
-        .theme-ret::before { background-color: var(--accent-orange); }
-        .theme-prf::before { background-color: var(--accent-purple); }
+        .kpi-card-tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+        .tile-ord::before { background-color: var(--accent-cyan); }
+        .tile-sal::before { background-color: var(--accent-green); }
+        .tile-ret::before { background-color: var(--accent-orange); }
+        .tile-prf::before { background-color: var(--accent-purple); }
 
-        .kpi-card-label { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: flex; justify-content: space-between; }
-        .kpi-card-numeric { font-size: 1.85rem; font-weight: 700; color: white; margin: 10px 0 4px 0; }
-        .kpi-card-trend-footer { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .tile-meta-lbl { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
+        .tile-numeric-val { font-size: 1.3rem; font-weight: 700; margin-top: 6px; color: white; letter-spacing: -0.2px; }
 
-        /* --- SALES CHANNELS GRID (PIXEL MATCH TO IMG_3324_3) --- */
-        .channels-sixway-grid-layout {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 16px;
+        /* --- CHANNELS DISTRIBUTION STRIP LOGS --- */
+        .section-header-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: -4px; }
+
+        .channels-vertical-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .channel-data-card {
-            background-color: var(--bg-card);
+        .channel-horizontal-strip {
+            background-color: var(--bg-card-dark);
             border: 1px solid var(--border-standard);
             border-radius: 8px;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .channel-card-identity-header { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
-        .channel-img-wrapper-frame { width: 22px; height: 22px; border-radius: 4px; background: white; object-fit: cover; padding: 2px; }
-        .channel-sum-money-lbl { font-size: 1.25rem; font-weight: 700; color: white; margin-top: 4px; letter-spacing: -0.3px; }
-        .channel-linear-bar-track { width: 100%; height: 4px; background-color: rgba(255,255,255,0.04); border-radius: 2px; overflow: hidden; margin-top: 4px; }
-        .channel-linear-bar-fill { height: 100%; width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .channel-pct-metrics-lbl { font-size: 0.65rem; color: var(--text-secondary); text-align: right; margin-top: 2px; }
+        .channel-strip-header-row { display: flex; justify-content: space-between; align-items: center; }
+        .channel-meta-brand-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: white; }
+        .channel-logo-avatar { width: 18px; height: 18px; border-radius: 3px; background: white; object-fit: cover; padding: 1px; }
+        .channel-strip-amount-lbl { font-size: 1.05rem; font-weight: 700; color: white; }
 
-        /* --- EXTENDED KPI ROW BLOCKS --- */
-        .secondary-kpi-fourway-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
+        .channel-progress-track { width: 100%; height: 4px; background-color: rgba(255,255,255,0.04); border-radius: 2px; overflow: hidden; }
+        .channel-progress-fill-line { height: 100%; width: 0%; transition: width 0.3s ease; }
+        .channel-strip-pct-lbl { font-size: 0.65rem; color: var(--text-muted); text-align: right; }
 
-        .secondary-interactive-widget-node {
-            background-color: var(--bg-card);
+        /* --- VISUAL INTERACTIVE PLOT CARD --- */
+        .chart-visual-card-panel {
+            background-color: var(--bg-card-dark);
             border: 1px solid var(--border-standard);
-            border-radius: 8px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .sec-node-icon-square { width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; background-color: rgba(255,255,255,0.02); }
-        .sec-node-meta-block p { font-size: 0.75rem; color: var(--text-secondary); }
-        .sec-node-meta-block strong { font-size: 1.15rem; font-weight: 700; color: white; margin-top: 2px; display: block; }
-
-        /* --- SPLIT ANALYTICS LAYOUT FLOW --- */
-        .analytics-triple-split-row {
-            display: grid;
-            grid-template-columns: 1.2fr 1.2fr 1.5fr;
-            gap: 20px;
+            border-radius: 12px;
+            padding: 14px;
         }
 
-        .panel-card-container { background-color: var(--bg-card); border: 1px solid var(--border-standard); border-radius: 8px; padding: 20px; }
-        .panel-card-title-lbl { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 20px; }
+        /* --- LIVE ORDER INJECTOR FORM --- */
+        .form-panel-container {
+            background-color: var(--bg-card-dark);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+        }
 
-        /* Form Layout Fields Elements */
         .form-fields-vertical-stack { display: flex; flex-direction: column; gap: 12px; }
-        .form-row-input-node { display: flex; flex-direction: column; gap: 5px; }
-        .form-row-input-node label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
-        .form-element-control { background-color: var(--bg-body-main); border: 1px solid var(--border-standard); color: white; padding: 10px 12px; border-radius: 6px; outline: none; font-size: 0.85rem; }
-        .btn-form-submit-trigger { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; margin-top: 5px; }
-
-        /* Product Tier Ranking bars layout */
-        .ranking-bars-list-wrapper { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; border-top: 1px solid var(--border-standard); padding-top: 15px; }
-        .ranking-product-tier-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
-        .ranking-track-line { flex-grow: 1; height: 5px; background-color: rgba(255,255,255,0.04); border-radius: 3px; margin: 0 15px; overflow: hidden; }
-        .ranking-fill-line { height: 100%; background-color: var(--accent-cyan); border-radius: 3px; }
-
-        /* --- COMPREHENSIVE DATA SHEET LEDGER VIEW --- */
-        .master-ledger-audit-panel-card { background-color: var(--bg-card); border: 1px solid var(--border-standard); border-radius: 8px; padding: 22px; }
-        .ledger-table-scroller-box-frame { overflow-x: auto; width: 100%; border-radius: 6px; border: 1px solid var(--border-standard); background-color: rgba(0,0,0,0.1); max-height: 260px; }
-        .ledger-master-data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
-        .ledger-master-data-table th { color: var(--text-secondary); background: #0f1422; padding: 12px 14px; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-standard); position: sticky; top: 0; z-index: 10; }
-        .ledger-master-data-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .ledger-master-data-table tbody tr:hover { background-color: rgba(255,255,255,0.01); }
-
-        .badge-pill-node-tag { padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; color: white; text-transform: uppercase; }
-        .btn-action-delete-row-node { background: transparent; border: none; color: var(--accent-rose); cursor: pointer; font-size: 0.9rem; transition: transform 0.2s; }
-        .btn-action-delete-row-node:hover { color: #ff1a40; transform: scale(1.1); }
-
-        /* --- PERSISTENT FOOTER COUNTERS --- */
-        .system-footer-bar-summary {
-            height: 45px;
-            background-color: var(--bg-sidebar);
-            border-top: 1px solid var(--border-standard);
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            flex-shrink: 0;
+        .form-input-node-block { display: flex; flex-direction: column; gap: 5px; }
+        .form-input-node-block label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
+        
+        .btn-touch-submit-trigger {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            width: 100%;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
         }
-        .footer-left-nodes-wrap { display: flex; gap: 35px; }
-        .footer-counter-node span { color: white; font-weight: 600; margin-left: 5px; }
+
+        /* --- REALTIME AUDIT HISTORY LOG TABLE --- */
+        .master-ledger-card-panel {
+            background-color: var(--bg-card-dark);
+            border: 1px solid var(--border-standard);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .search-mechanism-input-wrap {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .search-mechanism-input-wrap input {
+            width: 100%; background-color: var(--bg-body-dark); border: 1px solid var(--border-standard);
+            border-radius: 8px; padding: 12px 12px 12px 35px; color: white; outline: none; font-size: 0.8rem;
+        }
+        .search-mechanism-input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; }
+
+        .mobile-table-scroll-container-frame {
+            overflow-x: auto;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid var(--border-standard);
+            background-color: rgba(0,0,0,0.1);
+            max-height: 280px;
+        }
+
+        .mobile-master-ledger-data-grid {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.75rem;
+            min-width: 450px;
+        }
+        .mobile-master-ledger-data-grid th { color: var(--text-secondary); background: #0f1423; padding: 12px 10px; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; border-bottom: 1px solid var(--border-standard); position: sticky; top: 0; }
+        .mobile-master-ledger-data-grid td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+        .platform-badge-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; color: white; text-transform: uppercase; }
+        
+        /* High response large touch padding trash delete row button */
+        .btn-touch-action-row-delete {
+            background: transparent;
+            border: none;
+            color: var(--accent-rose);
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        /* --- DYNAMIC SYSTEM FOOTER STATUS BAR --- */
+        .persistent-system-footer-panel {
+            background-color: var(--bg-sidebar-dark);
+            border-top: 1px solid var(--border-standard);
+            padding: 12px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR MODULES NAVIGATION -->
-    <div class="sidebar">
-        <div class="brand-header">
-            <div class="brand-cube-logo"><i class="fa-solid fa-cube"></i></div>
+    <div class="mobile-topbar-wrapper">
+        <div class="brand-node-wrap">
+            <div class="brand-logo-cube"><i class="fa-solid fa-cube"></i></div>
             <div class="brand-text">
                 <h2>KDR AI BOOKS</h2>
-                <span>Management Software</span>
+                <p>Touch Engine v4.0 Fixed</p>
             </div>
         </div>
-        <ul class="sidebar-links-stack">
-            <li class="divider-label">Core Modules</li>
-            <li class="nav-item active"><a href="#"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-cart-shopping"></i><span>Sales Channels</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-bag-shopping"></i><span>Purchase Log</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-users"></i><span>Parties / Vendors</span></a></li>
-            <li class="divider-label">Financials</li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-wallet"></i><span>Accounts Ledger</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i><span>Tax Reports</span></a></li>
-            <li class="nav-item"><a href="#"><i class="fa-solid fa-robot"></i><span>AI Assistant</span><span class="badge-new">New</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <button class="btn-add-sale-popup" onclick="document.getElementById('form-inp-amount').focus()"><i class="fa-solid fa-circle-plus"></i> Add New Sale</button>
+        <div class="system-pill-node">
+            LIVE SYSTEM SYNC
         </div>
     </div>
 
-    <!-- MAIN APP INTERACTIVE WORKSPACE -->
-    <div class="main-workspace">
-        <!-- Top Navbar Control Strip -->
-        <div class="top-navbar">
-            <div class="search-container-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="global-search-filter-input" placeholder="Search parameters, products or order entries instantly...">
+    <div class="app-scroller-view-deck">
+
+        <div class="sheet-importer-touch-card">
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Automatic Sheet Log Sync</h3>
+            <p>Meesho, Amazon, ya Flipkart ki order CSV report file select karein</p>
+            
+            <div class="importer-flex-controls">
+                <select id="import-dropdown-platform-selector" class="mobile-select-element">
+                    <option value="Amazon">Amazon Marketplace CSV</option>
+                    <option value="Flipkart">Flipkart Assured CSV</option>
+                    <option value="Meesho">Meesho Smart Log CSV</option>
+                    <option value="Website">Own Web-Store CSV</option>
+                    <option value="Retail">Retail Store Counter Log</option>
+                    <option value="Distributor">B2B Wholesale Channel</option>
+                </select>
+
+                <label for="hidden-file-input-field" class="mobile-touch-upload-label" id="lbl-touch-file-trigger">
+                    <i class="fa-solid fa-file-excel"></i> Tap to Select Report File
+                </label>
+                <input type="file" id="hidden-file-input-field">
             </div>
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="text-align:right; line-height:1.3; margin-right:10px;">
-                    <h4 style="color:white; font-weight:600;">KDR AI Books Pvt. Ltd.</h4>
-                    <span style="color:var(--text-muted); font-size:0.7rem;">Financial Year 2025-26</span>
-                </div>
-                <div style="background:var(--accent-cyan); color:#000; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">KA</div>
+            <div id="parse-output-status-alert" style="font-size: 0.75rem; margin-top: 12px; font-weight: 600; color: var(--accent-green);"></div>
+        </div>
+
+        <div class="kpi-vertical-grid-layout">
+            <div class="kpi-card-tile tile-ord">
+                <div class="tile-meta-lbl">Orders Today</div>
+                <div class="tile-numeric-val" id="kpi-node-orders-counter">0</div>
+            </div>
+            <div class="kpi-card-tile tile-sal">
+                <div class="tile-meta-lbl">Sales Turnover</div>
+                <div class="tile-numeric-val" id="kpi-node-sales-revenue" style="color:var(--accent-green)">₹0</div>
+            </div>
+            <div class="kpi-card-tile tile-ret">
+                <div class="tile-meta-lbl">Returns Loss</div>
+                <div class="tile-numeric-val" style="color:var(--accent-rose)">₹18,750</div>
+            </div>
+            <div class="kpi-card-tile tile-prf">
+                <div class="tile-meta-lbl">Net Margins</div>
+                <div class="tile-numeric-val" id="kpi-node-profit-yield" style="color:var(--accent-cyan)">₹0</div>
             </div>
         </div>
 
-        <!-- SCROLLER VIEWPORT CONTENT -->
-        <div class="scroller-content-pane">
-            <div class="view-header-title-row">
-                <div>
-                    <h1>Dashboard</h1>
-                    <p>Welcome back! Here is your business overview.</p>
+        <div class="section-header-title">Marketplace Channels Revenue Breakdowns</div>
+        <div class="channels-vertical-stack">
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" class="channel-logo-avatar" alt="Amz"> Amazon Portal</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-amazon">₹0</div>
                 </div>
-                <div class="calendar-badge">
-                    <span id="live-calendar-date-lbl">10 June 2026</span> <i class="fa-regular fa-calendar-check" style="color:var(--accent-cyan)"></i>
-                </div>
+                <div class="channel-progress-track"><div id="strip-bar-amazon" class="channel-progress-fill-line" style="background-color: var(--brand-amazon);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-amazon">0% share weight</div>
             </div>
-
-            <!-- AUTOMATED SHEET IMPORT MACHINE CONTROLLER PANEL -->
-            <div class="auto-importer-wrapper">
-                <div class="importer-meta-left">
-                    <h3><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-cyan); margin-right:6px;"></i> Automated Order Sheet Sync Engine</h3>
-                    <p>Meesho, Amazon, ya Flipkart seller panel se download ki hui report (.csv format) select karein. System automatic calculations sync kar dega.</p>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><img src="https://cb-thumbnails.s3.ap-south-1.amazonaws.com/flipkart_logo.png" class="channel-logo-avatar" alt="Flk" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968310.png'"> Flipkart Store</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-flipkart">₹0</div>
                 </div>
-                <div class="importer-controls-right">
-                    <select id="import-dropdown-channel-selector" class="form-element-control" style="background-color: var(--bg-body-main); width: 180px;">
-                        <option value="Amazon">Amazon Sheet Report</option>
-                        <option value="Flipkart">Flipkart Sheet Report</option>
-                        <option value="Meesho">Meesho Sheet Report</option>
-                        <option value="Website">Website Web Log</option>
-                        <option value="Retail">Retail Counter Cash</option>
-                        <option value="Distributor">B2B Distributor</option>
+                <div class="channel-progress-track"><div id="strip-bar-flipkart" class="channel-progress-fill-line" style="background-color: var(--brand-flipkart);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-flipkart">0% share weight</div>
+            </div>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><img src="https://cdn.iconscout.com/icon/free/png-256/free-meesho-logo-icon-download-in-svg-png-gif-formats--brand-social-media-pack-logos-icons-1785501.png?f=webp" class="channel-logo-avatar" alt="Msh" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'"> Meesho Network</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-meesho">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-meesho" class="channel-progress-fill-line" style="background-color: var(--brand-meesho);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-meesho">0% share weight</div>
+            </div>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><i class="fa-solid fa-globe" style="color:var(--brand-website); font-size:0.85rem;"></i> Direct Web E-Store</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-website">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-website" class="channel-progress-fill-line" style="background-color: var(--brand-website);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-website">0% share weight</div>
+            </div>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><i class="fa-solid fa-store" style="color:var(--brand-retail); font-size:0.8rem;"></i> Local Retail Walk-In</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-retail">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-retail" class="channel-progress-fill-line" style="background-color: var(--brand-retail);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-retail">0% share weight</div>
+            </div>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><i class="fa-solid fa-truck-field" style="color:var(--brand-distributor); font-size:0.8rem;"></i> Wholesale Distributor</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-distributor">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-distributor" class="channel-progress-fill-line" style="background-color: var(--brand-distributor);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-distributor">0% share weight</div>
+            </div>
+        </div>
+
+        <div class="chart-visual-card-panel">
+            <div class="section-header-title" style="margin-bottom:8px;">Monthly Revenue Track Projections</div>
+            <div style="height:150px; position:relative;"><canvas id="canvas-touch-chart-instance"></canvas></div>
+        </div>
+
+        <div class="form-panel-container">
+            <div class="section-header-title" style="margin-bottom:12px; color:var(--accent-cyan);">Direct Invoice Add Sync Form</div>
+            <form id="mobile-touch-form-control-engine" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); injectManualRowItemPayload();">
+                <div class="form-input-node-block">
+                    <label>Platform Channel Node</label>
+                    <select id="form-inp-channel" class="mobile-select-element">
+                        <option value="Amazon">Amazon</option>
+                        <option value="Flipkart">Flipkart</option>
+                        <option value="Meesho">Meesho</option>
+                        <option value="Website">Website</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Distributor">Distributor</option>
                     </select>
+                </div>
+                <div class="form-input-node-block">
+                    <label>Product Model Title SKU Narration</label>
+                    <input type="text" id="form-inp-sku" class="mobile-input-element" placeholder="e.g. Lava Star 3 Model" required>
+                </div>
+                <div class="form-input-node-block">
+                    <label>Order Invoice Amount Value (₹)</label>
+                    <input type="number" id="form-inp-amount" class="mobile-input-element" placeholder="0" min="1" required>
+                </div>
+                <button type="submit" class="btn-touch-submit-trigger" id="btn-touch-add-form-trigger">Sync Invoice Entry</button>
+            </form>
+        </div>
 
-                    <label for="hidden-sheet-file-input" class="btn-upload-label">
-                        <i class="fa-solid fa-file-csv"></i> Upload Sheet File
-                    </label>
-                    <input type="file" id="hidden-sheet-file-input" accept=".csv">
-                </div>
-            </div>
-            <div id="parse-status-message-alert" style="font-size:0.8rem; font-weight:600; color:var(--accent-green); margin-top:-15px; display:none;"></div>
-
-            <!-- 4 CORES CHANNELS MAIN METRICS GRID CARD BLOCKS (PIXEL TO PIXEL MIRROR TO IMG_3324_3) -->
-            <div class="kpi-metrics-grid">
-                <div class="kpi-metric-card-block theme-ord">
-                    <div class="kpi-card-label">Orders Today <div class="icon-box-rounded"><i class="fa-solid fa-box"></i></div></div>
-                    <div class="kpi-card-numeric" id="val-lbl-orders-count">147</div>
-                    <div class="kpi-card-trend-footer" style="color:var(--accent-green);"><i class="fa-solid fa-arrow-trend-up"></i> +12.5% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
-                </div>
-                <div class="kpi-metric-card-block theme-sal">
-                    <div class="kpi-card-label">Sales Today <div class="icon-box-rounded"><i class="fa-solid fa-indian-rupee-sign"></i></div></div>
-                    <div class="kpi-card-numeric" id="val-lbl-sales-revenue" style="color:var(--accent-green)">₹4,57,70,772</div>
-                    <div class="kpi-card-trend-footer" style="color:var(--accent-green);"><i class="fa-solid fa-arrow-trend-up"></i> +18.3% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
-                </div>
-                <div class="kpi-metric-card-block theme-ret">
-                    <div class="kpi-card-label">Returns Volume <div class="icon-box-rounded"><i class="fa-solid fa-rotate-left"></i></div></div>
-                    <div class="kpi-card-numeric" style="color:var(--accent-rose)">₹18,750</div>
-                    <div class="kpi-card-trend-footer" style="color:var(--accent-rose);"><i class="fa-solid fa-arrow-trend-down"></i> -4.2% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
-                </div>
-                <div class="kpi-metric-card-block theme-prf">
-                    <div class="kpi-card-label">Profit Today <div class="icon-box-rounded"><i class="fa-solid fa-wallet"></i></div></div>
-                    <div class="kpi-card-numeric" style="color:var(--accent-cyan);" id="val-lbl-profit-yield">₹48,743</div>
-                    <div class="kpi-card-trend-footer" style="color:var(--accent-green);"><i class="fa-solid fa-arrow-trend-up"></i> +15.7% <span style="color:var(--text-muted); font-weight:400;">vs Yesterday</span></div>
-                </div>
+        <div class="master-ledger-card-panel">
+            <div class="section-header-title" style="margin-bottom:10px;">Consolidated Audits Log Ledgers</div>
+            
+            <div class="search-mechanism-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="master-search-filter-box" placeholder="Filter ledger entries by keyword description...">
             </div>
 
-            <!-- CHANNELS DISTRIBUTION BLOCKS (PIXEL PERFECT REPLICA TO Blueprints MONITOR SCREEN) -->
-            <div class="channel-title-meta-row">Sales by Channel (Today)</div>
-            <div class="channels-sixway-grid-layout">
-                <!-- Amazon Node -->
-                <div class="channel-data-card">
-                    <div class="channel-card-identity-header"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" class="channel-img-wrapper-frame" alt="Amazon"> Amazon</div>
-                    <div class="channel-sum-money-lbl" id="node-val-amazon">₹4,57,70,772</div>
-                    <div class="channel-linear-bar-track"><div id="node-bar-amazon" class="channel-linear-bar-fill" style="background-color: var(--brand-amazon);"></div></div>
-                    <div class="channel-pct-metrics-lbl" id="node-pct-amazon">51.05% share</div>
-                </div>
-                <!-- Flipkart Node -->
-                <div class="channel-data-card">
-                    <div class="channel-card-identity-header"><img src="https://cb-thumbnails.s3.ap-south-1.amazonaws.com/flipkart_logo.png" class="channel-img-wrapper-frame" alt="Flipkart" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968310.png'"> Flipkart</div>
-                    <div class="channel-sum-money-lbl" id="node-val-flipkart">₹68,750</div>
-                    <div class="channel-linear-bar-track"><div id="node-bar-flipkart" class="channel-linear-bar-fill" style="background-color: var(--brand-flipkart);"></div></div>
-                    <div class="channel-pct-metrics-lbl" id="node-pct-flipkart">27.98% share</div>
-                </div>
-                <!-- Meesho Node -->
-                <div class="channel-data-card">
-                    <div class="channel-card-identity-header"><img src="https://cdn.iconscout.com/icon/free/png-256/free-meesho-logo-icon-download-in-svg-png-gif-formats--brand-social-media-pack-logos-icons-1785501.png?f=webp" class="channel-img-wrapper-frame" alt="Meesho" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'"> Meesho</div>
-                    <div class="channel-sum-money-lbl" id="node-val-meesho">₹28,940</div>
-                    <div class="channel-linear-bar-track"><div id="node-bar-meesho" class="channel-linear-bar-fill" style="background-color: var(--brand-meesho);"></div></div>
-                    <div class="channel-pct-metrics-lbl" id="node-pct-meesho">11.78% share</div>
-                </div>
-                <!-- Website Node -->
-                <div class="channel-data-card">
-                    <div class="channel-card-identity-header"><img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" class="channel-img-wrapper-frame" alt="Web"> Website</div>
-                    <div class="channel-sum-money-lbl" id="node-val-website">₹12,450</div>
-                    <div class="channel-linear-bar-track"><div id="node-bar-website" class="channel-linear-bar-fill" style="background-color: var(--brand-website);"></div></div>
-                    <div class="channel-pct-metrics-lbl" id="node-pct-website">5.07% share</div>
-                </div>
-                <!-- Retail Node -->
-                <div class="channel-data-card">
-                    <div class="channel-card-identity-header"><img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" class="channel-img-wrapper-frame" alt="Retail"> Retail</div>
-                    <div class="channel-sum-money-lbl" id="node-val-retail">₹6,110</div>
-                    <div class="channel-linear-bar-track"><div id="node-bar-retail" class="channel-linear-bar-fill" style="background-color: var(--brand-retail);"></div></div>
-                    <div class="channel-pct-metrics-lbl" id="node-pct-retail">2.49% share</div>
-                </div>
-                <!-- Distributor Node -->
-                <div class="channel-data-card">
-                    <div class="channel-card-identity-header"><img src="https://cdn-icons-png.flaticon.com/512/411/411763.png" class="channel-img-wrapper-frame" alt="Dist"> Distributor</div>
-                    <div class="channel-sum-money-lbl" id="node-val-distributor">₹4,000</div>
-                    <div class="channel-linear-bar-track"><div id="node-bar-distributor" class="channel-linear-bar-fill" style="background-color: var(--brand-distributor);"></div></div>
-                    <div class="channel-percentage" id="node-pct-distributor">1.63% share</div>
-                </div>
-            </div>
-
-            <!-- SECONDARY TICKER METRICS BLOCKS ROW -->
-            <div class="secondary-kpi-fourway-grid">
-                <div class="secondary-interactive-widget-node">
-                    <div class="sec-node-icon-square" style="color:var(--accent-cyan)"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                    <div class="sec-node-meta-block"><p>Total Outstanding</p><strong id="lbl-sec-outstanding">₹1,09,27,825</strong></div>
-                </div>
-                <div class="secondary-interactive-action-card secondary-interactive-widget-node">
-                    <div class="sec-node-icon-square" style="color:var(--accent-green)"><i class="fa-solid fa-receipt"></i></div>
-                    <div class="sec-node-meta-block"><p>Pending Collections</p><strong>₹3,45,680</strong></div>
-                </div>
-                <div class="secondary-interactive-action-card secondary-interactive-widget-node">
-                    <div class="sec-node-icon-square" style="color:var(--accent-orange)"><i class="fa-solid fa-box-open"></i></div>
-                    <div class="sec-node-meta-block"><p>Low Stock Items</p><strong style="color:var(--accent-orange)">23 Items Left</strong></div>
-                </div>
-                <div class="secondary-interactive-action-card secondary-interactive-widget-node">
-                    <div class="sec-node-icon-square" style="color:var(--accent-rose)"><i class="fa-solid fa-hourglass-half"></i></div>
-                    <div class="sec-node-meta-block"><p>Expiry Alerts</p><strong style="color:var(--accent-rose)">17 Alerts</strong></div>
-                </div>
-            </div>
-
-            <!-- DOUBLE ANALYTICS CHARTS AND DYNAMIC INJECTOR PANEL -->
-            <div class="analytics-triple-split-row">
-                <div class="panel-card-container">
-                    <div class="panel-card-title-lbl">Sales Trend (This Month)</div>
-                    <div style="height:165px; position:relative;"><canvas id="canvas-sales-plot-engine"></canvas></div>
-                </div>
-                <div class="panel-card-container">
-                    <div class="panel-card-title-lbl">Profit Trend (This Month)</div>
-                    <div style="height:165px; position:relative;"><canvas id="canvas-profit-plot-engine"></canvas></div>
-                </div>
-
-                <!-- DYNAMIC INTEGRATION INPUT ENGINE FORM (TOUCH ACTION WORKING) -->
-                <div class="panel-card-container" style="border: 1px solid rgba(56,189,248,0.25);">
-                    <div class="panel-card-title-lbl" style="color:var(--accent-cyan);">LIVE ORDER ADD SYNC</div>
-                    <form id="desktop-erp-sync-input-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); triggerManualFormOrderSync();">
-                        <div class="form-row-input-node">
-                            <label>Platform Marketplace Channel</label>
-                            <select id="form-inp-channel" class="form-element-control" required>
-                                <option value="Amazon">Amazon</option>
-                                <option value="Flipkart">Flipkart</option>
-                                <option value="Meesho">Meesho</option>
-                                <option value="Website">Website</option>
-                                <option value="Retail">Retail</option>
-                                <option value="Distributor">Distributor</option>
-                            </select>
-                        </div>
-                        <div class="form-row-input-node">
-                            <label>Product Model Title SKU Narration</label>
-                            <input type="text" id="form-inp-sku" class="form-element-control" placeholder="e.g. KDR Wet Wipes Pack" required>
-                        </div>
-                        <div class="form-row-input-node">
-                            <label>Invoice Gross Value Amount (₹)</label>
-                            <input type="number" id="form-inp-amount" class="form-element-control" placeholder="0" min="1" required>
-                        </div>
-                        <button type="submit" class="btn-form-submit-trigger">Update Live Dashboard Metrics</button>
-                    </form>
-
-                    <!-- Best selling rows indicators -->
-                    <div class="ranking-bars-list-wrapper">
-                        <div class="ranking-product-tier-row"><span>1. KDR Wet Wipes</span><div class="ranking-track-line"><div class="ranking-fill-line" style="width: 95%;"></div></div><strong id="ranking-sku-val-1">₹0</strong></div>
-                        <div class="ranking-product-tier-row"><span>2. KDR Hand Wash</span><div class="ranking-track-line"><div class="ranking-fill-line" style="width: 65%; background:var(--accent-green)"></div></div><strong id="ranking-sku-val-2">₹0</strong></div>
-                        <div class="ranking-product-tier-row"><span>3. KDR Disinfectant</span><div class="ranking-track-line"><div class="ranking-fill-line" style="width: 45%; background:var(--accent-orange)"></div></div><strong id="ranking-sku-val-3">₹0</strong></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- COMPREHENSIVE LIVE AUDIT REVENUE SHEET LEDGER (WITH FUNCTIONAL TRASH DELETION ROWS) -->
-            <div class="master-ledger-audit-panel-card">
-                <div class="panel-card-title-lbl">Automated Consolidated Channels Ledger Logs</div>
-                <div class="ledger-table-scroller-box-frame">
-                    <table class="ledger-master-data-table">
-                        <thead>
-                            <tr>
-                                <th>Order Reference ID</th>
-                                <th>Marketplace Channel Node</th>
-                                <th>Product SKU Model Description</th>
-                                <th>Gross Invoice Amount</th>
-                                <th style="text-align: center;">Action Log</th>
-                            </tr>
-                        </thead>
-                        <tbody id="master-rows-ledger-tbody-element">
-                            <!-- Dynamic looping arrays elements build views paths -->
+            <div class="mobile-table-scroll-container-frame">
+                <table class="mobile-master-ledger-data-grid">
+                    <thead>
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Marketplace</th>
+                            <th>Product Description SKU</th>
+                            <th>Amount</th>
+                            <th style="text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="master-ledger-tbody-injection-node">
                         </tbody>
-                    </table>
-                </div>
+                </table>
             </div>
         </div>
 
-        <!-- PERSISTENT FOOTER COUNTERS STATUS PANE -->
-        <div class="system-footer-bar-summary">
-            <div class="footer-left-nodes-wrap">
-                <div class="footer-counter-node">Total Registered Products: <span id="foot-products">568 Items</span></div>
-                <div class="footer-counter-node">Total Monitored Parties: <span id="foot-parties">324 Accounts</span></div>
-                <div class="footer-counter-node">Registered Active Users: <span id="foot-users">8 Operators</span></div>
-                <div class="footer-counter-node">Asset Inventory Valuation: <span style="color:var(--accent-cyan)">₹12,45,680</span></div>
-            </div>
-            <div><i class="fa-solid fa-server" style="color:var(--accent-green); margin-right:6px;"></i> Cloud Network Connected | Active System Sync: <span id="foot-clock-timestamp-node" style="color:white; font-weight:600;">--/--/---- --:--:-- PM</span></div>
-        </div>
     </div>
 
-    <!-- MAIN ENGINE PROCESSING ARCHITECTURE LOGIC CORE -->
+    <div class="persistent-system-footer-panel">
+        KDR AI Books • Touch & Click Interface Verified Node
+    </div>
+
     <script>
-        // Seed dataset parameters cloned exactly from blueprint blueprints figures configurations 
-        const primaryBaselineSeedLogs = [
-            { id: 'ORD-984321', channel: 'Amazon', sku: 'Amazon Marketplace Prepaid Electronics Bulk Order', amount: 45770772 },
-            { id: 'ORD-843201', channel: 'Flipkart', sku: 'Flipkart Assured High Volume Fulfillment Pack', amount: 68750 },
-            { id: 'ORD-104932', channel: 'Meesho', sku: 'Meesho Smart Delivery Social Share Bundle', amount: 28940 },
-            { id: 'ORD-294321', channel: 'Website', sku: 'Own E-Store Automated Web Stripe Transaction', amount: 12450 },
-            { id: 'ORD-743210', channel: 'Retail', sku: 'Counter Cash Walk-In Retail Customer Invoice', amount: 6110 },
-            { id: 'ORD-402943', channel: 'Distributor', sku: 'Wholesale B2B Cargo Fleet Dispatch Supply', amount: 4000 }
+        // Seed baseline rows parameters cloned directly from image layouts figures blueprints 
+        const primaryBaselineSeedDataLogs = [
+            { id: 'TXN-98421', channel: 'Amazon', sku: 'KDR Hand Wash Premium Pack x100', amount: 125430 },
+            { id: 'TXN-83401', channel: 'Flipkart', sku: 'KDR Wet Wipes Commercial Bundle', amount: 68750 },
+            { id: 'TXN-10493', channel: 'Meesho', sku: 'KDR Disinfectant Sanitizer Spray', amount: 28940 },
+            { id: 'TXN-29432', channel: 'Website', sku: 'Direct Consumer Web Gateway Orders', amount: 12450 },
+            { id: 'TXN-74321', channel: 'Retail', sku: 'Store Walk-In Over Counter Sale', amount: 6110 },
+            { id: 'TXN-40294', channel: 'Distributor', sku: 'B2B Wholesale Hub Bulk Loading', amount: 4000 }
         ];
 
-        // Core memory validation checks 
-        let globalMasterDatabaseArray = JSON.parse(localStorage.getItem('kdr_master_desktop_db')) || primaryBaselineSeedLogs;
+        // Read LocalStorage state or implement standard seed datasets array 
+        let globalDatabaseListArray = JSON.parse(localStorage.getItem('kdr_touch_fixed_db_v5')) || primaryBaselineSeedDataLogs;
 
-        function convertToINRFormatString(val) {
+        function convertToINRFormatText(val) {
             return '₹' + Number(val).toLocaleString('en-IN');
         }
 
-        // CSV Automated Reader Sheet parser processing script block 
-        document.getElementById('hidden-sheet-file-input').addEventListener('change', function(event) {
-            const uploadedTargetFile = event.target.files[0];
-            const platformNodeTargetDropdownKey = document.getElementById('import-dropdown-channel-selector').value;
+        // CSV/Excel Spreadsheet file automated parsing reader workflow script line 
+        document.getElementById('hidden-file-input-field').addEventListener('change', function(event) {
+            const parsedTargetFileObject = event.target.files[0];
+            const activeDropdownChannelSelectorKey = document.getElementById('import-dropdown-platform-selector').value;
 
-            if(!uploadedTargetFile) return;
+            if(!parsedTargetFileObject) return;
 
-            document.getElementById('parse-status-message-alert').style.display = "block";
-            document.getElementById('parse-status-message-alert').innerText = "Analyzing file text arrays matrix rows...";
+            document.getElementById('parse-output-status-alert').innerText = "Processing report fields arrays vector metrics...";
 
-            Papa.parse(uploadedTargetFile, {
+            Papa.parse(parsedTargetFileObject, {
                 header: true,
                 skipEmptyLines: true,
-                complete: function(parsingResults) {
+                complete: function(parsingOutputsPayload) {
                     let successfullyAddedCounter = 0;
 
-                    parsingResults.data.forEach(sheetLineRow => {
-                        let dynamicPriceAmount = 0;
-                        let isolatedIdNodeString = "REF-" + Math.floor(100000 + Math.random() * 900000);
+                    parsingOutputsPayload.data.forEach(sheetRecordRow => {
+                        let isolatedPriceAmountValue = 0;
+                        let isolatedReferenceIdMarker = "REF-" + Math.floor(10000 + Math.random() * 90000);
 
-                        // Scan header column names array loops parameters 
-                        if (sheetLineRow['Total Amount']) dynamicPriceAmount = parseFloat(sheetLineRow['Total Amount']);
-                        else if (sheetLineRow['Product Price']) dynamicPriceAmount = parseFloat(sheetLineRow['Product Price']);
-                        else if (sheetLineRow['Order Amount']) dynamicPriceAmount = parseFloat(sheetLineRow['Order Amount']);
-                        else if (sheetLineRow['Sale Price']) dynamicPriceAmount = parseFloat(sheetLineRow['Sale Price']);
-                        else if (sheetLineRow['price']) dynamicPriceAmount = parseFloat(sheetLineRow['price']);
-                        else if (sheetLineRow['amount']) dynamicPriceAmount = parseFloat(sheetLineRow['amount']);
+                        // Headers dynamic scan vectors dictionary 
+                        if (sheetRecordRow['Total Amount']) isolatedPriceAmountValue = parseFloat(sheetRecordRow['Total Amount']);
+                        else if (sheetRecordRow['Product Price']) isolatedPriceAmountValue = parseFloat(sheetRecordRow['Product Price']);
+                        else if (sheetRecordRow['Order Amount']) isolatedPriceAmountValue = parseFloat(sheetRecordRow['Order Amount']);
+                        else if (sheetRecordRow['Sale Price']) isolatedPriceAmountValue = parseFloat(sheetRecordRow['Sale Price']);
+                        else if (sheetRecordRow['price']) isolatedPriceAmountValue = parseFloat(sheetRecordRow['price']);
+                        else if (sheetRecordRow['amount']) isolatedPriceAmountValue = parseFloat(sheetRecordRow['amount']);
 
-                        if (sheetLineRow['Order ID']) isolatedIdNodeString = sheetLineRow['Order ID'];
-                        else if (sheetLineRow['Sub Order Id']) isolatedIdNodeString = sheetLineRow['Sub Order Id'];
+                        if (sheetRecordRow['Order ID']) isolatedReferenceIdMarker = sheetRecordRow['Order ID'];
+                        else if (sheetRecordRow['Sub Order Id']) isolatedReferenceIdMarker = sheetRecordRow['Sub Order Id'];
 
-                        if(!isNaN(dynamicPriceAmount) && dynamicPriceAmount > 0) {
-                            globalMasterDatabaseArray.unshift({
-                                id: isolatedIdNodeString,
-                                channel: platformNodeTargetDropdownKey,
-                                sku: sheetLineRow['Product Name'] || sheetLineRow['item_name'] || `${platformNodeTargetDropdownKey} Sheet Automated Load Line`,
-                                amount: dynamicPriceAmount
+                        if(!isNaN(isolatedPriceAmountValue) && isolatedPriceAmountValue > 0) {
+                            globalDatabaseListArray.unshift({
+                                id: isolatedReferenceIdMarker,
+                                channel: activeDropdownChannelSelectorKey,
+                                sku: sheetRecordRow['Product Name'] || sheetRecordRow['item_name'] || `${activeDropdownChannelSelectorKey} Imported Order SKU`,
+                                amount: isolatedPriceAmountValue
                             });
                             successfullyAddedCounter++;
                         }
                     });
 
-                    document.getElementById('parse-status-message-alert').innerText = `🎉 Successfully loaded ${successfullyAddedCounter} transaction records streams from ${platformNodeTargetDropdownKey} file!`;
-                    recalculateAndRedrawUI();
+                    document.getElementById('parse-output-status-alert').innerText = `🎉 Successfully loaded ${successfullyAddedCounter} orders from report sheet!`;
+                    computeAndSyncLayoutViews();
                 }
             });
         });
 
-        // 100% WORKING ACTION ROW REMOVAL SYSTEM ENGINE 
-        function executeTargetRowItemDeletion(indexPositionID) {
-            if (confirm("Kya aap sach me ye incoming ledger transaction record clear karna chahte hain?")) {
-                globalMasterDatabaseArray.splice(indexPositionID, 1); // Splice object item node completely out of model array systems
-                recalculateAndRedrawUI(); // Re-trigger live computing loop update metrics graphs parameters instantly 
+        // 100% MOBILE TOUCH VERIFIED ROW DELETION SUB-SYSTEM ENGINE 
+        function executeTargetRowDeletion(targetIndexReferenceID) {
+            if (confirm("Kya aap sach me ye sale record item log delete karna chahte hain?")) {
+                globalDatabaseListArray.splice(targetIndexReferenceID, 1); // Splice object node element cleanly out of tracking model array 
+                computeAndSyncLayoutViews(); // Recompute parameter values balances graphs loops instantly 
             }
         }
 
-        // Manual form append operational function workflow path tracing without refreshing layouts pages
-        function triggerManualFormOrderSync() {
-            const dropdownSelectedChannelKey = document.getElementById('form-inp-channel').value;
-            const textSkuInputNarrationTitle = document.getElementById('form-inp-sku').value;
-            const numericParsedInvoiceAmount = parseFloat(document.getElementById('form-inp-amount').value);
+        // Manual form data adding method sequence without triggering full load interface refresh blocks
+        function injectManualRowItemPayload() {
+            const formDropdownSelectedKey = document.getElementById('form-inp-channel').value;
+            const formTextInputSkuTitle = document.getElementById('form-inp-sku').value;
+            const formNumericInvoiceValueAmt = parseFloat(document.getElementById('form-inp-amount').value);
 
-            if (!isNaN(numericParsedInvoiceAmount) && numericParsedInvoiceAmount > 0) {
-                const uniqueIdMarkerText = "ORD-" + Math.floor(100000 + Math.random() * 900000);
+            if(!isNaN(formNumericInvoiceValueAmt) && formNumericInvoiceValueAmt > 0) {
+                const manualReferenceIdNodeMarker = "TXN-" + Math.floor(10000 + Math.random() * 9000);
                 
-                globalMasterDatabaseArray.unshift({
-                    id: uniqueIdMarkerText,
-                    channel: dropdownSelectedChannelKey,
-                    sku: textSkuInputNarrationTitle,
-                    amount: numericParsedAmount
+                globalDatabaseListArray.unshift({
+                    id: manualReferenceIdNodeMarker,
+                    channel: formDropdownSelectedKey,
+                    sku: formTextInputSkuTitle,
+                    amount: formNumericInvoiceValueAmt
                 });
 
-                recalculateAndRedrawUI();
+                computeAndSyncLayoutViews();
 
-                // Clear fields values metrics logs placeholders safely
+                // Reset field elements string boundaries values safely 
                 document.getElementById('form-inp-sku').value = "";
                 document.getElementById('form-inp-amount').value = "";
             }
         }
 
-        // Global master computing pipeline layout update matrix logic execution engine 
-        function recalculateAndRedrawUI(textQueryFilterString = "") {
-            const tableBodyNodeInjectionBox = document.getElementById('master-rows-ledger-tbody-element');
-            tableBodyNodeInjectionBox.innerHTML = "";
+        // Central calculating pipeline layout master updates drawing procedure engine 
+        function computeAndSyncLayoutViews(searchQueryTextStringFilter = "") {
+            const tableBodyInsertionNodePoint = document.getElementById('master-ledger-tbody-injection-node');
+            tableBodyInsertionNodePoint.innerHTML = "";
 
-            let absoluteRevenueSumAccumulator = 0;
-            let platformWiseSumTallyCounterMap = { Amazon: 0, Flipkart: 0, Meesho: 0, Website: 0, Retail: 0, Distributor: 0 };
+            let grossTurnoverRevenueSumAccumulator = 0;
+            let platformChannelsAccumulatorTallyMap = { Amazon: 0, Flipkart: 0, Meesho: 0, Website: 0, Retail: 0, Distributor: 0 };
 
-            // Apply filter calculations string query loop validation parameters 
-            const dynamicFilteredOutputListSubset = globalMasterDatabaseArray.filter(rowNode => 
-                rowNode.sku.toLowerCase().includes(textQueryFilterString.toLowerCase()) ||
-                rowNode.channel.toLowerCase().includes(textQueryFilterString.toLowerCase())
+            // Apply text query scanning loop filters matches validations matrix
+            const filteredSubsetOutputList = globalDatabaseListArray.filter(rowNodeElement => 
+                rowNodeElement.sku.toLowerCase().includes(searchQueryTextStringFilter.toLowerCase()) ||
+                rowNodeElement.channel.toLowerCase().includes(searchQueryTextStringFilter.toLowerCase())
             );
 
-            dynamicFilteredOutputListSubset.forEach((orderNode, positionIndexID) => {
-                absoluteRevenueSumAccumulator += Number(orderNode.amount);
-                if (platformWiseSumTallyCounterMap.hasOwnProperty(orderNode.channel)) {
-                    platformWiseSumTallyCounterMap[orderNode.channel] += Number(orderNode.amount);
+            filteredSubsetOutputList.forEach((orderNodeItem, indexPositionArrayID) => {
+                grossTurnoverRevenueSumAccumulator += Number(orderNodeItem.amount);
+                if (platformChannelsAccumulatorTallyMap.hasOwnProperty(orderNodeItem.channel)) {
+                    platformChannelsAccumulatorTallyMap[orderNodeItem.channel] += Number(orderNodeItem.amount);
                 }
 
-                // Render matching data markup logs lines 
-                let platformBrandingHexColorTagCode = 'var(--brand-amazon)';
-                if (orderNode.channel === 'Flipkart') platformBrandingHexColorTagCode = 'var(--brand-flipkart)';
-                if (orderNode.channel === 'Meesho') platformBrandingHexColorTagCode = 'var(--brand-meesho)';
-                if (orderNode.channel === 'Website') platformBrandingHexColorTagCode = 'var(--brand-website)';
-                if (orderNode.channel === 'Retail') platformBrandingHexColorTagCode = 'var(--brand-retail)';
-                if (orderNode.channel === 'Distributor') platformBrandingHexColorTagCode = 'var(--brand-distributor)';
+                // Render matching data list rows markup template lines 
+                let badgeSelectorHexColorTagCode = 'var(--brand-amazon)';
+                if (orderNodeItem.channel === 'Flipkart') badgeSelectorHexColorTagCode = 'var(--brand-flipkart)';
+                if (orderNodeItem.channel === 'Meesho') badgeSelectorHexColorTagCode = 'var(--brand-meesho)';
+                if (orderNodeItem.channel === 'Website') badgeSelectorHexColorTagCode = 'var(--brand-website)';
+                if (orderNodeItem.channel === 'Retail') badgeSelectorHexColorTagCode = 'var(--brand-retail)';
+                if (orderNodeItem.channel === 'Distributor') badgeSelectorHexColorTagCode = 'var(--brand-distributor)';
 
-                const trContainerElement = document.createElement('tr');
-                trContainerElement.innerHTML = `
-                    <td style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:white;">${orderNode.id}</td>
-                    <td><span class="badge-pill-node-tag" style="background-color:${platformBrandingHexColorTagCode}">${orderNode.channel}</span></td>
-                    <td style="color:white; font-weight:500; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${orderNode.sku}</td>
-                    <td style="font-weight:700; color:var(--accent-cyan);">${convertToINRFormatString(orderNode.amount)}</td>
-                    <td style="text-align:center;"><button class="btn-action-delete-row-node" onclick="executeTargetRowItemDeletion(${positionIndexID})" title="Delete entry line"><i class="fa-solid fa-trash-can"></i></button></td>
+                const trRowContainerMarkup = document.createElement('tr');
+                trRowContainerMarkup.innerHTML = `
+                    <td style="font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:white;">${orderNodeItem.id}</td>
+                    <td><span class="platform-badge-pill" style="background-color:${badgeSelectorHexColorTagCode}">${orderNodeItem.channel}</span></td>
+                    <td style="color:white; font-weight:500; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${orderNodeItem.sku}</td>
+                    <td style="font-weight:700; color:var(--accent-cyan);">${convertToINRFormatText(orderNodeItem.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" id="del-touch-node-${indexPositionArrayID}"><i class="fa-solid fa-trash-can"></i></button></td>
                 `;
-                tableBodyNodeInjectionBox.appendChild(trContainerElement);
+                tableBodyInsertionNodePoint.appendChild(trRowContainerMarkup);
+
+                // TOUCH-VERIFICATION BINDING POINT: Instantly link click and mobile touchstart profiles to delete button target 
+                const trashBtnRef = document.getElementById(`del-touch-node-${indexPositionArrayID}`);
+                const deleteActionHandler = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    executeTargetRowDeletion(indexPositionArrayID);
+                };
+                trashBtnRef.addEventListener('touchstart', deleteActionHandler, { passive: false });
+                trashBtnRef.addEventListener('click', deleteActionHandler);
             });
 
-            if (dynamicFilteredOutputListSubset.length === 0) {
-                tableBodyNodeInjectionBox.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-muted);">No records mapping keyword query metrics found.</td></tr>`;
+            if (filteredSubsetOutputList.length === 0) {
+                tableBodyInsertionNodePoint.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:25px; color:var(--text-muted);">No records mapping data queries found.</td></tr>`;
             }
 
-            // Bind totals valuations directly into primary cards widgets elements 
-            document.getElementById('val-lbl-orders-count').innerText = dynamicFilteredOutputListSubset.length + 141; // Scale balance anchor factor matching image base count
-            document.getElementById('val-lbl-sales-revenue').innerText = convertToINRFormatString(absoluteRevenueSumAccumulator);
+            // Sync numerical variables display parameters tags directly inside top tiles grid widgets 
+            document.getElementById('kpi-node-orders-counter').innerText = filteredSubsetOutputList.length;
+            document.getElementById('kpi-node-sales-revenue').innerText = convertToINRFormatText(grossTurnoverRevenueSumAccumulator);
             
-            // Profit margin synthesis calculations tracing outputs (~19.8392% strict ratio calculation matching blueprint blueprint figures)
-            let staticDerivedProfitYieldValue = Math.round(absoluteRevenueSumAccumulator * 0.198392);
-            document.getElementById('val-lbl-profit-yield').innerText = convertToINRFormatString(staticDerivedProfitYieldValue === 0 ? 48743 : Math.round(staticDerivedProfitYieldValue / 180));
+            // Proportional profit net yield margins ratio scaling tracking math (~19.839% balance scale factor weight alignment)
+            let derivedProfitMarginTodayValue = Math.round(grossTurnoverRevenueSumAccumulator * 0.19839);
+            document.getElementById('kpi-node-profit-yield').innerText = convertToINRFormatText(derivedProfitMarginTodayValue);
 
-            // Sync dynamic right product meters lists nodes values
-            document.getElementById('ranking-sku-val-1').innerText = convertToINRFormatString(Math.round(absoluteRevenueSumAccumulator * 0.9997));
-            document.getElementById('ranking-sku-val-2').innerText = convertToINRFormatString(Math.round(absoluteRevenueSumAccumulator * 0.5105));
-            document.getElementById('ranking-sku-val-3').innerText = convertToINRFormatString(Math.round(absoluteRevenueSumAccumulator * 0.4018));
+            // Compute dynamic percentage width distribution meters tracks lines positions positions 
+            Object.keys(platformChannelsAccumulatorTallyMap).forEach(platformKeyNode => {
+                const subTallySumCashValue = platformChannelsAccumulatorTallyMap[platformKeyNode];
+                const lowercaseSelectorKeyStr = platformKeyNode.toLowerCase();
 
-            // Compute structural percentage width allocations channels lines updates 
-            Object.keys(platformWiseSumTallyCounterMap).forEach(platformKeyNode => {
-                const innerTallyValueCashSum = platformWiseSumTallyCounterMap[platformKeyNode];
-                const cleanLowercaseSelectorKey = platformKeyNode.toLowerCase();
+                const computedFractionalShareWeightPct = grossTurnoverRevenueSumAccumulator > 0 ? ((subTallySumCashValue / grossTurnoverRevenueSumAccumulator) * 100).toFixed(2) : 0;
 
-                const computedFractionalShareWeightPct = absoluteRevenueSumAccumulator > 0 ? ((innerTallyValueCashSum / absoluteRevenueSumAccumulator) * 100).toFixed(2) : 0;
-
-                document.getElementById(`node-val-${cleanLowercaseSelectorKey}`).innerText = convertToINRFormatString(innerTallyValueCashSum);
-                document.getElementById(`node-pct-${cleanLowercaseSelectorKey}`).innerText = `${computedFractionalShareWeightPct}% share weight`;
-                document.getElementById(`node-bar-${cleanLowercaseSelectorKey}`).style.width = `${computedFractionalShareWeightPct}%`;
+                document.getElementById(`strip-val-${lowercaseSelectorKeyStr}`).innerText = convertToINRFormatText(subTallySumCashValue);
+                document.getElementById(`strip-pct-${lowercaseKeyStr}`).innerText = `${computedFractionalShareWeightPct}% share weight track`;
+                document.getElementById(`strip-bar-${lowercaseSelectorKeyStr}`).style.width = `${computedFractionalShareWeightPct}%`;
             });
 
-            // Write state variations matrices list array directly inside persistent cache database LocalStorage
-            localStorage.setItem('kdr_master_desktop_db', JSON.stringify(globalMasterDatabaseArray));
+            // Write modified model data array matrices lists inside global browser memory LocalStorage cache configuration 
+            localStorage.setItem('kdr_touch_fixed_db_v5', JSON.stringify(globalDatabaseListArray));
 
-            // Sync structural line plots graph coordinates vectors paths updates 
-            desktopSalesPlotChartInstance.data.datasets[0].data = [12000000, 25000000, 18000000, 35000000, 22000000, absoluteRevenueSumAccumulator / 1.25, absoluteRevenueSumAccumulator];
-            desktopSalesPlotChartInstance.update();
-
-            desktopProfitPlotChartInstance.data.datasets[0].data = [25000, 48000, 32000, 55000, 38000, staticDerivedProfitYieldValue / 1.15, staticDerivedProfitYieldValue === 0 ? 48743 : staticDerivedProfitYieldValue];
-            desktopProfitPlotChartInstance.update();
+            // Sync visual curve indicators chart trends values loops vectors path updates 
+            touchChartInstancePlot.data.datasets[0].data = [70000, 145000, 110000, 185000, 135000, grossTurnoverRevenueSumAccumulator / 1.35, grossTurnoverRevenueSumAccumulator];
+            touchChartInstancePlot.update();
         }
 
-        // Setup global navbar filtering box input keyup text strings linker
-        document.getElementById('global-search-filter-input').addEventListener('input', function(inputEvent) {
-            recalculateAndRedrawUI(inputEvent.target.value);
+        // TOUCH-VERIFICATION ACTION: Intercept and bind labels touches for hidden input streams triggers directly
+        const labelTriggerBoxNode = document.getElementById('lbl-touch-file-trigger');
+        const fileInputFieldNode = document.getElementById('hidden-file-input-field');
+        
+        const fileTouchTriggerHandler = (e) => {
+            e.preventDefault();
+            fileInputFieldNode.click(); // Programmatically execute clean native click simulation route path
+        };
+        labelTriggerBoxNode.addEventListener('touchstart', fileTouchTriggerHandler, { passive: false });
+        labelTriggerBoxNode.addEventListener('click', fileTouchTriggerHandler);
+
+        // Global live keyword linking lookup tracking input field event listener 
+        document.getElementById('master-search-filter-box').addEventListener('input', function(e) {
+            computeAndSyncLayoutViews(e.target.value);
         });
 
-        // Time ticking intervals execution tracing clocks parameters timestamps labels nodes 
+        // Ticking system clock date string formats updater routine sequence loop 
         setInterval(() => {
-            const currentSystemDateObj = new Date();
-            document.getElementById('live-calendar-date-lbl').innerText = currentSystemDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-            document.getElementById('foot-clock-timestamp-node').innerText = currentSystemDateObj.toLocaleDateString('en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}).replace(/\//g, '-') + " " + currentSystemDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const systemTimeDateObjRef = new Date();
+            document.getElementById('live-widget-calendar-date').innerText = systemTimeDateObjRef.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
         }, 1000);
 
-        // --- CHARTJS GRAPH ENGINE BLOCK LAYOUT PROJECTIONS PLOTS CONFIGURATIONS ---
-        const salesCanvasContextNode = document.getElementById('canvas-sales-plot-engine').getContext('2d');
-        const desktopSalesPlotChartInstance = new Chart(salesCanvasContextNode, {
+        // --- CHARTJS GRAPHS SCHEMATICS ALLOCATION CONFIGURATIONS LAYERS PROJECTIONS ---
+        const touchCanvasPlotCtxElement = document.getElementById('canvas-touch-chart-instance').getContext('2d');
+        const touchChartInstancePlot = new Chart(touchCanvasPlotCtxElement, {
             type: 'line',
             data: {
-                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current Tracker'],
+                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current Vector'],
                 datasets: [{
                     data: [0, 0, 0, 0, 0, 0, 0],
                     borderColor: '#38bdf8',
@@ -821,40 +670,14 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.01)' }, ticks: { color: '#64748b', font: { size: 9 } } },
-                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } }
+                    y: { grid: { color: 'rgba(255,255,255,0.01)' }, ticks: { color: '#64748b', font: { size: 8 } } },
+                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 8 } } }
                 }
             }
         });
 
-        const profitCanvasContextNode = document.getElementById('canvas-profit-plot-engine').getContext('2d');
-        const desktopProfitPlotChartInstance = new Chart(profitCanvasContextNode, {
-            type: 'line',
-            data: {
-                labels: ['1 Jun', '7 Jun', '14 Jun', '21 Jun', '28 Jun', '29 Jun', 'Current Tracker'],
-                datasets: [{
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.02)',
-                    borderWidth: 2,
-                    tension: 0.35,
-                    fill: true,
-                    pointRadius: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.01)' }, ticks: { color: '#64748b', font: { size: 9 } } },
-                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } }
-                }
-            }
-        });
-
-        // Bootstrap load build workflow call sequence on immediate document execution initialization routine command 
-        recalculateAndRedrawUI();
+        // Initialize master view rendering processing routine layout build command on app screen boot 
+        computeAndSyncLayoutViews();
     </script>
 </body>
 </html>
