@@ -3,590 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shakti Mobile - Mobile First Dashboard</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>SHAKTI MOBILE - Dashboard</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
-        :root {
-            --bg-dark: #070b19;
-            --bg-card: #0d142c;
-            --topbar-bg: #050814;
-            --text-main: #ffffff;
-            --text-muted: #8492a6;
-            --accent-purple: #7000ff;
-            --accent-blue: #00b4d8;
-            --accent-green: #00e676;
-            --accent-orange: #ff9100;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --neon-glow: 0 0 15px rgba(112, 0, 255, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding-bottom: 30px; /* Bottom space for mobile scrolling */
+            background-color: #0B111E;
+            color: #FFFFFF;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-
-        /* --- MOBILE TOP NAVIGATION BAR --- */
-        .mobile-topbar {
-            background-color: var(--topbar-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .card-bg {
+            background-color: #121A2E;
+            border: 1px solid #1E293B;
         }
-
-        .logo-area h1 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .logo-area h1 span { color: var(--accent-purple); }
-        .logo-area p { font-size: 0.6rem; color: #d4af37; text-transform: uppercase; }
-
-        .time-box {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            text-align: right;
-            line-height: 1.2;
-        }
-
-        /* --- CONTAINER --- */
-        .app-container {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* --- RESPONSIVE KPI CARDS GRID (2 Columns on Mobile) --- */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .kpi-card {
-            background: linear-gradient(135deg, #0d1532, #070c1e);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 95px;
-        }
-
-        .kpi-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 500; }
-        .kpi-value { font-size: 1.2rem; font-weight: 700; margin: 4px 0; }
-        .kpi-sub { font-size: 0.65rem; color: var(--text-muted); }
-        .trend-up { color: var(--accent-green); }
-
-        /* --- SECTION CARDS --- */
-        .section-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .card-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            color: var(--text-main);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* --- FORMS (Mobile optimized vertical stack) --- */
-        .form-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
-        
-        .form-control {
-            background-color: #050814;
-            border: 1px solid var(--border-color);
+        .input-field {
+            background-color: #0F172A;
+            border: 1px solid #334155;
             color: white;
-            padding: 12px;
-            border-radius: 8px;
+        }
+        .input-field:focus {
+            border-color: #3B82F6;
             outline: none;
-            font-size: 0.85rem;
-            width: 100%;
-        }
-
-        .form-control:focus { border-color: var(--accent-purple); }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--accent-purple), #5000b8);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            box-shadow: var(--neon-glow);
-            text-transform: uppercase;
-        }
-
-        /* --- SUMMARY BLOCK --- */
-        .month-stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.8rem;
-        }
-
-        /* --- SEARCH BAR --- */
-        .search-box-wrapper {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-box-wrapper input {
-            width: 100%;
-            background-color: #050814;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px 12px 10px 35px;
-            color: white;
-            outline: none;
-            font-size: 0.8rem;
-        }
-
-        .search-box-wrapper i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        /* --- MOBILE TABLE SYSTEM (Horizontal scrollable with min-width safety) --- */
-        .table-container-mobile {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 8px;
-            background-color: #050814;
-        }
-
-        .mobile-data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.75rem;
-            min-width: 620px; /* safe grid preventing layout squeezing */
-        }
-
-        .mobile-data-table th {
-            color: var(--text-muted);
-            padding: 10px;
-            background-color: rgba(255,255,255,0.02);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .mobile-data-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* Row Action buttons layout */
-        .row-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .row-actions button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .color-cyan { color: #00b4d8; }
-        .color-green { color: #00e676; }
-        .color-orange { color: #ff9100; }
-        .color-red { color: #ff4d4d; }
-
-        /* Lifetime Stats Card at Bottom */
-        .bottom-summary-bar {
-            background: linear-gradient(90deg, #0c122c, #050814);
-            border: 1px solid rgba(112,0,255,0.2);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
     </style>
 </head>
-<body>
+<body class="p-4 max-w-md mx-auto pb-10">
 
-    <!-- MOBILE NAVIGATION TOPBAR -->
-    <div class="mobile-topbar">
-        <div class="logo-area">
-            <h1>SHAKTI <span>MOBILE</span></h1>
-            <p>Trust • Quality • Service</p>
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
+            <p class="text-xs text-gray-400 uppercase tracking-widest" style="font-size: 0.65rem;">Trust • Quality • Service</p>
         </div>
-        <div class="time-box">
-            <strong id="m-date">10 Jun 2026</strong><br>
-            <span id="m-time" style="color:var(--text-muted)">02:33 PM</span>
+        <div class="text-right">
+            <span class="bg-slate-800 text-gray-300 text-xs px-2 py-1 rounded font-mono">10 Jun 2026</span>
+            <p class="text-gray-500 text-xs mt-1 font-mono">03:57:43 PM</p>
         </div>
     </div>
 
-    <!-- MAIN INTERACTIVE APP WRAPPER -->
-    <div class="app-container">
+    <!-- Top Stats Grid -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="card-bg p-3 rounded-xl">
+            <p class="text-xs text-gray-400 uppercase">Today's Sale</p>
+            <p id="todaySale" class="text-xl font-bold text-blue-500">₹0</p>
+            <p id="todayOrders" class="text-xs text-gray-500">0 Orders</p>
+        </div>
+        <div class="card-bg p-3 rounded-xl">
+            <p class="text-xs text-gray-400 uppercase">Today's Profit</p>
+            <p id="todayProfit" class="text-xl font-bold text-emerald-500">₹0</p>
+            <p class="text-xs text-gray-500">Live Sync</p>
+        </div>
+        <div class="card-bg p-3 rounded-xl">
+            <p class="text-xs text-gray-400 uppercase">Month Sale</p>
+            <p id="monthSale" class="text-xl font-bold text-blue-500">₹0</p>
+            <p class="text-xs text-gray-500">June 2026</p>
+        </div>
+        <div class="card-bg p-3 rounded-xl">
+            <p class="text-xs text-gray-400 uppercase">Month Profit</p>
+            <p id="monthProfit" class="text-xl font-bold text-amber-500">₹0</p>
+            <p class="text-xs text-gray-500">Margin Target</p>
+        </div>
+    </div>
 
-        <!-- 2x2 GRID FOR KPI CARDS (No Clipping) -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-title">Today's Sale</div>
-                <div class="kpi-value color-cyan" id="card-sale">₹0</div>
-                <div class="kpi-sub"><span id="card-orders">0</span> Orders</div>
+    <!-- Inventory / Stock Status Section (NEW) -->
+    <div class="card-bg p-4 rounded-xl mb-4">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Current Stock & Inventory</h3>
+            <span class="text-xs text-blue-400 bg-blue-950/50 px-2 py-0.5 rounded border border-blue-900">Live Count</span>
+        </div>
+        <div id="stockContainer" class="space-y-2 text-xs">
+            <!-- Stock items will be loaded here dynamically -->
+            <div class="flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-800">
+                <span>Lava Star 3</span>
+                <span class="font-mono bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">12 Units Left</span>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-title">Today's Profit</div>
-                <div class="kpi-value color-green" id="card-profit">₹0</div>
-                <div class="kpi-sub trend-up">Live Sync</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-title">Month Sale</div>
-                <div class="kpi-value" id="card-m-sale">₹0</div>
-                <div class="kpi-sub">June 2026</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-title">Month Profit</div>
-                <div class="kpi-value color-orange" id="card-m-profit">₹0</div>
-                <div class="kpi-sub">Margin Target</div>
+            <div class="flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-800">
+                <span>Samsung Galaxy M14</span>
+                <span class="font-mono bg-amber-950 text-amber-400 px-2 py-0.5 rounded">3 Units (Low Stock)</span>
             </div>
         </div>
+    </div>
 
-        <!-- LINE/BAR CHART -->
-        <div class="section-card">
-            <div class="card-title">Profit Analytics (Last 6 Months)</div>
-            <div style="height: 160px; position: relative;">
-                <canvas id="mobileChart"></canvas>
-            </div>
-        </div>
+    <!-- Filter & Analytics Section -->
+    <div class="card-bg p-4 rounded-xl mb-4">
+        <label class="block text-xs text-gray-400 uppercase mb-2">Select Filter Month</label>
+        <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4">
+            <option value="June 2026">June 2026</option>
+            <option value="May 2026">May 2026</option>
+        </select>
 
-        <!-- DYNAMIC FILTER SYSTEM -->
-        <div class="section-card">
-            <div class="card-title">Select Filter Month</div>
-            <select class="form-control" id="month-selector-dropdown" style="background-color:#050814;">
-                <option value="2026-06" selected>June 2026</option>
-                <option value="2026-05">May 2026</option>
-            </select>
-            <div style="margin-top: 10px;">
-                <div class="month-stat-item"><span>Total Units Sold:</span> <strong id="lbl-total-qty">0</strong></div>
-                <div class="month-stat-item"><span>Total Capital Cost:</span> <strong id="lbl-total-cost">₹0</strong></div>
-            </div>
-        </div>
-
-        <!-- 100% WORKING ADD / UPDATE ENTRY FORM -->
-        <div class="section-card" style="border-color: rgba(112,0,255,0.25);">
-            <div class="card-title" id="form-header-title">Add New Sale</div>
-            <form id="mobile-sale-form" class="form-stack">
-                <!-- Hidden Index tracker input -->
-                <input type="hidden" id="edit-row-index" value="-1">
-
-                <div class="form-group">
-                    <label>Transaction Date</label>
-                    <input type="date" class="form-control" id="field-date" required>
-                </div>
-                <div class="form-group">
-                    <label>Product Model Name</label>
-                    <input type="text" class="form-control" id="field-name" placeholder="e.g. Lava Star 3" required>
-                </div>
-                <div class="form-group">
-                    <label>Quantity (Units)</label>
-                    <input type="number" class="form-control" id="field-qty" value="1" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label>Cost Price (Per Item ₹)</label>
-                    <input type="number" class="form-control" id="field-cost" placeholder="0" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Sale Price (Per Item ₹)</label>
-                    <input type="number" class="form-control" id="field-sale" placeholder="0" min="0" required>
-                </div>
-                <button type="submit" class="btn-submit" id="btn-submit-action">Add Sale</button>
-            </form>
-        </div>
-
-        <!-- DYNAMIC DATA LOG HISTORY VIEW -->
-        <div class="section-card">
-            <div class="card-title">Sales History Log</div>
+        <div class="grid grid-cols-2 gap-2 text-sm border-t border-slate-800 pt-3">
+            <div class="text-gray-400">Total Units Sold:</div>
+            <div id="totalUnitsSold" class="text-right font-mono font-semibold">0</div>
             
-            <!-- Realtime filter box -->
-            <div class="search-box-wrapper">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="live-search-filter" placeholder="Search item model name...">
-            </div>
+            <div class="text-gray-400">Total Capital Cost:</div>
+            <div id="totalCapitalCost" class="text-right font-mono font-semibold">₹0</div>
 
-            <!-- Scrollable Table Box wrapper -->
-            <div class="table-container-mobile">
-                <table class="mobile-data-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Product Name</th>
-                            <th>Qty</th>
-                            <th>Cost</th>
-                            <th>Sale</th>
-                            <th>Total Sale</th>
-                            <th>Profit</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mobile-table-body-rows">
-                        <!-- Javascript row loops populate here dynamically -->
-                    </tbody>
-                </table>
-            </div>
+            <!-- Total Other Expenses (NEW) -->
+            <div class="text-gray-400">Other Expenses:</div>
+            <div id="totalOtherExpenses" class="text-right font-mono font-semibold text-rose-400">₹0</div>
+            
+            <!-- Net Margin After Expenses (NEW) -->
+            <div class="text-gray-400 font-semibold text-emerald-400">Actual Net Margin:</div>
+            <div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400">₹0</div>
         </div>
-
-        <!-- BOTTOM TOTAL FOOTER PANEL -->
-        <div class="bottom-summary-bar">
-            <div>
-                <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Overall Net Worth</p>
-                <h4 style="font-size:1.1rem; color:#fff;" id="lbl-grand-turnover">₹0</h4>
-            </div>
-            <div style="text-align:right;">
-                <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Net Margins</p>
-                <h4 style="font-size:1.1rem; color:var(--accent-green);" id="lbl-grand-profit">₹0</h4>
-            </div>
-        </div>
-
     </div>
 
-    <!-- LOGIC APPLICATION CORE SCRIPT ENGINE -->
+    <!-- Top Selling Products (NEW) -->
+    <div class="card-bg p-4 rounded-xl mb-4">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Top Selling Models</h3>
+        <div id="topProductsContainer" class="space-y-2 text-xs">
+            <p class="text-gray-500 italic">No sales data available yet.</p>
+        </div>
+    </div>
+
+    <!-- Add New Sale Form -->
+    <div class="card-bg p-4 rounded-xl mb-4">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Add New Sale</h3>
+        
+        <div class="space-y-3">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Transaction Date</label>
+                <input type="date" id="saleDate" value="2026-06-10" class="w-full input-field rounded-lg p-2 text-sm font-mono">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Product Model Name</label>
+                <input type="text" id="modelName" placeholder="e.g. Lava Star 3" class="w-full input-field rounded-lg p-2 text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Quantity (Units)</label>
+                    <input type="number" id="quantity" value="1" min="1" class="w-full input-field rounded-lg p-2 text-sm font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Payment Mode</label>
+                    <select id="paymentMode" class="w-full input-field rounded-lg p-2 text-sm">
+                        <option value="UPI">UPI (GPay/PhonePe)</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Udhaar">Udhaar (Credit)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Cost Price (Per Item ₹)</label>
+                    <input type="number" id="costPrice" value="0" class="w-full input-field rounded-lg p-2 text-sm font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Sale Price (Per Item ₹)</label>
+                    <input type="number" id="salePrice" value="0" class="w-full input-field rounded-lg p-2 text-sm font-mono">
+                </div>
+            </div>
+            <button onclick="addSale()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2.5 rounded-lg text-sm transition mt-2">
+                ADD SALE
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Other Expenses Form (NEW) -->
+    <div class="card-bg p-4 rounded-xl mb-4">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Add Shop Expense</h3>
+        <div class="grid grid-cols-2 gap-2 mb-2">
+            <input type="text" id="expenseName" placeholder="Rent, Light Bill etc." class="w-full input-field rounded-lg p-2 text-xs">
+            <input type="number" id="expenseAmount" placeholder="Amount (₹)" class="w-full input-field rounded-lg p-2 text-xs font-mono">
+        </div>
+        <button onclick="addExpense()" class="w-full bg-slate-800 hover:bg-slate-700 text-gray-300 border border-slate-700 font-semibold p-2 rounded-lg text-xs transition">
+            ADD EXPENSE
+        </button>
+    </div>
+
+    <!-- Sales History Log -->
+    <div class="card-bg p-4 rounded-xl">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Sales History Log</h3>
+            <button onclick="exportToCSV()" class="text-xs text-blue-400 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+        </div>
+        
+        <div class="mb-3">
+            <input type="text" id="searchLog" oninput="renderLog()" placeholder="Search item model name..." class="w-full input-field rounded-lg p-2 text-xs">
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs min-w-[400px]">
+                <thead>
+                    <tr class="border-b border-slate-800 text-gray-400">
+                        <th class="pb-2 font-medium">DATE</th>
+                        <th class="pb-2 font-medium">PRODUCT NAME</th>
+                        <th class="pb-2 font-medium text-center">QTY</th>
+                        <th class="pb-2 font-medium text-center">MODE</th>
+                        <th class="pb-2 font-medium text-right">COST</th>
+                        <th class="pb-2 font-medium text-right">SALE</th>
+                        <th class="pb-2 font-medium text-center">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody" class="divide-y divide-slate-900">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
     <script>
-        // Default Dataset initialized exactly matching image metrics log entries
-        const coreBackupData = [
-            { date: '2026-06-10', name: 'Lava Star 3', qty: 3, cost: 8800, sale: 9400 },
-            { date: '2026-06-10', name: 'Samsung M16', qty: 2, cost: 12500, sale: 13999 },
-            { date: '2026-06-10', name: 'Realme Narzo 70', qty: 1, cost: 11000, sale: 12500 },
-            { date: '2026-06-10', name: 'Redmi 13C', qty: 4, cost: 7200, sale: 7999 }
-        ];
+        // Sample Local Data Storage
+        let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
+        let expenseData = JSON.parse(localStorage.getItem('expenseData')) || [];
+        
+        // Dummy Inventory Stock Count
+        let inventory = {
+            "Lava Star 3": 15,
+            "Samsung Galaxy M14": 3,
+            "iPhone 15": 8
+        };
 
-        // Read LocalStorage state or fallback to default dataset
-        let appStateList = JSON.parse(localStorage.getItem('shakti_mobile_db')) || coreBackupData;
-
-        // Auto default input form date element box to standard system timestamp
-        document.getElementById('field-date').value = '2026-06-10';
-
-        // Localized INR formatting string function
-        function convertINR(amount) {
-            return '₹' + Number(amount).toLocaleString('en-IN');
+        function saveData() {
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+            localStorage.setItem('expenseData', JSON.stringify(expenseData));
+            updateDashboard();
         }
 
-        // Live core drawing view processing matrix
-        function refreshUiLayout(searchString = "") {
-            const tableBody = document.getElementById('mobile-table-body-rows');
-            tableBody.innerHTML = "";
+        function addSale() {
+            const date = document.getElementById('saleDate').value;
+            const model = document.getElementById('modelName').value.trim();
+            const qty = parseInt(document.getElementById('quantity').value) || 0;
+            const mode = document.getElementById('paymentMode').value;
+            const cost = parseFloat(document.getElementById('costPrice').value) || 0;
+            const sale = parseFloat(document.getElementById('salePrice').value) || 0;
 
-            let sumQty = 0, sumCost = 0, sumSale = 0, sumProfit = 0;
-
-            // Perform string query matching calculations instantly
-            const workingSubset = appStateList.filter(row => 
-                row.name.toLowerCase().includes(searchString.toLowerCase())
-            );
-
-            workingSubset.forEach((item, index) => {
-                const totalItemCost = item.cost * item.qty;
-                const totalItemSale = item.sale * item.qty;
-                const calculatedProfit = totalItemSale - totalItemCost;
-
-                sumQty += Number(item.qty);
-                sumCost += totalItemCost;
-                sumSale += totalItemSale;
-                sumProfit += calculatedProfit;
-
-                // Format row dates nicely (dd/mm/yyyy)
-                const sDate = item.date.split('-');
-                const displayDate = sDate.length === 3 ? `${sDate[2]}/${sDate[1]}/${sDate[0]}` : item.date;
-
-                const trRow = document.createElement('tr');
-                trRow.innerHTML = `
-                    <td>${displayDate}</td>
-                    <td style="color:#fff; font-weight:500;">${item.name}</td>
-                    <td class="color-cyan">${item.qty}</td>
-                    <td>${convertINR(item.cost)}</td>
-                    <td>${convertINR(item.sale)}</td>
-                    <td class="color-cyan">${convertINR(totalItemSale)}</td>
-                    <td class="color-green">${convertINR(calculatedProfit)}</td>
-                    <td class="row-actions">
-                        <button class="color-cyan" onclick="actionEditRow(${index})" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="color-red" onclick="actionDeleteRow(${index})" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tableBody.appendChild(trRow);
-            });
-
-            if(workingSubset.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:20px;">No matching sales found.</td></tr>`;
+            if (!model || qty <= 0) {
+                alert("Please fill Product Name and valid Quantity!");
+                return;
             }
 
-            // Sync dynamic calculated metrics with screen cards directly
-            document.getElementById('card-sale').innerText = convertINR(sumSale);
-            document.getElementById('card-profit').innerText = convertINR(sumProfit);
-            document.getElementById('card-orders').innerText = workingSubset.length;
-            document.getElementById('card-m-sale').innerText = convertINR(sumSale);
-            document.getElementById('card-m-profit').innerText = convertINR(sumProfit);
-
-            // Center card widgets stats assignment
-            document.getElementById('lbl-total-qty').innerText = sumQty;
-            document.getElementById('lbl-total-cost').innerText = convertINR(sumCost);
-            
-            // Bottom floating panel parameters calculation sync
-            document.getElementById('lbl-grand-turnover').innerText = convertINR(sumSale);
-            document.getElementById('lbl-grand-profit').innerText = convertINR(sumProfit);
-
-            // Flash values update directly inside global browser storage state
-            localStorage.setItem('shakti_mobile_db', JSON.stringify(appStateList));
-
-            // Sync chart update bars
-            mobileChart.data.datasets[0].data = [12450, 15800, 18200, 21000, 24500, sumProfit];
-            mobileChart.update();
-        }
-
-        // Form processing function loop handles logic routing securely
-        document.getElementById('mobile-sale-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const activeIndex = parseInt(document.getElementById('edit-row-index').value);
-            
-            const dynamicObject = {
-                date: document.getElementById('field-date').value,
-                name: document.getElementById('field-name').value,
-                qty: parseInt(document.getElementById('field-qty').value),
-                cost: parseFloat(document.getElementById('field-cost').value),
-                sale: parseFloat(document.getElementById('field-sale').value)
+            // Create entry object
+            const newSale = {
+                id: Date.now(),
+                date,
+                model,
+                qty,
+                mode,
+                cost: cost * qty,
+                sale: sale * qty
             };
 
-            if(activeIndex === -1) {
-                // Creation flow
-                appStateList.push(dynamicObject);
+            salesData.push(newSale);
+
+            // Deduct stock if available in inventory tracking
+            if(inventory[model]) {
+                inventory[model] = Math.max(0, inventory[model] - qty);
             } else {
-                // Modification updating flow path
-                appStateList[activeIndex] = dynamicObject;
-                document.getElementById('edit-row-index').value = "-1";
-                document.getElementById('form-header-title').innerText = "Add New Sale";
-                document.getElementById('btn-submit-action').innerText = "Add Sale";
+                inventory[model] = 10; // Default dynamic stock setting if item is new
             }
 
-            refreshUiLayout();
+            // Reset inputs
+            document.getElementById('modelName').value = '';
+            document.getElementById('costPrice').value = '0';
+            document.getElementById('salePrice').value = '0';
+            document.getElementById('quantity').value = '1';
 
-            // Clear inputs system reset sequence safely
-            document.getElementById('field-name').value = "";
-            document.getElementById('field-qty').value = "1";
-            document.getElementById('field-cost').value = "";
-            document.getElementById('field-sale').value = "";
-        });
+            saveData();
+        }
 
-        // Interactive individual row entry delete protocol
-        function actionDeleteRow(targetIndex) {
-            if(confirm("Kya aap sach me ye sale record delete karna chahte hain?")) {
-                appStateList.splice(targetIndex, 1);
-                refreshUiLayout();
+        function addExpense() {
+            const name = document.getElementById('expenseName').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+
+            if(!name || amount <= 0) {
+                alert("Please enter valid Expense Name and Amount");
+                return;
+            }
+
+            expenseData.push({
+                id: Date.now(),
+                name,
+                amount,
+                date: "2026-06-10"
+            });
+
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+            saveData();
+        }
+
+        function deleteSale(id) {
+            if(confirm("Are you sure you want to delete this sale entry?")) {
+                salesData = salesData.filter(item => item.id !== id);
+                saveData();
             }
         }
 
-        // Interactive item dataset load editing logic sequence trigger
-        function actionEditRow(targetIndex) {
-            const dataReference = appStateList[targetIndex];
-            document.getElementById('edit-row-index').value = targetIndex;
-            
-            document.getElementById('field-date').value = dataReference.date;
-            document.getElementById('field-name').value = dataReference.name;
-            document.getElementById('field-qty').value = dataReference.qty;
-            document.getElementById('field-cost').value = dataReference.cost;
-            document.getElementById('field-sale').value = dataReference.sale;
+        function updateDashboard() {
+            let todaySaleTotal = 0, todayProfitTotal = 0, todayOrderCount = 0;
+            let monthSaleTotal = 0, monthProfitTotal = 0;
+            let totalUnits = 0, totalCost = 0;
+            let totalExpenses = 0;
 
-            document.getElementById('form-header-title').innerText = "✏️ Update Entry Mode";
-            document.getElementById('btn-submit-action').innerText = "Save Updates";
+            const todayStr = "2026-06-10"; // Match dashboard default date
 
-            // Scroll directly smoothly to input text field container boundary lines
-            document.getElementById('mobile-sale-form').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Setup text filtering event triggers linkage points
-        document.getElementById('live-search-filter').addEventListener('input', function(event) {
-            refreshUiLayout(event.target.value);
-        });
-
-        // Initialize Live Time clock functionality sequence tracking loop
-        setInterval(() => {
-            const timeDateObj = new Date();
-            document.getElementById('m-date').innerText = timeDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-            document.getElementById('m-time').innerText = timeDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-        }, 1000);
-
-        // Chart setup script initialization execution loop path
-        const renderingCanvasCtx = document.getElementById('mobileChart').getContext('2d');
-        const mobileChart = new Chart(renderingCanvasCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    data: [12450, 15800, 18200, 21000, 24500, 0],
-                    backgroundColor: ['#00b4d8', '#0077b6', '#00e676', '#ffcc00', '#ff9100', '#7000ff'],
-                    borderRadius: 5,
-                    barPercentage: 0.5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8492a6', font: { size: 9 } } },
-                    x: { grid: { display: false }, ticks: { color: '#8492a6', font: { size: 9 } } }
+            // Calculate Sales
+            salesData.forEach(item => {
+                const itemProfit = item.sale - item.cost;
+                
+                // For Today Stats
+                if(item.date === todayStr) {
+                    todaySaleTotal += item.sale;
+                    todayProfitTotal += itemProfit;
+                    todayOrderCount += 1;
                 }
-            }
-        });
 
-        // Load initial state database records execution draw layout routine command
-        refreshUiLayout();
+                // Overall Filter Summary (For June 2026 dummy context)
+                monthSaleTotal += item.sale;
+                monthProfitTotal += itemProfit;
+                totalUnits += item.qty;
+                totalCost += item.cost;
+            });
+
+            // Calculate Expenses
+            expenseData.forEach(exp => {
+                totalExpenses += exp.amount;
+            });
+
+            // Actual profit after deducting other operational expenses
+            let actualNetMargin = monthProfitTotal - totalExpenses;
+
+            // Update UI elements
+            document.getElementById('todaySale').innerText = `\u20B9${todaySaleTotal}`;
+            document.getElementById('todayProfit').innerText = `\u20B9${todayProfitTotal}`;
+            document.getElementById('todayOrders').innerText = `${todayOrderCount} Orders`;
+            
+            document.getElementById('monthSale').innerText = `\u20B9${monthSaleTotal}`;
+            document.getElementById('monthProfit').innerText = `\u20B9${monthProfitTotal}`;
+            
+            document.getElementById('totalUnitsSold').innerText = totalUnits;
+            document.getElementById('totalCapitalCost').innerText = `\u20B9${totalCost}`;
+            document.getElementById('totalOtherExpenses').innerText = `\u20B9${totalExpenses}`;
+            document.getElementById('actualNetMargin').innerText = `\u20B9${actualNetMargin}`;
+
+            renderLog();
+            renderTopProducts();
+            renderStock();
+        }
+
+        function renderLog() {
+            const tbody = document.getElementById('logTableBody');
+            const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            const filteredData = salesData.filter(item => item.model.toLowerCase().includes(searchKeyword));
+
+            if(filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-4 italic">No matching sales found</td></tr>`;
+                return;
+            }
+
+            filteredData.reverse().forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/50";
+                tr.innerHTML = `
+                    <td class="py-2.5 font-mono text-gray-400">${item.date.substring(5)}</td>
+                    <td class="py-2.5 font-semibold text-gray-200">${item.model}</td>
+                    <td class="py-2.5 text-center font-mono">${item.qty}</td>
+                    <td class="py-2.5 text-center"><span class="px-1 py-0.5 rounded text-[10px] ${item.mode === 'UPI' ? 'bg-purple-950 text-purple-400' : item.mode === 'Cash' ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'}">${item.mode}</span></td>
+                    <td class="py-2.5 text-right font-mono text-gray-400">₹${item.cost}</td>
+                    <td class="py-2.5 text-right font-mono font-semibold text-blue-400">₹${item.sale}</td>
+                    <td class="py-2.5 text-center">
+                        <button onclick="deleteSale(${item.id})" class="text-rose-500 hover:text-rose-400 px-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderStock() {
+            const container = document.getElementById('stockContainer');
+            container.innerHTML = '';
+            for (const [model, count] of Object.entries(inventory)) {
+                const badgeColor = count <= 3 ? 'bg-rose-950 text-rose-400' : 'bg-emerald-950 text-emerald-400';
+                const statusText = count <= 3 ? '(Low Stock)' : 'Units Left';
+                
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-800";
+                div.innerHTML = `<span>${model}</span> <span class="font-mono ${badgeColor} px-2 py-0.5 rounded">${count} ${statusText}</span>`;
+                container.appendChild(div);
+            }
+        }
+
+        function renderTopProducts() {
+            const container = document.getElementById('topProductsContainer');
+            container.innerHTML = '';
+
+            let productCounts = {};
+            salesData.forEach(item => {
+                productCounts[item.model] = (productCounts[item.model] || 0) + item.qty;
+            });
+
+            let sorted = Object.entries(productCounts).sort((a,b) => b[1] - a[1]).slice(0, 3);
+
+            if(sorted.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 italic">No sales data available yet.</p>`;
+                return;
+            }
+
+            sorted.forEach(([model, qty], index) => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-slate-900/30 p-2 rounded";
+                div.innerHTML = `<span>#${index+1} ${model}</span><span class="font-bold text-blue-400">${qty} sold</span>`;
+                container.appendChild(div);
+            });
+        }
+
+        function exportToCSV() {
+            if(salesData.length === 0) {
+                alert("No data available to export!");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,Date,Product Name,Quantity,Payment Mode,Cost Price,Sale Price\n";
+            salesData.forEach(r => {
+                csvContent += `${r.date},${r.model},${r.qty},${r.mode},${r.cost},${r.sale}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Sales_Report_Shakti_Mobile.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Run on Page Load
+        window.onload = function() {
+            updateDashboard();
+        }
     </script>
 </body>
 </html>
