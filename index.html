@@ -338,6 +338,14 @@
             syncToCloud();
         }
 
+        // NEW: Function to completely delete a stock item from the inventory
+        function deleteStockItem(modelKey) {
+            if(confirm(`Are you sure you want to completely remove "${modelKey}" from stock inventory?`)) {
+                delete inventory[modelKey]; // Hatane ka native logic
+                syncToCloud(); // Save Changes on Cloud Server
+            }
+        }
+
         function addSale() {
             const date = document.getElementById('saleDate').value;
             const model = document.getElementById('modelName').value.trim();
@@ -502,6 +510,7 @@
             });
         }
 
+        // MODIFIED: Added dynamic interactive delete triggers inside rows
         function renderStockTable() {
             const container = document.getElementById('stockContainer');
             const searchKeyword = document.getElementById('searchStockInp').value.toLowerCase();
@@ -511,7 +520,7 @@
             let matchFound = false;
 
             if (Object.keys(inventory).length === 0) {
-                container.innerHTML = `<p class="text-gray-500 italic">No inventory tracked yet. Add stock below.</p>`;
+                container.innerHTML = `<p class="text-gray-500 italic text-center py-2">No inventory tracked yet. Add stock below.</p>`;
                 document.getElementById('totalStockValuation').innerText = "₹0";
                 return;
             }
@@ -538,9 +547,14 @@
                     div.innerHTML = `
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-200">${model}</span> 
-                            <span class="font-mono ${badgeColor} px-2 py-0.5 rounded">${count} ${statusText}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono ${badgeColor} px-2 py-0.5 rounded">${count} ${statusText}</span>
+                                <button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-400 p-1 cursor-pointer text-xs">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center text-[10px] text-gray-400 font-mono">
+                        <div class="flex justify-between items-center text-[10px] text-gray-400 font-mono pr-6">
                             <span>Cost: ₹${price} / unit</span>
                             <span class="text-blue-400">Total Value: ₹${individualStockValue}</span>
                         </div>
