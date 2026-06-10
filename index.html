@@ -14,7 +14,7 @@
     <!-- ================= FIREBASE SDK INTEGRATION ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBFM1JgizFIwUtI2uX9tQ2ZWv2Mlb_RtHo",
@@ -28,7 +28,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        window.db = db; window.doc = doc; window.setDoc = setDoc; window.onSnapshot = onSnapshot;
+        window.db = db; window.doc = doc; window.setDoc = setDoc; window.onSnapshot = onSnapshot; window.getDoc = getDoc;
 
         window.addEventListener('load', () => {
             setTimeout(() => { if (typeof window.setupRealtimeSync === "function") window.setupRealtimeSync(); }, 200);
@@ -432,21 +432,24 @@
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         function showDashboard() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardContent').classList.remove('hidden'); setTimeout(() => { setupRealtimeSync(); }, 500); }
 
+        // ================= FULL MASTER DATA RECOVERY INJECTOR ENGINE =================
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
-            window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
+            
+            // Snapshot listener targeting the main node document root
+            window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), async (docSnap) => {
                 if (docSnap.exists()) {
                     let c = docSnap.data();
                     
-                    // FIXED: Dynamic structure merge to prevent data loss
-                    salesData = c.salesData || []; 
-                    expenseData = c.expenseData || []; 
+                    // Recover core arrays safely
+                    salesData = c.salesData || [];
+                    expenseData = c.expenseData || [];
                     udhaarData = c.udhaarData || [];
                     
                     let rawInventory = c.inventory || {};
                     inventory = {};
 
-                    // FORCE CONVERT OLD DATA STRUCUTRE TO PREVENT DISAPPEARING
+                    // Double loop repair system - prevents structure blocking
                     for (const [key, val] of Object.entries(rawInventory)) {
                         if (typeof val === 'number') {
                             inventory[key] = { qty: val, price: 0, brand: "", imei: "" };
@@ -459,14 +462,25 @@
                             };
                         }
                     }
-                }
+                    
+                    // DEEP RECOVERY SAFETIED EXTRACTION CHECK:
+                    // If dashboard loads empty but cloud still holds isolated keys, fallback merge triggers
+                    if(salesData.length === 0 && c.sales) { salesData = c.sales; }
+                    if(expenseData.length === 0 && c.expenses) { expenseData = c.expenses; }
+                } 
                 updateDashboardUI();
             });
         }
 
         async function syncToCloud() {
             if (window.setDoc && window.db) {
-                await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData });
+                // Save everything cleanly inside individual secure mapping tracks
+                await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { 
+                    salesData, 
+                    expenseData, 
+                    inventory, 
+                    udhaarData 
+                });
             }
         }
 
@@ -629,7 +643,12 @@
             let val = 0;
 
             for (const [model, data] of Object.entries(inventory)) {
-                let count = data.qty || 0; let price = data.price || 0; let brand = data.brand || ""; let imei = data.imei || "";
+                let count = 0; let price = 0; let brand = ""; let imei = "";
+                
+                if (data && typeof data === 'object') {
+                    count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || "";
+                }
+                
                 val += (count * price);
 
                 let match = false;
@@ -755,6 +774,12 @@
                 let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between";
                 d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d);
             });
+        }
+        function exportToCSV() {
+            let csv = "Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n";
+            salesData.forEach(x => csv += `${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`);
+            let link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
+            link.setAttribute("download", "Sales_Report.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
 </body>
