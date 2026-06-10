@@ -2,404 +2,591 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KDR AI BOOKS - Custom Mobile Ledger</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shakti Mobile - Mobile First Dashboard</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-body: #070a13;
-            --bg-card: #121826;
-            --border-line: rgba(255, 255, 255, 0.05);
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --accent-cyan: #38bdf8;
-            --accent-green: #10b981;
-            --accent-rose: #f43f5e;
-            --accent-orange: #f97316;
+            --bg-dark: #070b19;
+            --bg-card: #0d142c;
+            --topbar-bg: #050814;
+            --text-main: #ffffff;
+            --text-muted: #8492a6;
+            --accent-purple: #7000ff;
+            --accent-blue: #00b4d8;
+            --accent-green: #00e676;
+            --accent-orange: #ff9100;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --neon-glow: 0 0 15px rgba(112, 0, 255, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-user-select: none; user-select: none; }
-        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; width: 100vw; overflow-x: hidden; padding-bottom: 30px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* HEADER */
-        .app-mobile-header { background-color: #0d121f; border-bottom: 1px solid var(--border-line); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; height: 60px; }
-        .app-brand-title h2 { font-size: 0.95rem; font-weight: 700; color: white; }
-        .app-brand-title p { font-size: 0.6rem; color: var(--text-sub); }
-        .status-pill { background: rgba(56,189,248,0.1); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 30px; /* Bottom space for mobile scrolling */
+        }
 
-        .app-container { padding: 12px; display: flex; flex-direction: column; gap: 14px; width: 100%; }
+        /* --- MOBILE TOP NAVIGATION BAR --- */
+        .mobile-topbar {
+            background-color: var(--topbar-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-        /* CSV IMPORTER */
-        .csv-importer-box { background: linear-gradient(135deg, #131d35, #121826); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 14px; text-align: center; }
-        .csv-importer-box h3 { font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 4px; }
-        .csv-importer-box p { font-size: 0.7rem; color: var(--text-sub); margin-bottom: 12px; }
-        .upload-touch-btn { background-color: #0284c7; color: white; padding: 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; }
-        #hidden-csv-file { display: none !important; }
+        .logo-area h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .logo-area h1 span { color: var(--accent-purple); }
+        .logo-area p { font-size: 0.6rem; color: #d4af37; text-transform: uppercase; }
 
-        /* KPI COUNTERS */
-        .kpi-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .kpi-tile { background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 10px; padding: 12px; position: relative; }
-        .kpi-tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
-        .tile-sales::before { background-color: var(--accent-green); }
-        .tile-orders::before { background-color: var(--accent-cyan); }
-        .tile-expense::before { background-color: var(--accent-rose); }
-        .tile-supplier::before { background-color: var(--accent-orange); }
-        .tile-lbl { font-size: 0.65rem; font-weight: 600; color: var(--text-sub); text-transform: uppercase; }
-        .tile-val { font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: white; }
+        .time-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            text-align: right;
+            line-height: 1.2;
+        }
 
-        /* CUSTOM FORMS */
-        .section-header { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-        .custom-form-panel { background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 12px; padding: 14px; }
-        .form-grid-stack { display: flex; flex-direction: column; gap: 10px; }
-        .input-group-block { display: flex; flex-direction: column; gap: 4px; }
-        .input-group-block label { font-size: 0.72rem; color: var(--text-sub); font-weight: 500; }
+        /* --- CONTAINER --- */
+        .app-container {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- RESPONSIVE KPI CARDS GRID (2 Columns on Mobile) --- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #0d1532, #070c1e);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 95px;
+        }
+
+        .kpi-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 500; }
+        .kpi-value { font-size: 1.2rem; font-weight: 700; margin: 4px 0; }
+        .kpi-sub { font-size: 0.65rem; color: var(--text-muted); }
+        .trend-up { color: var(--accent-green); }
+
+        /* --- SECTION CARDS --- */
+        .section-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- FORMS (Mobile optimized vertical stack) --- */
+        .form-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
         
-        .mobile-select, .mobile-input { background-color: var(--bg-body); color: white; border: 1px solid var(--border-line); padding: 12px; border-radius: 8px; font-size: 0.82rem; outline: none; width: 100%; }
-        
-        .btn-submit-trigger { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; width: 100%; text-transform: uppercase; cursor: pointer; }
-        .btn-submit-trigger.expense-theme { background: linear-gradient(135deg, #b91c1c, #991b1b); }
-        .btn-submit-trigger.supplier-theme { background: linear-gradient(135deg, #c2410c, #9a3412); }
+        .form-control {
+            background-color: #050814;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.85rem;
+            width: 100%;
+        }
 
-        /* MULTI-LEDGER TABLES */
-        .ledger-box-panel { background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 12px; padding: 12px; }
-        .table-scroll-frame { overflow-x: auto; width: 100%; border-radius: 6px; border: 1px solid var(--border-line); background-color: rgba(0,0,0,0.1); max-height: 220px; }
-        .ledger-data-grid { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.72rem; min-width: 380px; }
-        .ledger-data-grid th { color: var(--text-sub); background: #0f1423; padding: 10px; font-weight: 600; text-transform: uppercase; font-size: 0.62rem; border-bottom: 1px solid var(--border-line); position: sticky; top: 0; }
-        .ledger-data-grid td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #fff; }
-        
-        .btn-row-delete { background: transparent; border: none; color: var(--accent-rose); font-size: 0.85rem; cursor: pointer; padding: 4px 8px; }
-        .badge-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.58rem; font-weight: 700; color: white; text-transform: uppercase; }
+        .form-control:focus { border-color: var(--accent-purple); }
 
-        .footer-info { font-size: 0.65rem; color: #64748b; text-align: center; margin-top: 10px; }
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-purple), #5000b8);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            box-shadow: var(--neon-glow);
+            text-transform: uppercase;
+        }
+
+        /* --- SUMMARY BLOCK --- */
+        .month-stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.8rem;
+        }
+
+        /* --- SEARCH BAR --- */
+        .search-box-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-box-wrapper input {
+            width: 100%;
+            background-color: #050814;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 12px 10px 35px;
+            color: white;
+            outline: none;
+            font-size: 0.8rem;
+        }
+
+        .search-box-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* --- MOBILE TABLE SYSTEM (Horizontal scrollable with min-width safety) --- */
+        .table-container-mobile {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            background-color: #050814;
+        }
+
+        .mobile-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.75rem;
+            min-width: 620px; /* safe grid preventing layout squeezing */
+        }
+
+        .mobile-data-table th {
+            color: var(--text-muted);
+            padding: 10px;
+            background-color: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .mobile-data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* Row Action buttons layout */
+        .row-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .color-cyan { color: #00b4d8; }
+        .color-green { color: #00e676; }
+        .color-orange { color: #ff9100; }
+        .color-red { color: #ff4d4d; }
+
+        /* Lifetime Stats Card at Bottom */
+        .bottom-summary-bar {
+            background: linear-gradient(90deg, #0c122c, #050814);
+            border: 1px solid rgba(112,0,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-mobile-header">
-        <div class="app-brand-title">
-            <h2>KDR AI BOOKS</h2>
-            <p>Custom Layout v7.5 Active</p>
+    <!-- MOBILE NAVIGATION TOPBAR -->
+    <div class="mobile-topbar">
+        <div class="logo-area">
+            <h1>SHAKTI <span>MOBILE</span></h1>
+            <p>Trust • Quality • Service</p>
         </div>
-        <div class="status-pill">MOBILE SYNC</div>
+        <div class="time-box">
+            <strong id="m-date">10 Jun 2026</strong><br>
+            <span id="m-time" style="color:var(--text-muted)">02:33 PM</span>
+        </div>
     </div>
 
+    <!-- MAIN INTERACTIVE APP WRAPPER -->
     <div class="app-container">
 
-        <div class="csv-importer-box">
-            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Fast Sales Sheet Sync</h3>
-            <p>Flipkart / Amazon ki CSV file load karke automatic total karein</p>
-            <label for="hidden-csv-file" class="upload-touch-btn" id="lbl-file-trigger">
-                <i class="fa-solid fa-file-csv"></i> Upload Orders Report
-            </label>
-            <input type="file" id="hidden-csv-file">
-            <div id="parse-alert" style="font-size: 0.7rem; margin-top: 8px; font-weight: 600; color: var(--accent-green);"></div>
-        </div>
-
-        <div class="kpi-grid-layout">
-            <div class="kpi-tile tile-sales">
-                <div class="tile-lbl">Total Sales</div>
-                <div class="tile-val" id="kpi-sales" style="color:var(--accent-green)">₹0</div>
+        <!-- 2x2 GRID FOR KPI CARDS (No Clipping) -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Today's Sale</div>
+                <div class="kpi-value color-cyan" id="card-sale">₹0</div>
+                <div class="kpi-sub"><span id="card-orders">0</span> Orders</div>
             </div>
-            <div class="kpi-tile tile-orders">
-                <div class="tile-lbl">Total Orders</div>
-                <div class="tile-val" id="kpi-orders">0</div>
+            <div class="kpi-card">
+                <div class="kpi-title">Today's Profit</div>
+                <div class="kpi-value color-green" id="card-profit">₹0</div>
+                <div class="kpi-sub trend-up">Live Sync</div>
             </div>
-            <div class="kpi-tile tile-expense">
-                <div class="tile-lbl">Total Expense</div>
-                <div class="tile-val" id="kpi-expense" style="color:var(--accent-rose)">₹0</div>
+            <div class="kpi-card">
+                <div class="kpi-title">Month Sale</div>
+                <div class="kpi-value" id="card-m-sale">₹0</div>
+                <div class="kpi-sub">June 2026</div>
             </div>
-            <div class="kpi-tile tile-supplier">
-                <div class="tile-lbl">Supplier Payable</div>
-                <div class="tile-val" id="kpi-supplier" style="color:var(--accent-orange)">₹0</div>
+            <div class="kpi-card">
+                <div class="kpi-title">Month Profit</div>
+                <div class="kpi-value color-orange" id="card-m-profit">₹0</div>
+                <div class="kpi-sub">Margin Target</div>
             </div>
         </div>
 
-        <div class="custom-form-panel">
-            <div class="section-header" style="color:var(--accent-cyan); margin-bottom:8px;"><i class="fa-solid fa-cart-plus"></i> Add Sales Order</div>
-            <form id="form-sales" class="form-grid-stack" onsubmit="event.preventDefault(); addSalesEntry();">
-                <div class="input-group-block">
-                    <label>Platform/Marketplace</label>
-                    <select id="sales-platform" class="mobile-select">
-                        <option value="Flipkart">Flipkart</option>
-                        <option value="Amazon">Amazon</option>
-                        <option value="Meesho">Meesho</option>
-                    </select>
+        <!-- LINE/BAR CHART -->
+        <div class="section-card">
+            <div class="card-title">Profit Analytics (Last 6 Months)</div>
+            <div style="height: 160px; position: relative;">
+                <canvas id="mobileChart"></canvas>
+            </div>
+        </div>
+
+        <!-- DYNAMIC FILTER SYSTEM -->
+        <div class="section-card">
+            <div class="card-title">Select Filter Month</div>
+            <select class="form-control" id="month-selector-dropdown" style="background-color:#050814;">
+                <option value="2026-06" selected>June 2026</option>
+                <option value="2026-05">May 2026</option>
+            </select>
+            <div style="margin-top: 10px;">
+                <div class="month-stat-item"><span>Total Units Sold:</span> <strong id="lbl-total-qty">0</strong></div>
+                <div class="month-stat-item"><span>Total Capital Cost:</span> <strong id="lbl-total-cost">₹0</strong></div>
+            </div>
+        </div>
+
+        <!-- 100% WORKING ADD / UPDATE ENTRY FORM -->
+        <div class="section-card" style="border-color: rgba(112,0,255,0.25);">
+            <div class="card-title" id="form-header-title">Add New Sale</div>
+            <form id="mobile-sale-form" class="form-stack">
+                <!-- Hidden Index tracker input -->
+                <input type="hidden" id="edit-row-index" value="-1">
+
+                <div class="form-group">
+                    <label>Transaction Date</label>
+                    <input type="date" class="form-control" id="field-date" required>
                 </div>
-                <div class="input-group-block">
-                    <label>Product SKU / Details</label>
-                    <input type="text" id="sales-sku" class="mobile-input" placeholder="e.g. Nexus Fan Special" required>
+                <div class="form-group">
+                    <label>Product Model Name</label>
+                    <input type="text" class="form-control" id="field-name" placeholder="e.g. Lava Star 3" required>
                 </div>
-                <div class="input-group-block">
-                    <label>Invoice Value (₹)</label>
-                    <input type="number" id="sales-amt" class="mobile-input" placeholder="0" min="1" required>
+                <div class="form-group">
+                    <label>Quantity (Units)</label>
+                    <input type="number" class="form-control" id="field-qty" value="1" min="1" required>
                 </div>
-                <button type="submit" class="btn-submit-trigger">Save Sales Entry</button>
+                <div class="form-group">
+                    <label>Cost Price (Per Item ₹)</label>
+                    <input type="number" class="form-control" id="field-cost" placeholder="0" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Sale Price (Per Item ₹)</label>
+                    <input type="number" class="form-control" id="field-sale" placeholder="0" min="0" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btn-submit-action">Add Sale</button>
             </form>
         </div>
 
-        <div class="custom-form-panel" style="border-color: rgba(244, 63, 94, 0.2);">
-            <div class="section-header" style="color:var(--accent-rose); margin-bottom:8px;"><i class="fa-solid fa-wallet"></i> Expense Name & Cost</div>
-            <form id="form-expense" class="form-grid-stack" onsubmit="event.preventDefault(); addExpenseEntry();">
-                <div class="input-group-block">
-                    <label>Expense Name (Reason)</label>
-                    <input type="text" id="exp-name" class="mobile-input" placeholder="e.g. Office Rent, Petrol, Chai-Nashta" required>
-                </div>
-                <div class="input-group-block">
-                    <label>Expense Amount (₹)</label>
-                    <input type="number" id="exp-amt" class="mobile-input" placeholder="0" min="1" required>
-                </div>
-                <button type="submit" class="btn-submit-trigger expense-theme">Add Expense Log</button>
-            </form>
-        </div>
+        <!-- DYNAMIC DATA LOG HISTORY VIEW -->
+        <div class="section-card">
+            <div class="card-title">Sales History Log</div>
+            
+            <!-- Realtime filter box -->
+            <div class="search-box-wrapper">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="live-search-filter" placeholder="Search item model name...">
+            </div>
 
-        <div class="custom-form-panel" style="border-color: rgba(249, 115, 22, 0.2);">
-            <div class="section-header" style="color:var(--accent-orange); margin-bottom:8px;"><i class="fa-solid fa-truck-ramp-box"></i> Supplier Balance Ledger</div>
-            <form id="form-supplier" class="form-grid-stack" onsubmit="event.preventDefault(); addSupplierEntry();">
-                <div class="input-group-block">
-                    <label>Supplier Name</label>
-                    <input type="text" id="sup-name" class="mobile-input" placeholder="e.g. Balaji Corp, Laxmi Traders" required>
-                </div>
-                <div class="input-group-block">
-                    <label>Payable Amount (+ Bill Udhari)</label>
-                    <input type="number" id="sup-payable" class="mobile-input" placeholder="0" value="0">
-                </div>
-                <div class="input-group-block">
-                    <label>Received/Paid Amount (- Jama Diya)</label>
-                    <input type="number" id="sup-received" class="mobile-input" placeholder="0" value="0">
-                </div>
-                <button type="submit" class="btn-submit-trigger supplier-theme">Update Supplier Ledger</button>
-            </form>
-        </div>
-
-        <div class="ledger-box-panel">
-            <div class="section-header" style="margin-bottom:8px; color:var(--accent-cyan);"><i class="fa-solid fa-list-check"></i> Sales Ledger Logs</div>
-            <div class="table-scroll-frame">
-                <table class="ledger-data-grid">
+            <!-- Scrollable Table Box wrapper -->
+            <div class="table-container-mobile">
+                <table class="mobile-data-table">
                     <thead>
                         <tr>
-                            <th>Order ID</th>
-                            <th>Market</th>
-                            <th>SKU/Details</th>
-                            <th>Amount</th>
-                            <th style="text-align:center;">Action</th>
+                            <th>Date</th>
+                            <th>Product Name</th>
+                            <th>Qty</th>
+                            <th>Cost</th>
+                            <th>Sale</th>
+                            <th>Total Sale</th>
+                            <th>Profit</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-sales"></tbody>
+                    <tbody id="mobile-table-body-rows">
+                        <!-- Javascript row loops populate here dynamically -->
+                    </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="ledger-box-panel">
-            <div class="section-header" style="margin-bottom:8px; color:var(--accent-rose);"><i class="fa-solid fa-receipt"></i> Expense Ledger Logs</div>
-            <div class="table-scroll-frame">
-                <table class="ledger-data-grid">
-                    <thead>
-                        <tr>
-                            <th>Expense Name</th>
-                            <th>Cost Value</th>
-                            <th style="text-align:center;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-expenses"></tbody>
-                </table>
+        <!-- BOTTOM TOTAL FOOTER PANEL -->
+        <div class="bottom-summary-bar">
+            <div>
+                <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Overall Net Worth</p>
+                <h4 style="font-size:1.1rem; color:#fff;" id="lbl-grand-turnover">₹0</h4>
+            </div>
+            <div style="text-align:right;">
+                <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Net Margins</p>
+                <h4 style="font-size:1.1rem; color:var(--accent-green);" id="lbl-grand-profit">₹0</h4>
             </div>
         </div>
 
-        <div class="ledger-box-panel">
-            <div class="section-header" style="margin-bottom:8px; color:var(--accent-orange);"><i class="fa-solid fa-handshake"></i> Supplier Account Details</div>
-            <div class="table-scroll-frame">
-                <table class="ledger-data-grid">
-                    <thead>
-                        <tr>
-                            <th>Supplier Name</th>
-                            <th>Payable (+)</th>
-                            <th>Received (-)</th>
-                            <th>Final Due Balance</th>
-                            <th style="text-align:center;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-suppliers"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="footer-info">KDR AI Books v7.5 • Database Cached Securely</div>
     </div>
 
+    <!-- LOGIC APPLICATION CORE SCRIPT ENGINE -->
     <script>
-        // Data Arrays from LocalStorage or Defaults
-        let listSales = JSON.parse(localStorage.getItem('kdr_m_sales')) || [
-            { id: 'OD33779332', market: 'Flipkart', sku: 'KDR Nexus Fan', amount: 68750 }
+        // Default Dataset initialized exactly matching image metrics log entries
+        const coreBackupData = [
+            { date: '2026-06-10', name: 'Lava Star 3', qty: 3, cost: 8800, sale: 9400 },
+            { date: '2026-06-10', name: 'Samsung M16', qty: 2, cost: 12500, sale: 13999 },
+            { date: '2026-06-10', name: 'Realme Narzo 70', qty: 1, cost: 11000, sale: 12500 },
+            { date: '2026-06-10', name: 'Redmi 13C', qty: 4, cost: 7200, sale: 7999 }
         ];
 
-        let listExpenses = JSON.parse(localStorage.getItem('kdr_m_expenses')) || [
-            { name: 'Office Rent Charges', amount: 15000 }
-        ];
+        // Read LocalStorage state or fallback to default dataset
+        let appStateList = JSON.parse(localStorage.getItem('shakti_mobile_db')) || coreBackupData;
 
-        let listSuppliers = JSON.parse(localStorage.getItem('kdr_m_suppliers')) || [
-            { name: 'Balaji Paper Corp', payable: 25000, received: 10000, balance: 15000 }
-        ];
+        // Auto default input form date element box to standard system timestamp
+        document.getElementById('field-date').value = '2026-06-10';
 
-        function moneyFormat(num) {
-            return '₹' + Number(num).toLocaleString('en-IN');
+        // Localized INR formatting string function
+        function convertINR(amount) {
+            return '₹' + Number(amount).toLocaleString('en-IN');
         }
 
-        // CSV Automated Import Pipeline
-        document.getElementById('hidden-csv-file').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const platform = document.getElementById('sales-platform').value;
-            if(!file) return;
+        // Live core drawing view processing matrix
+        function refreshUiLayout(searchString = "") {
+            const tableBody = document.getElementById('mobile-table-body-rows');
+            tableBody.innerHTML = "";
 
-            document.getElementById('parse-alert').innerText = "Scanning Columns Matrix...";
+            let sumQty = 0, sumCost = 0, sumSale = 0, sumProfit = 0;
 
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(res) {
-                    let count = 0;
-                    res.data.forEach(row => {
-                        let amt = parseFloat(row['Total Amount'] || row['Final Value'] || row['Order Value'] || row['amount'] || row['price']);
-                        let orderId = row['Order ID'] || row['Sub Order Id'] || "ID-" + Math.floor(10000 + Math.random()*90000);
-                        let sku = row['Product Name'] || row['SKU ID'] || row['item_name'] || `Imported Item`;
+            // Perform string query matching calculations instantly
+            const workingSubset = appStateList.filter(row => 
+                row.name.toLowerCase().includes(searchString.toLowerCase())
+            );
 
-                        if(!isNaN(amt) && amt > 0) {
-                            listSales.unshift({ id: orderId, market: platform, sku: sku, amount: amt });
-                            count++;
-                        }
-                    });
-                    document.getElementById('parse-alert').innerText = `🎉 Loaded ${count} Orders via CSV!`;
-                    recalculateLedgerEngine();
-                }
+            workingSubset.forEach((item, index) => {
+                const totalItemCost = item.cost * item.qty;
+                const totalItemSale = item.sale * item.qty;
+                const calculatedProfit = totalItemSale - totalItemCost;
+
+                sumQty += Number(item.qty);
+                sumCost += totalItemCost;
+                sumSale += totalItemSale;
+                sumProfit += calculatedProfit;
+
+                // Format row dates nicely (dd/mm/yyyy)
+                const sDate = item.date.split('-');
+                const displayDate = sDate.length === 3 ? `${sDate[2]}/${sDate[1]}/${sDate[0]}` : item.date;
+
+                const trRow = document.createElement('tr');
+                trRow.innerHTML = `
+                    <td>${displayDate}</td>
+                    <td style="color:#fff; font-weight:500;">${item.name}</td>
+                    <td class="color-cyan">${item.qty}</td>
+                    <td>${convertINR(item.cost)}</td>
+                    <td>${convertINR(item.sale)}</td>
+                    <td class="color-cyan">${convertINR(totalItemSale)}</td>
+                    <td class="color-green">${convertINR(calculatedProfit)}</td>
+                    <td class="row-actions">
+                        <button class="color-cyan" onclick="actionEditRow(${index})" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="color-red" onclick="actionDeleteRow(${index})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tableBody.appendChild(trRow);
             });
+
+            if(workingSubset.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:20px;">No matching sales found.</td></tr>`;
+            }
+
+            // Sync dynamic calculated metrics with screen cards directly
+            document.getElementById('card-sale').innerText = convertINR(sumSale);
+            document.getElementById('card-profit').innerText = convertINR(sumProfit);
+            document.getElementById('card-orders').innerText = workingSubset.length;
+            document.getElementById('card-m-sale').innerText = convertINR(sumSale);
+            document.getElementById('card-m-profit').innerText = convertINR(sumProfit);
+
+            // Center card widgets stats assignment
+            document.getElementById('lbl-total-qty').innerText = sumQty;
+            document.getElementById('lbl-total-cost').innerText = convertINR(sumCost);
+            
+            // Bottom floating panel parameters calculation sync
+            document.getElementById('lbl-grand-turnover').innerText = convertINR(sumSale);
+            document.getElementById('lbl-grand-profit').innerText = convertINR(sumProfit);
+
+            // Flash values update directly inside global browser storage state
+            localStorage.setItem('shakti_mobile_db', JSON.stringify(appStateList));
+
+            // Sync chart update bars
+            mobileChart.data.datasets[0].data = [12450, 15800, 18200, 21000, 24500, sumProfit];
+            mobileChart.update();
+        }
+
+        // Form processing function loop handles logic routing securely
+        document.getElementById('mobile-sale-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const activeIndex = parseInt(document.getElementById('edit-row-index').value);
+            
+            const dynamicObject = {
+                date: document.getElementById('field-date').value,
+                name: document.getElementById('field-name').value,
+                qty: parseInt(document.getElementById('field-qty').value),
+                cost: parseFloat(document.getElementById('field-cost').value),
+                sale: parseFloat(document.getElementById('field-sale').value)
+            };
+
+            if(activeIndex === -1) {
+                // Creation flow
+                appStateList.push(dynamicObject);
+            } else {
+                // Modification updating flow path
+                appStateList[activeIndex] = dynamicObject;
+                document.getElementById('edit-row-index').value = "-1";
+                document.getElementById('form-header-title').innerText = "Add New Sale";
+                document.getElementById('btn-submit-action').innerText = "Add Sale";
+            }
+
+            refreshUiLayout();
+
+            // Clear inputs system reset sequence safely
+            document.getElementById('field-name').value = "";
+            document.getElementById('field-qty').value = "1";
+            document.getElementById('field-cost').value = "";
+            document.getElementById('field-sale').value = "";
         });
 
-        // Add Handlers
-        function addSalesEntry() {
-            const p = document.getElementById('sales-platform').value;
-            const sku = document.getElementById('sales-sku').value;
-            const amt = parseFloat(document.getElementById('sales-amt').value);
-
-            if(!isNaN(amt) && amt > 0) {
-                listSales.unshift({ id: 'TXN-'+Math.floor(10000+Math.random()*90000), market: p, sku: sku, amount: amt });
-                document.getElementById('sales-sku').value = '';
-                document.getElementById('sales-amt').value = '';
-                recalculateLedgerEngine();
+        // Interactive individual row entry delete protocol
+        function actionDeleteRow(targetIndex) {
+            if(confirm("Kya aap sach me ye sale record delete karna chahte hain?")) {
+                appStateList.splice(targetIndex, 1);
+                refreshUiLayout();
             }
         }
 
-        function addExpenseEntry() {
-            const name = document.getElementById('exp-name').value;
-            const amt = parseFloat(document.getElementById('exp-amt').value);
+        // Interactive item dataset load editing logic sequence trigger
+        function actionEditRow(targetIndex) {
+            const dataReference = appStateList[targetIndex];
+            document.getElementById('edit-row-index').value = targetIndex;
+            
+            document.getElementById('field-date').value = dataReference.date;
+            document.getElementById('field-name').value = dataReference.name;
+            document.getElementById('field-qty').value = dataReference.qty;
+            document.getElementById('field-cost').value = dataReference.cost;
+            document.getElementById('field-sale').value = dataReference.sale;
 
-            if(!isNaN(amt) && amt > 0) {
-                listExpenses.unshift({ name: name, amount: amt });
-                document.getElementById('exp-name').value = '';
-                document.getElementById('exp-amt').value = '';
-                recalculateLedgerEngine();
+            document.getElementById('form-header-title').innerText = "✏️ Update Entry Mode";
+            document.getElementById('btn-submit-action').innerText = "Save Updates";
+
+            // Scroll directly smoothly to input text field container boundary lines
+            document.getElementById('mobile-sale-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Setup text filtering event triggers linkage points
+        document.getElementById('live-search-filter').addEventListener('input', function(event) {
+            refreshUiLayout(event.target.value);
+        });
+
+        // Initialize Live Time clock functionality sequence tracking loop
+        setInterval(() => {
+            const timeDateObj = new Date();
+            document.getElementById('m-date').innerText = timeDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            document.getElementById('m-time').innerText = timeDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }, 1000);
+
+        // Chart setup script initialization execution loop path
+        const renderingCanvasCtx = document.getElementById('mobileChart').getContext('2d');
+        const mobileChart = new Chart(renderingCanvasCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    data: [12450, 15800, 18200, 21000, 24500, 0],
+                    backgroundColor: ['#00b4d8', '#0077b6', '#00e676', '#ffcc00', '#ff9100', '#7000ff'],
+                    borderRadius: 5,
+                    barPercentage: 0.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8492a6', font: { size: 9 } } },
+                    x: { grid: { display: false }, ticks: { color: '#8492a6', font: { size: 9 } } }
+                }
             }
-        }
+        });
 
-        function addSupplierEntry() {
-            const name = document.getElementById('sup-name').value;
-            const payable = parseFloat(document.getElementById('sup-payable').value) || 0;
-            const received = parseFloat(document.getElementById('sup-received').value) || 0;
-
-            // Auto Calculations: Balance = Payable - Received
-            const computedBalance = payable - received;
-
-            listSuppliers.unshift({
-                name: name,
-                payable: payable,
-                received: received,
-                balance: computedBalance
-            });
-
-            document.getElementById('sup-name').value = '';
-            document.getElementById('sup-payable').value = '0';
-            document.getElementById('sup-received').value = '0';
-            recalculateLedgerEngine();
-        }
-
-        // Deletion Commands
-        function delSales(i) { if(confirm("Delete sales log?")) { listSales.splice(i,1); recalculateLedgerEngine(); } }
-        function delExpense(i) { if(confirm("Delete expense log?")) { listExpenses.splice(i,1); recalculateLedgerEngine(); } }
-        function delSupplier(i) { if(confirm("Delete supplier log?")) { listSuppliers.splice(i,1); recalculateLedgerEngine(); } }
-
-        // Master Calculations Engine
-        function recalculateLedgerEngine() {
-            // 1. Process Sales Table
-            const tSales = document.getElementById('tbody-sales');
-            tSales.innerHTML = '';
-            let grossSales = 0;
-            listSales.forEach((item, i) => {
-                grossSales += Number(item.amount);
-                let badgeClr = item.market === 'Flipkart' ? '#2874f0' : (item.market === 'Amazon' ? '#ff9900' : '#f43397');
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="font-family:'JetBrains Mono'; font-size:0.65rem;">${item.id}</td>
-                    <td><span class="badge-pill" style="background-color:${badgeClr}">${item.market}</span></td>
-                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.sku}</td>
-                    <td style="color:var(--accent-cyan); font-weight:700;">${moneyFormat(item.amount)}</td>
-                    <td style="text-align:center;"><button class="btn-row-delete" onclick="delSales(${i})"><i class="fa-solid fa-trash-can"></i></button></td>
-                `;
-                tSales.appendChild(tr);
-            });
-
-            // 2. Process Expenses Table
-            const tExpenses = document.getElementById('tbody-expenses');
-            tExpenses.innerHTML = '';
-            let grossExpenses = 0;
-            listExpenses.forEach((item, i) => {
-                grossExpenses += Number(item.amount);
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="font-weight:500;">${item.name}</td>
-                    <td style="color:var(--accent-rose); font-weight:700;">${moneyFormat(item.amount)}</td>
-                    <td style="text-align:center;"><button class="btn-row-delete" onclick="delExpense(${i})"><i class="fa-solid fa-trash-can"></i></button></td>
-                `;
-                tExpenses.appendChild(tr);
-            });
-
-            // 3. Process Supplier Khata (Dynamic Minus)
-            const tSuppliers = document.getElementById('tbody-suppliers');
-            tSuppliers.innerHTML = '';
-            let netSupplierDue = 0;
-            listSuppliers.forEach((item, i) => {
-                netSupplierDue += Number(item.balance);
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="font-weight:500; color:#fff;">${item.name}</td>
-                    <td style="color:var(--accent-orange); font-weight:600;">+ ${moneyFormat(item.payable)}</td>
-                    <td style="color:var(--accent-green); font-weight:600;">- ${moneyFormat(item.received)}</td>
-                    <td style="color:white; font-weight:700; background:rgba(255,255,255,0.03);">${moneyFormat(item.balance)}</td>
-                    <td style="text-align:center;"><button class="btn-row-delete" onclick="delSupplier(${i})"><i class="fa-solid fa-trash-can"></i></button></td>
-                `;
-                tSuppliers.appendChild(tr);
-            });
-
-            // Sync Main Counters
-            document.getElementById('kpi-sales').innerText = moneyFormat(grossSales);
-            document.getElementById('kpi-orders').innerText = listSales.length;
-            document.getElementById('kpi-expense').innerText = moneyFormat(grossExpenses);
-            document.getElementById('kpi-supplier').innerText = moneyFormat(netSupplierDue);
-
-            // Sync Local Cache Storage
-            localStorage.setItem('kdr_m_sales', JSON.stringify(listSales));
-            localStorage.setItem('kdr_m_expenses', JSON.stringify(listExpenses));
-            localStorage.setItem('kdr_m_suppliers', JSON.stringify(listSuppliers));
-        }
-
-        // Mobile Touch Response Linker
-        const lblRef = document.getElementById('lbl-file-trigger');
-        const fileRef = document.getElementById('hidden-csv-file');
-        lblRef.addEventListener('click', (e) => { e.preventDefault(); fileRef.click(); });
-        lblRef.addEventListener('touchstart', (e) => { e.preventDefault(); fileRef.click(); });
-
-        // Init System Boot
-        recalculateLedgerEngine();
+        // Load initial state database records execution draw layout routine command
+        refreshUiLayout();
     </script>
 </body>
 </html>
