@@ -2,591 +2,489 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shakti Mobile - Mobile First Dashboard</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KDR AI BOOKS - Ultra Ledger Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
         :root {
-            --bg-dark: #070b19;
-            --bg-card: #0d142c;
-            --topbar-bg: #050814;
-            --text-main: #ffffff;
-            --text-muted: #8492a6;
-            --accent-purple: #7000ff;
-            --accent-blue: #00b4d8;
-            --accent-green: #00e676;
-            --accent-orange: #ff9100;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --neon-glow: 0 0 15px rgba(112, 0, 255, 0.3);
+            --bg-body-dark: #070a13;
+            --bg-sidebar-dark: #0d121f;
+            --bg-card-dark: #121826;
+            --border-standard: rgba(255, 255, 255, 0.05);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #38bdf8;
+            --accent-green: #10b981;
+            --accent-orange: #f97316;
+            --accent-purple: #a855f7;
+            --accent-rose: #f43f5e;
+            
+            --brand-flipkart: #2874f0;
+            --brand-amazon: #ff9900;
+            --brand-meesho: #f43397;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-user-select: none; user-select: none; }
+        body { background-color: var(--bg-body-dark); color: var(--text-primary); min-height: 100vh; width: 100vw; overflow-x: hidden; padding-bottom: 40px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding-bottom: 30px; /* Bottom space for mobile scrolling */
-        }
+        /* TOPBAR */
+        .mobile-topbar-wrapper { background-color: var(--bg-sidebar-dark); border-bottom: 1px solid var(--border-standard); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; height: 60px; }
+        .brand-node-wrap { display: flex; align-items: center; gap: 10px; }
+        .brand-logo-cube { background: linear-gradient(135deg, #0284c7, #0369a1); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; }
+        .brand-text h2 { font-size: 0.95rem; font-weight: 700; color: white; }
+        .brand-text p { font-size: 0.6rem; color: var(--text-muted); }
+        .system-pill-node { background: rgba(56,189,248,0.1); color: var(--accent-cyan); padding: 5px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; }
 
-        /* --- MOBILE TOP NAVIGATION BAR --- */
-        .mobile-topbar {
-            background-color: var(--topbar-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        .app-scroller-view-deck { padding: 14px; display: flex; flex-direction: column; gap: 16px; width: 100%; }
 
-        .logo-area h1 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .logo-area h1 span { color: var(--accent-purple); }
-        .logo-area p { font-size: 0.6rem; color: #d4af37; text-transform: uppercase; }
+        /* SMART IMPORTER */
+        .sheet-importer-touch-card { background: linear-gradient(135deg, #131d35, #121826); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 16px; text-align: center; }
+        .sheet-importer-touch-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; }
+        .sheet-importer-touch-card p { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 14px; }
+        .importer-flex-controls { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .mobile-select-element, .mobile-input-element { background-color: var(--bg-body-dark); color: white; border: 1px solid var(--border-standard); padding: 14px; border-radius: 8px; font-size: 0.85rem; outline: none; width: 100%; display: block; }
+        .mobile-touch-upload-label { background-color: #0284c7; color: white; padding: 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; }
+        #hidden-file-input-field { display: none !important; }
 
-        .time-box {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            text-align: right;
-            line-height: 1.2;
-        }
+        /* KPI TILES */
+        .kpi-vertical-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .kpi-card-tile { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 10px; padding: 14px; position: relative; }
+        .kpi-card-tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+        .tile-ord::before { background-color: var(--accent-cyan); }
+        .tile-sal::before { background-color: var(--accent-green); }
+        .tile-exp::before { background-color: var(--accent-rose); }
+        .tile-sup::before { background-color: var(--accent-orange); }
+        .tile-meta-lbl { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
+        .tile-numeric-val { font-size: 1.25rem; font-weight: 700; margin-top: 6px; color: white; }
 
-        /* --- CONTAINER --- */
-        .app-container {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        /* CHANNELS PROGRESS BARS */
+        .section-header-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-top: 5px; display: flex; align-items: center; gap: 6px; }
+        .channels-vertical-stack { display: flex; flex-direction: column; gap: 10px; }
+        .channel-horizontal-strip { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .channel-strip-header-row { display: flex; justify-content: space-between; align-items: center; }
+        .channel-meta-brand-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: white; }
+        .channel-logo-avatar { width: 18px; height: 18px; border-radius: 3px; background: white; object-fit: cover; }
+        .channel-strip-amount-lbl { font-size: 1.05rem; font-weight: 700; color: white; }
+        .channel-progress-track { width: 100%; height: 4px; background-color: rgba(255,255,255,0.04); border-radius: 2px; overflow: hidden; }
+        .channel-progress-fill-line { height: 100%; width: 0%; transition: width 0.3s ease; }
+        .channel-strip-pct-lbl { font-size: 0.65rem; color: var(--text-muted); text-align: right; }
 
-        /* --- RESPONSIVE KPI CARDS GRID (2 Columns on Mobile) --- */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        /* FORMS CONTAINER */
+        .form-panel-container { background-color: var(--bg-card-dark); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 16px; }
+        .form-fields-vertical-stack { display: flex; flex-direction: column; gap: 12px; }
+        .form-input-node-block { display: flex; flex-direction: column; gap: 5px; }
+        .form-input-node-block label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
+        .btn-touch-submit-trigger { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; width: 100%; text-transform: uppercase; cursor: pointer; }
+        .btn-touch-submit-trigger.expense-btn { background: linear-gradient(135deg, #b91c1c, #991b1b); }
+        .btn-touch-submit-trigger.supplier-btn { background: linear-gradient(135deg, #c2410c, #9a3412); }
 
-        .kpi-card {
-            background: linear-gradient(135deg, #0d1532, #070c1e);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 95px;
-        }
+        /* TABLES & LEDGERS */
+        .master-ledger-card-panel { background-color: var(--bg-card-dark); border: 1px solid var(--border-standard); border-radius: 12px; padding: 14px; }
+        .search-mechanism-input-wrap { position: relative; margin-bottom: 12px; }
+        .search-mechanism-input-wrap input { width: 100%; background-color: var(--bg-body-dark); border: 1px solid var(--border-standard); border-radius: 8px; padding: 12px 12px 12px 35px; color: white; outline: none; font-size: 0.8rem; }
+        .search-mechanism-input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; }
+        .mobile-table-scroll-container-frame { overflow-x: auto; width: 100%; border-radius: 6px; border: 1px solid var(--border-standard); background-color: rgba(0,0,0,0.1); max-height: 250px; }
+        .mobile-master-ledger-data-grid { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem; min-width: 400px; }
+        .mobile-master-ledger-data-grid th { color: var(--text-secondary); background: #0f1423; padding: 12px 10px; font-weight: 600; text-transform: uppercase; font-size: 0.65rem; border-bottom: 1px solid var(--border-standard); position: sticky; top: 0; }
+        .mobile-master-ledger-data-grid td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #fff; }
+        .platform-badge-pill { padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; color: white; text-transform: uppercase; }
+        .btn-touch-action-row-delete { background: transparent; border: none; color: var(--accent-rose); padding: 6px 10px; font-size: 0.9rem; cursor: pointer; }
 
-        .kpi-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 500; }
-        .kpi-value { font-size: 1.2rem; font-weight: 700; margin: 4px 0; }
-        .kpi-sub { font-size: 0.65rem; color: var(--text-muted); }
-        .trend-up { color: var(--accent-green); }
-
-        /* --- SECTION CARDS --- */
-        .section-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .card-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            color: var(--text-main);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* --- FORMS (Mobile optimized vertical stack) --- */
-        .form-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
-        
-        .form-control {
-            background-color: #050814;
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            outline: none;
-            font-size: 0.85rem;
-            width: 100%;
-        }
-
-        .form-control:focus { border-color: var(--accent-purple); }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--accent-purple), #5000b8);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            box-shadow: var(--neon-glow);
-            text-transform: uppercase;
-        }
-
-        /* --- SUMMARY BLOCK --- */
-        .month-stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.8rem;
-        }
-
-        /* --- SEARCH BAR --- */
-        .search-box-wrapper {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-box-wrapper input {
-            width: 100%;
-            background-color: #050814;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px 12px 10px 35px;
-            color: white;
-            outline: none;
-            font-size: 0.8rem;
-        }
-
-        .search-box-wrapper i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        /* --- MOBILE TABLE SYSTEM (Horizontal scrollable with min-width safety) --- */
-        .table-container-mobile {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 8px;
-            background-color: #050814;
-        }
-
-        .mobile-data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.75rem;
-            min-width: 620px; /* safe grid preventing layout squeezing */
-        }
-
-        .mobile-data-table th {
-            color: var(--text-muted);
-            padding: 10px;
-            background-color: rgba(255,255,255,0.02);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .mobile-data-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* Row Action buttons layout */
-        .row-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .row-actions button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .color-cyan { color: #00b4d8; }
-        .color-green { color: #00e676; }
-        .color-orange { color: #ff9100; }
-        .color-red { color: #ff4d4d; }
-
-        /* Lifetime Stats Card at Bottom */
-        .bottom-summary-bar {
-            background: linear-gradient(90deg, #0c122c, #050814);
-            border: 1px solid rgba(112,0,255,0.2);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .persistent-system-footer-panel { background-color: var(--bg-sidebar-dark); border-top: 1px solid var(--border-standard); padding: 12px; font-size: 0.7rem; color: var(--text-muted); text-align: center; }
     </style>
 </head>
 <body>
 
-    <!-- MOBILE NAVIGATION TOPBAR -->
-    <div class="mobile-topbar">
-        <div class="logo-area">
-            <h1>SHAKTI <span>MOBILE</span></h1>
-            <p>Trust • Quality • Service</p>
+    <div class="mobile-topbar-wrapper">
+        <div class="brand-node-wrap">
+            <div class="brand-logo-cube"><i class="fa-solid fa-calculator"></i></div>
+            <div class="brand-text">
+                <h2>KDR AI BOOKS</h2>
+                <p>Multi-Ledger Sync Enabled</p>
+            </div>
         </div>
-        <div class="time-box">
-            <strong id="m-date">10 Jun 2026</strong><br>
-            <span id="m-time" style="color:var(--text-muted)">02:33 PM</span>
-        </div>
+        <div class="system-pill-node">SECURE V7.0</div>
     </div>
 
-    <!-- MAIN INTERACTIVE APP WRAPPER -->
-    <div class="app-container">
+    <div class="app-scroller-view-deck">
 
-        <!-- 2x2 GRID FOR KPI CARDS (No Clipping) -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-title">Today's Sale</div>
-                <div class="kpi-value color-cyan" id="card-sale">₹0</div>
-                <div class="kpi-sub"><span id="card-orders">0</span> Orders</div>
+        <div class="sheet-importer-touch-card">
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Smart Sales Sync</h3>
+            <p>Flipkart, Amazon ya Meesho ki CSV report upload karein</p>
+            <div class="importer-flex-controls">
+                <select id="import-dropdown-platform-selector" class="mobile-select-element">
+                    <option value="Flipkart">Flipkart Report</option>
+                    <option value="Amazon">Amazon Report</option>
+                    <option value="Meesho">Meesho Report</option>
+                </select>
+                <label for="hidden-file-input-field" class="mobile-touch-upload-label" id="lbl-touch-file-trigger">
+                    <i class="fa-solid fa-file-csv"></i> Select Sales CSV File
+                </label>
+                <input type="file" id="hidden-file-input-field">
             </div>
-            <div class="kpi-card">
-                <div class="kpi-title">Today's Profit</div>
-                <div class="kpi-value color-green" id="card-profit">₹0</div>
-                <div class="kpi-sub trend-up">Live Sync</div>
+            <div id="parse-output-status-alert" style="font-size: 0.75rem; margin-top: 12px; font-weight: 600; color: var(--accent-green);"></div>
+        </div>
+
+        <div class="kpi-vertical-grid-layout">
+            <div class="kpi-card-tile tile-ord">
+                <div class="tile-meta-lbl">Total Orders</div>
+                <div class="tile-numeric-val" id="kpi-orders-count">0</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-title">Month Sale</div>
-                <div class="kpi-value" id="card-m-sale">₹0</div>
-                <div class="kpi-sub">June 2026</div>
+            <div class="kpi-card-tile tile-sal">
+                <div class="tile-meta-lbl">Sales Revenue</div>
+                <div class="tile-numeric-val" id="kpi-sales-amt" style="color:var(--accent-green)">₹0</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-title">Month Profit</div>
-                <div class="kpi-value color-orange" id="card-m-profit">₹0</div>
-                <div class="kpi-sub">Margin Target</div>
+            <div class="kpi-card-tile tile-exp">
+                <div class="tile-meta-lbl">Total Expenses</div>
+                <div class="tile-numeric-val" id="kpi-expense-amt" style="color:var(--accent-rose)">₹0</div>
+            </div>
+            <div class="kpi-card-tile tile-sup">
+                <div class="tile-meta-lbl">Supplier Payable</div>
+                <div class="tile-numeric-val" id="kpi-supplier-amt" style="color:var(--accent-orange)">₹0</div>
             </div>
         </div>
 
-        <!-- LINE/BAR CHART -->
-        <div class="section-card">
-            <div class="card-title">Profit Analytics (Last 6 Months)</div>
-            <div style="height: 160px; position: relative;">
-                <canvas id="mobileChart"></canvas>
+        <div class="section-header-title"><i class="fa-solid fa-chart-pie"></i> Marketplace Channel Split</div>
+        <div class="channels-vertical-stack">
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><img src="https://cb-thumbnails.s3.ap-south-1.amazonaws.com/flipkart_logo.png" class="channel-logo-avatar" alt="FK"> Flipkart</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-flipkart">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-flipkart" class="channel-progress-fill-line" style="background-color: var(--brand-flipkart);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-flipkart">0% weight</div>
+            </div>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" class="channel-logo-avatar" alt="AMZ"> Amazon</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-amazon">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-amazon" class="channel-progress-fill-line" style="background-color: var(--brand-amazon);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-amazon">0% weight</div>
+            </div>
+            <div class="channel-horizontal-strip">
+                <div class="channel-strip-header-row">
+                    <div class="channel-meta-brand-wrap"><img src="https://cdn.iconscout.com/icon/free/png-256/free-meesho-logo-icon-download-in-svg-png-gif-formats--brand-social-media-pack-logos-icons-1785501.png?f=webp" class="channel-logo-avatar" alt="MS"> Meesho</div>
+                    <div class="channel-strip-amount-lbl" id="strip-val-meesho">₹0</div>
+                </div>
+                <div class="channel-progress-track"><div id="strip-bar-meesho" class="channel-progress-fill-line" style="background-color: var(--brand-meesho);"></div></div>
+                <div class="channel-strip-pct-lbl" id="strip-pct-meesho">0% weight</div>
             </div>
         </div>
 
-        <!-- DYNAMIC FILTER SYSTEM -->
-        <div class="section-card">
-            <div class="card-title">Select Filter Month</div>
-            <select class="form-control" id="month-selector-dropdown" style="background-color:#050814;">
-                <option value="2026-06" selected>June 2026</option>
-                <option value="2026-05">May 2026</option>
-            </select>
-            <div style="margin-top: 10px;">
-                <div class="month-stat-item"><span>Total Units Sold:</span> <strong id="lbl-total-qty">0</strong></div>
-                <div class="month-stat-item"><span>Total Capital Cost:</span> <strong id="lbl-total-cost">₹0</strong></div>
-            </div>
-        </div>
-
-        <!-- 100% WORKING ADD / UPDATE ENTRY FORM -->
-        <div class="section-card" style="border-color: rgba(112,0,255,0.25);">
-            <div class="card-title" id="form-header-title">Add New Sale</div>
-            <form id="mobile-sale-form" class="form-stack">
-                <!-- Hidden Index tracker input -->
-                <input type="hidden" id="edit-row-index" value="-1">
-
-                <div class="form-group">
-                    <label>Transaction Date</label>
-                    <input type="date" class="form-control" id="field-date" required>
+        <div class="form-panel-container">
+            <div class="section-header-title" style="color:var(--accent-cyan); margin-bottom:10px;"><i class="fa-solid fa-plus"></i> Add Direct Sales Order</div>
+            <form id="sales-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); insertSalesOrder();">
+                <div class="form-input-node-block">
+                    <label>Platform Channel</label>
+                    <select id="sales-channel" class="mobile-select-element">
+                        <option value="Flipkart">Flipkart</option>
+                        <option value="Amazon">Amazon</option>
+                        <option value="Meesho">Meesho</option>
+                    </select>
                 </div>
-                <div class="form-group">
-                    <label>Product Model Name</label>
-                    <input type="text" class="form-control" id="field-name" placeholder="e.g. Lava Star 3" required>
+                <div class="form-input-node-block">
+                    <label>Product SKU / Description</label>
+                    <input type="text" id="sales-sku" class="mobile-input-element" placeholder="e.g. Premium Watch Pack" required>
                 </div>
-                <div class="form-group">
-                    <label>Quantity (Units)</label>
-                    <input type="number" class="form-control" id="field-qty" value="1" min="1" required>
+                <div class="form-input-node-block">
+                    <label>Order Value (₹)</label>
+                    <input type="number" id="sales-amount" class="mobile-input-element" placeholder="0" min="1" required>
                 </div>
-                <div class="form-group">
-                    <label>Cost Price (Per Item ₹)</label>
-                    <input type="number" class="form-control" id="field-cost" placeholder="0" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Sale Price (Per Item ₹)</label>
-                    <input type="number" class="form-control" id="field-sale" placeholder="0" min="0" required>
-                </div>
-                <button type="submit" class="btn-submit" id="btn-submit-action">Add Sale</button>
+                <button type="submit" class="btn-touch-submit-trigger">Sync Sales Order</button>
             </form>
         </div>
 
-        <!-- DYNAMIC DATA LOG HISTORY VIEW -->
-        <div class="section-card">
-            <div class="card-title">Sales History Log</div>
-            
-            <!-- Realtime filter box -->
-            <div class="search-box-wrapper">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="live-search-filter" placeholder="Search item model name...">
-            </div>
+        <div class="form-panel-container" style="border-color: rgba(244, 63, 94, 0.2);">
+            <div class="section-header-title" style="color:var(--accent-rose); margin-bottom:10px;"><i class="fa-solid fa-wallet"></i> Add Company Expense</div>
+            <form id="expense-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); insertExpenseRow();">
+                <div class="form-input-node-block">
+                    <label>Expense Name / Reason</label>
+                    <input type="text" id="exp-name" class="mobile-input-element" placeholder="e.g. Office Rent, Advertisement, Packing Box" required>
+                </div>
+                <div class="form-input-node-block">
+                    <label>Expense Cost Amount (₹)</label>
+                    <input type="number" id="exp-amount" class="mobile-input-element" placeholder="0" min="1" required>
+                </div>
+                <button type="submit" class="btn-touch-submit-trigger expense-btn">Book Expense Log</button>
+            </form>
+        </div>
 
-            <!-- Scrollable Table Box wrapper -->
-            <div class="table-container-mobile">
-                <table class="mobile-data-table">
+        <div class="form-panel-container" style="border-color: rgba(249, 115, 22, 0.2);">
+            <div class="section-header-title" style="color:var(--accent-orange); margin-bottom:10px;"><i class="fa-solid fa-truck-ramp-box"></i> Supplier Payable Ledger</div>
+            <form id="supplier-form" class="form-fields-vertical-stack" onsubmit="event.preventDefault(); insertSupplierRow();">
+                <div class="form-input-node-block">
+                    <label>Supplier Name</label>
+                    <input type="text" id="sup-name" class="mobile-input-element" placeholder="e.g. Laxmi Fabrics, Balaji Traders" required>
+                </div>
+                <div class="form-input-node-block">
+                    <label>Transaction Type</label>
+                    <select id="sup-type" class="mobile-select-element">
+                        <option value="Bill">New Pending Bill (Udhari Jodein +)</option>
+                        <option value="Pay">Jama Kiya Amount (Udhari Minus -)</option>
+                    </select>
+                </div>
+                <div class="form-input-node-block">
+                    <label>Transaction Amount (₹)</label>
+                    <input type="number" id="sup-amount" class="mobile-input-element" placeholder="0" min="1" required>
+                </div>
+                <button type="submit" class="btn-touch-submit-trigger supplier-btn">Update Supplier Balance</button>
+            </form>
+        </div>
+
+        <div class="master-ledger-card-panel">
+            <div class="section-header-title" style="margin-bottom:10px; color:var(--accent-cyan);"><i class="fa-solid fa-list"></i> Sales Consolidated Ledger</div>
+            <div class="mobile-table-scroll-container-frame">
+                <table class="mobile-master-ledger-data-grid">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Product Name</th>
-                            <th>Qty</th>
-                            <th>Cost</th>
-                            <th>Sale</th>
-                            <th>Total Sale</th>
-                            <th>Profit</th>
-                            <th>Action</th>
+                            <th>Order ID</th>
+                            <th>Market</th>
+                            <th>SKU Description</th>
+                            <th>Amount</th>
+                            <th style="text-align:center;">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="mobile-table-body-rows">
-                        <!-- Javascript row loops populate here dynamically -->
-                    </tbody>
+                    <tbody id="sales-tbody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- BOTTOM TOTAL FOOTER PANEL -->
-        <div class="bottom-summary-bar">
-            <div>
-                <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Overall Net Worth</p>
-                <h4 style="font-size:1.1rem; color:#fff;" id="lbl-grand-turnover">₹0</h4>
+        <div class="master-ledger-card-panel">
+            <div class="section-header-title" style="margin-bottom:10px; color:var(--accent-rose);"><i class="fa-solid fa-receipt"></i> Company Expenses Log</div>
+            <div class="mobile-table-scroll-container-frame">
+                <table class="mobile-master-ledger-data-grid">
+                    <thead>
+                        <tr>
+                            <th>Expense Title Head</th>
+                            <th>Cost Value</th>
+                            <th style="text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expense-tbody"></tbody>
+                </table>
             </div>
-            <div style="text-align:right;">
-                <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Net Margins</p>
-                <h4 style="font-size:1.1rem; color:var(--accent-green);" id="lbl-grand-profit">₹0</h4>
+        </div>
+
+        <div class="master-ledger-card-panel">
+            <div class="section-header-title" style="margin-bottom:10px; color:var(--accent-orange);"><i class="fa-solid fa-handshake"></i> Supplier Khata Ledger</div>
+            <div class="mobile-table-scroll-container-frame">
+                <table class="mobile-master-ledger-data-grid">
+                    <thead>
+                        <tr>
+                            <th>Supplier Name</th>
+                            <th>Type</th>
+                            <th>Amount Traced</th>
+                            <th style="text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplier-tbody"></tbody>
+                </table>
             </div>
         </div>
 
     </div>
 
-    <!-- LOGIC APPLICATION CORE SCRIPT ENGINE -->
+    <div class="persistent-system-footer-panel">
+        KDR AI Books Engine • Local Browser Encryption Active
+    </div>
+
     <script>
-        // Default Dataset initialized exactly matching image metrics log entries
-        const coreBackupData = [
-            { date: '2026-06-10', name: 'Lava Star 3', qty: 3, cost: 8800, sale: 9400 },
-            { date: '2026-06-10', name: 'Samsung M16', qty: 2, cost: 12500, sale: 13999 },
-            { date: '2026-06-10', name: 'Realme Narzo 70', qty: 1, cost: 11000, sale: 12500 },
-            { date: '2026-06-10', name: 'Redmi 13C', qty: 4, cost: 7200, sale: 7999 }
+        // Separate Database Lists Array Modules
+        let dbSales = JSON.parse(localStorage.getItem('kdr_v7_sales')) || [
+            { id: 'OD3377933255', channel: 'Flipkart', sku: 'KDR Nexus Fan Silent', amount: 68750 },
+            { id: 'AMZ-90432104', channel: 'Amazon', sku: 'KDR Hand Wash Premium', amount: 125430 }
         ];
 
-        // Read LocalStorage state or fallback to default dataset
-        let appStateList = JSON.parse(localStorage.getItem('shakti_mobile_db')) || coreBackupData;
+        let dbExpenses = JSON.parse(localStorage.getItem('kdr_v7_expenses')) || [
+            { name: 'Office Room Rent Charges', amount: 15000 },
+            { name: 'Cardboard Packing Material Box Bulk', amount: 4500 }
+        ];
 
-        // Auto default input form date element box to standard system timestamp
-        document.getElementById('field-date').value = '2026-06-10';
+        let dbSuppliers = JSON.parse(localStorage.getItem('kdr_v7_suppliers')) || [
+            { name: 'Balaji Paper Mill Corp', type: 'Bill', amount: 25000 },
+            { name: 'Balaji Paper Mill Corp', type: 'Pay', amount: 10000 } // This will act as minus (-) dynamically
+        ];
 
-        // Localized INR formatting string function
-        function convertINR(amount) {
-            return '₹' + Number(amount).toLocaleString('en-IN');
+        function formatINR(val) {
+            return '₹' + Number(val).toLocaleString('en-IN');
         }
 
-        // Live core drawing view processing matrix
-        function refreshUiLayout(searchString = "") {
-            const tableBody = document.getElementById('mobile-table-body-rows');
-            tableBody.innerHTML = "";
+        // CSV Automated File Reader Pipeline Integration
+        document.getElementById('hidden-file-input-field').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const activeMarket = document.getElementById('import-dropdown-platform-selector').value;
+            if(!file) return;
 
-            let sumQty = 0, sumCost = 0, sumSale = 0, sumProfit = 0;
+            document.getElementById('parse-output-status-alert').innerText = "Parsing Data Columns Matrix...";
 
-            // Perform string query matching calculations instantly
-            const workingSubset = appStateList.filter(row => 
-                row.name.toLowerCase().includes(searchString.toLowerCase())
-            );
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(res) {
+                    let count = 0;
+                    res.data.forEach(row => {
+                        let amt = parseFloat(row['Total Amount'] || row['Final Value'] || row['Order Value'] || row['amount'] || row['price']);
+                        let orderId = row['Order ID'] || row['Sub Order Id'] || "ID-" + Math.floor(10000 + Math.random()*90000);
+                        let sku = row['Product Name'] || row['SKU ID'] || row['item_name'] || `${activeMarket} Imported Item`;
 
-            workingSubset.forEach((item, index) => {
-                const totalItemCost = item.cost * item.qty;
-                const totalItemSale = item.sale * item.qty;
-                const calculatedProfit = totalItemSale - totalItemCost;
+                        if(!isNaN(amt) && amt > 0) {
+                            dbSales.unshift({ id: orderId, channel: activeMarket, sku: sku, amount: amt });
+                            count++;
+                        }
+                    });
+                    document.getElementById('parse-output-status-alert').innerText = `🎉 Loaded ${count} Orders via Sheet!`;
+                    syncMasterCoreEngine();
+                }
+            });
+        });
 
-                sumQty += Number(item.qty);
-                sumCost += totalItemCost;
-                sumSale += totalItemSale;
-                sumProfit += calculatedProfit;
+        // Insertion Functions
+        function insertSalesOrder() {
+            const ch = document.getElementById('sales-channel').value;
+            const sku = document.getElementById('sales-sku').value;
+            const amt = parseFloat(document.getElementById('sales-amount').value);
 
-                // Format row dates nicely (dd/mm/yyyy)
-                const sDate = item.date.split('-');
-                const displayDate = sDate.length === 3 ? `${sDate[2]}/${sDate[1]}/${sDate[0]}` : item.date;
+            if(!isNaN(amt) && amt > 0) {
+                dbSales.unshift({ id: 'TXN-'+Math.floor(100000+Math.random()*900000), channel: ch, sku: sku, amount: amt });
+                document.getElementById('sales-sku').value = '';
+                document.getElementById('sales-amount').value = '';
+                syncMasterCoreEngine();
+            }
+        }
 
-                const trRow = document.createElement('tr');
-                trRow.innerHTML = `
-                    <td>${displayDate}</td>
-                    <td style="color:#fff; font-weight:500;">${item.name}</td>
-                    <td class="color-cyan">${item.qty}</td>
-                    <td>${convertINR(item.cost)}</td>
-                    <td>${convertINR(item.sale)}</td>
-                    <td class="color-cyan">${convertINR(totalItemSale)}</td>
-                    <td class="color-green">${convertINR(calculatedProfit)}</td>
-                    <td class="row-actions">
-                        <button class="color-cyan" onclick="actionEditRow(${index})" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="color-red" onclick="actionDeleteRow(${index})" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                    </td>
+        function insertExpenseRow() {
+            const name = document.getElementById('exp-name').value;
+            const amt = parseFloat(document.getElementById('exp-amount').value);
+
+            if(!isNaN(amt) && amt > 0) {
+                dbExpenses.unshift({ name: name, amount: amt });
+                document.getElementById('exp-name').value = '';
+                document.getElementById('exp-amount').value = '';
+                syncMasterCoreEngine();
+            }
+        }
+
+        function insertSupplierRow() {
+            const name = document.getElementById('sup-name').value;
+            const type = document.getElementById('sup-type').value;
+            const amt = parseFloat(document.getElementById('sup-amount').value);
+
+            if(!isNaN(amt) && amt > 0) {
+                dbSuppliers.unshift({ name: name, type: type, amount: amt });
+                document.getElementById('sup-name').value = '';
+                document.getElementById('sup-amount').value = '';
+                syncMasterCoreEngine();
+            }
+        }
+
+        // Deletion Routines
+        function deleteSales(idx) { if(confirm("Delete sales record?")) { dbSales.splice(idx,1); syncMasterCoreEngine(); } }
+        function deleteExpense(idx) { if(confirm("Delete expense log?")) { dbExpenses.splice(idx,1); syncMasterCoreEngine(); } }
+        function deleteSupplier(idx) { if(confirm("Delete supplier entry?")) { dbSuppliers.splice(idx,1); syncMasterCoreEngine(); } }
+
+        // Core Calculation Engine Pipeline
+        function syncMasterCoreEngine() {
+            // 1. Sync Sales Table & Calculations
+            const salesTbody = document.getElementById('sales-tbody');
+            salesTbody.innerHTML = '';
+            let totalSales = 0;
+            let channelSums = { Flipkart: 0, Amazon: 0, Meesho: 0 };
+
+            dbSales.forEach((item, idx) => {
+                totalSales += Number(item.amount);
+                if(channelSums.hasOwnProperty(item.channel)) channelSums[item.channel] += Number(item.amount);
+
+                let badgColor = item.channel === 'Flipkart' ? 'var(--brand-flipkart)' : (item.channel === 'Amazon' ? 'var(--brand-amazon)' : 'var(--brand-meesho)');
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-family:'JetBrains Mono'; font-size:0.65rem;">${item.id}</td>
+                    <td><span class="platform-badge-pill" style="background-color:${badgColor}">${item.channel}</span></td>
+                    <td style="max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.sku}</td>
+                    <td style="color:var(--accent-cyan); font-weight:700;">${formatINR(item.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" onclick="deleteSales(${idx})"><i class="fa-solid fa-trash-can"></i></button></td>
                 `;
-                tableBody.appendChild(trRow);
+                salesTbody.appendChild(tr);
             });
 
-            if(workingSubset.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:20px;">No matching sales found.</td></tr>`;
-            }
+            // 2. Sync Expenses Table & Calculations
+            const expTbody = document.getElementById('expense-tbody');
+            expTbody.innerHTML = '';
+            let totalExpenses = 0;
 
-            // Sync dynamic calculated metrics with screen cards directly
-            document.getElementById('card-sale').innerText = convertINR(sumSale);
-            document.getElementById('card-profit').innerText = convertINR(sumProfit);
-            document.getElementById('card-orders').innerText = workingSubset.length;
-            document.getElementById('card-m-sale').innerText = convertINR(sumSale);
-            document.getElementById('card-m-profit').innerText = convertINR(sumProfit);
+            dbExpenses.forEach((item, idx) => {
+                totalExpenses += Number(item.amount);
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:500;">${item.name}</td>
+                    <td style="color:var(--accent-rose); font-weight:700;">${formatINR(item.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" onclick="deleteExpense(${idx})"><i class="fa-solid fa-trash-can"></i></button></td>
+                `;
+                expTbody.appendChild(tr);
+            });
 
-            // Center card widgets stats assignment
-            document.getElementById('lbl-total-qty').innerText = sumQty;
-            document.getElementById('lbl-total-cost').innerText = convertINR(sumCost);
-            
-            // Bottom floating panel parameters calculation sync
-            document.getElementById('lbl-grand-turnover').innerText = convertINR(sumSale);
-            document.getElementById('lbl-grand-profit').innerText = convertINR(sumProfit);
+            // 3. Sync Supplier Table & Smart Minus Calculation Engine
+            const supTbody = document.getElementById('supplier-tbody');
+            supTbody.innerHTML = '';
+            let totalSupplierPayable = 0;
 
-            // Flash values update directly inside global browser storage state
-            localStorage.setItem('shakti_mobile_db', JSON.stringify(appStateList));
-
-            // Sync chart update bars
-            mobileChart.data.datasets[0].data = [12450, 15800, 18200, 21000, 24500, sumProfit];
-            mobileChart.update();
-        }
-
-        // Form processing function loop handles logic routing securely
-        document.getElementById('mobile-sale-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const activeIndex = parseInt(document.getElementById('edit-row-index').value);
-            
-            const dynamicObject = {
-                date: document.getElementById('field-date').value,
-                name: document.getElementById('field-name').value,
-                qty: parseInt(document.getElementById('field-qty').value),
-                cost: parseFloat(document.getElementById('field-cost').value),
-                sale: parseFloat(document.getElementById('field-sale').value)
-            };
-
-            if(activeIndex === -1) {
-                // Creation flow
-                appStateList.push(dynamicObject);
-            } else {
-                // Modification updating flow path
-                appStateList[activeIndex] = dynamicObject;
-                document.getElementById('edit-row-index').value = "-1";
-                document.getElementById('form-header-title').innerText = "Add New Sale";
-                document.getElementById('btn-submit-action').innerText = "Add Sale";
-            }
-
-            refreshUiLayout();
-
-            // Clear inputs system reset sequence safely
-            document.getElementById('field-name').value = "";
-            document.getElementById('field-qty').value = "1";
-            document.getElementById('field-cost').value = "";
-            document.getElementById('field-sale').value = "";
-        });
-
-        // Interactive individual row entry delete protocol
-        function actionDeleteRow(targetIndex) {
-            if(confirm("Kya aap sach me ye sale record delete karna chahte hain?")) {
-                appStateList.splice(targetIndex, 1);
-                refreshUiLayout();
-            }
-        }
-
-        // Interactive item dataset load editing logic sequence trigger
-        function actionEditRow(targetIndex) {
-            const dataReference = appStateList[targetIndex];
-            document.getElementById('edit-row-index').value = targetIndex;
-            
-            document.getElementById('field-date').value = dataReference.date;
-            document.getElementById('field-name').value = dataReference.name;
-            document.getElementById('field-qty').value = dataReference.qty;
-            document.getElementById('field-cost').value = dataReference.cost;
-            document.getElementById('field-sale').value = dataReference.sale;
-
-            document.getElementById('form-header-title').innerText = "✏️ Update Entry Mode";
-            document.getElementById('btn-submit-action').innerText = "Save Updates";
-
-            // Scroll directly smoothly to input text field container boundary lines
-            document.getElementById('mobile-sale-form').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Setup text filtering event triggers linkage points
-        document.getElementById('live-search-filter').addEventListener('input', function(event) {
-            refreshUiLayout(event.target.value);
-        });
-
-        // Initialize Live Time clock functionality sequence tracking loop
-        setInterval(() => {
-            const timeDateObj = new Date();
-            document.getElementById('m-date').innerText = timeDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-            document.getElementById('m-time').innerText = timeDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-        }, 1000);
-
-        // Chart setup script initialization execution loop path
-        const renderingCanvasCtx = document.getElementById('mobileChart').getContext('2d');
-        const mobileChart = new Chart(renderingCanvasCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    data: [12450, 15800, 18200, 21000, 24500, 0],
-                    backgroundColor: ['#00b4d8', '#0077b6', '#00e676', '#ffcc00', '#ff9100', '#7000ff'],
-                    borderRadius: 5,
-                    barPercentage: 0.5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8492a6', font: { size: 9 } } },
-                    x: { grid: { display: false }, ticks: { color: '#8492a6', font: { size: 9 } } }
+            dbSuppliers.forEach((item, idx) => {
+                // Agar 'Bill' hai toh udhari add (+) hogi, agar 'Pay' (Jama Kiya) hai toh udhari minus (-) hogi
+                if(item.type === 'Bill') {
+                    totalSupplierPayable += Number(item.amount);
+                } else {
+                    totalSupplierPayable -= Number(item.amount);
                 }
-            }
-        });
 
-        // Load initial state database records execution draw layout routine command
-        refreshUiLayout();
+                let typeLabel = item.type === 'Bill' ? 'PENDING BILL (+)' : 'JAMA KIYA (-)';
+                let typeColor = item.type === 'Bill' ? 'var(--accent-orange)' : 'var(--accent-green)';
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:500;">${item.name}</td>
+                    <td><span class="platform-badge-pill" style="background-color:${typeColor}">${typeLabel}</span></td>
+                    <td style="color:white; font-weight:700;">${formatINR(item.amount)}</td>
+                    <td style="text-align:center;"><button class="btn-touch-action-row-delete" onclick="deleteSupplier(${idx})"><i class="fa-solid fa-trash-can"></i></button></td>
+                `;
+                supTbody.appendChild(tr);
+            });
+
+            // KPI Dashboard Counters Updates
+            document.getElementById('kpi-orders-count').innerText = dbSales.length;
+            document.getElementById('kpi-sales-amt').innerText = formatINR(totalSales);
+            document.getElementById('kpi-expense-amt').innerText = formatINR(totalExpenses);
+            document.getElementById('kpi-supplier-amt').innerText = formatINR(totalSupplierPayable);
+
+            // Channel Progress Strip Syncing Vector
+            Object.keys(channelSums).forEach(key => {
+                let amt = channelSums[key];
+                let lowKey = key.toLowerCase();
+                let pct = totalSales > 0 ? ((amt / totalSales) * 100).toFixed(1) : 0;
+                
+                document.getElementById(`strip-val-${lowKey}`).innerText = formatINR(amt);
+                document.getElementById(`strip-pct-${lowKey}`).innerText = `${pct}% share weight`;
+                document.getElementById(`strip-bar-${lowKey}`).style.width = `${pct}%`;
+            });
+
+            // LocalStorage Flush Cache Backup Sync
+            localStorage.setItem('kdr_v7_sales', JSON.stringify(dbSales));
+            localStorage.setItem('kdr_v7_expenses', JSON.stringify(dbExpenses));
+            localStorage.setItem('kdr_v7_suppliers', JSON.stringify(dbSuppliers));
+        }
+
+        // Fast Touch Trigger Handler Simulation Linker
+        const labelNode = document.getElementById('lbl-touch-file-trigger');
+        const fileInpNode = document.getElementById('hidden-file-input-field');
+        labelNode.addEventListener('click', (e) => { e.preventDefault(); fileInpNode.click(); });
+        labelNode.addEventListener('touchstart', (e) => { e.preventDefault(); fileInpNode.click(); });
+
+        // Boot Init Code Execution
+        syncMasterCoreEngine();
     </script>
 </body>
 </html>
