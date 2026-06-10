@@ -146,7 +146,7 @@
             </div>
         </div>
 
-        <!-- TOP CARDS KE NICHE 4 BUTTONS -->
+        <!-- TOP CARDS KE NICHE NEW 4 BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-4">
             <button onclick="openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">➕ Add Sale</p>
@@ -330,7 +330,7 @@
         </div>
     </div>
 
-    <!-- 🟢 ADD/EDIT SALE MODAL -->
+    <!-- 🟢 ADD/EDIT SALE MODAL (WITH AUTOMATIC COST FILL ON MODEL MATCH) -->
     <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -340,8 +340,9 @@
             <input type="hidden" id="editSaleId">
             <div class="space-y-2 text-xs">
                 <input type="date" id="saleDate" class="w-full input-field rounded-lg p-2 font-mono">
-                <input type="text" id="modelBrand" placeholder="Brand Name" class="w-full input-field rounded-lg p-2">
-                <input type="text" id="modelName" placeholder="Model Name" class="w-full input-field rounded-lg p-2">
+                <input type="text" id="modelBrand" placeholder="Brand Name (e.g. Vivo)" class="w-full input-field rounded-lg p-2">
+                <!-- Added oninput listener to check stock inventory on text type -->
+                <input type="text" id="modelName" oninput="checkAndAutoFillCost()" placeholder="Model Name (e.g. Y200)" class="w-full input-field rounded-lg p-2">
                 <input type="text" id="modelImei" placeholder="IMEI / Serial Number" class="w-full input-field rounded-lg p-2 font-mono">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="quantity" value="1" class="w-full input-field rounded-lg p-2 font-mono">
@@ -443,11 +444,9 @@
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         function showDashboard() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardContent').classList.remove('hidden'); setTimeout(() => { setupRealtimeSync(); }, 500); }
 
-        // REALTIME SNAPSHOT STREAM
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
             
-            // Check browser cache availability for recovery banner trigger
             let cachedSales = JSON.parse(localStorage.getItem('salesData')) || [];
             let cachedStock = JSON.parse(localStorage.getItem('inventory')) || {};
             if((cachedSales.length > 0 || Object.keys(cachedStock).length > 0) && salesData.length === 0) {
@@ -483,7 +482,26 @@
             });
         }
 
-        // MASTER FORCED RECOVERY TRIGGER (RESTORES LOCALSTORAGE CACHE BACK TO CLOUD DB)
+        // NEW FEATURE: AUTO FILL COST PRICE IF MODEL EXISTS IN INVENTORY
+        window.checkAndAutoFillCost = function() {
+            let inputtedModelName = document.getElementById('modelName').value.trim();
+            
+            // Loop and search inside live sync stock inventory mapping
+            for (const [stockModelKey, data] of Object.entries(inventory)) {
+                // If model name matches exactly (capital letters matter nahi karenge)
+                if (stockModelKey.toLowerCase() === inputtedModelName.toLowerCase()) {
+                    if (data && data.price) {
+                        // Automatically inject the purchase price to Cost input field box
+                        document.getElementById('costPrice').value = data.price;
+                        
+                        // Dynamic background brand injector convenience block
+                        if (data.brand) { document.getElementById('modelBrand').value = data.brand; }
+                        return; // Match milte hi loop band
+                    }
+                }
+            }
+        };
+
         window.forceLocalRecovery = function() {
             let recoveredSales = JSON.parse(localStorage.getItem('salesData')) || [];
             let recoveredExpense = JSON.parse(localStorage.getItem('expenseData')) || [];
@@ -491,21 +509,14 @@
             let recoveredUdhaar = JSON.parse(localStorage.getItem('udhaarData')) || [];
 
             if(recoveredSales.length > 0 || Object.keys(recoveredInventory).length > 0) {
-                salesData = recoveredSales;
-                expenseData = recoveredExpense;
-                udhaarData = recoveredUdhaar;
-                
-                // Inventory structural normalisation loop
+                salesData = recoveredSales; expenseData = recoveredExpense; udhaarData = recoveredUdhaar;
                 for (const [k, v] of Object.entries(recoveredInventory)) {
                     if (typeof v === 'number') { recoveredInventory[k] = { qty: v, price: 0, brand: "", imei: "" }; }
                 }
                 inventory = recoveredInventory;
-
                 syncToCloud();
                 document.getElementById('recoveryBanner').classList.add('hidden');
-                alert("⚡ SUCCESS: Your dashboard history data has been successfully recovered from browser memory!");
-            } else {
-                alert("No local cache history found on this phone browser.");
+                alert("⚡ SUCCESS: History data recovered!");
             }
         }
 
@@ -571,6 +582,13 @@
                 if(inventory[model] && typeof inventory[model] === 'object') { inventory[model].qty = Math.max(0, inventory[model].qty - qty); }
                 salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty });
             }
+
+            document.getElementById('modelBrand').value = "";
+            document.getElementById('modelName').value = "";
+            document.getElementById('modelImei').value = "";
+            document.getElementById('quantity').value = "1";
+            document.getElementById('costPrice').value = "";
+            document.getElementById('salePrice').value = "";
 
             closeModal('saleModal');
             syncToCloud();
@@ -682,13 +700,8 @@
 
             for (const [model, data] of Object.entries(inventory)) {
                 let count = 0; let price = 0; let brand = ""; let imei = "";
-                
-                if (data && typeof data === 'object') {
-                    count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || "";
-                }
-                
+                if (data && typeof data === 'object') { count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || ""; }
                 val += (count * price);
-
                 let match = false;
                 if(searchType === 'model' && model.toLowerCase().includes(searchKeyword)) match = true;
                 if(searchType === 'brand' && brand.toLowerCase().includes(searchKeyword)) match = true;
@@ -743,7 +756,6 @@
         function renderUdhaarTable() {
             const container = document.getElementById('udhaarContainer');
             if(!container) return;
-            
             const kw = document.getElementById('searchUdhaarInp').value.toLowerCase();
             container.innerHTML = '';
             let totalPendingMarket = 0;
@@ -755,16 +767,13 @@
             }
 
             let filtered = udhaarData.filter(x => x.name.toLowerCase().includes(kw) || x.phone.includes(kw));
-
             filtered.reverse().forEach(x => {
                 let pendingAmount = x.total - x.jama;
                 totalPendingMarket += pendingAmount;
-
                 let udhaarDateObj = new Date(x.date);
                 let currentSystemDate = new Date("2026-06-10");
                 let differenceInTime = currentSystemDate.getTime() - udhaarDateObj.getTime();
                 let totalDaysPassed = Math.floor(differenceInTime / (1000 * 3600 * 24));
-
                 let isOverdue = totalDaysPassed >= 30 && pendingAmount > 0;
                 let fallbackPhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23475569' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4y'/></svg>";
 
@@ -773,7 +782,6 @@
                 div.innerHTML = `
                     <img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0">
                     <div class="flex-1 text-xs">
-                        <div class="flex-1 text-xs">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="font-bold text-gray-200 text-sm">${x.name}</p>
@@ -813,12 +821,6 @@
                 let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between";
                 d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d);
             });
-        }
-        function exportToCSV() {
-            let csv = "Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n";
-            salesData.forEach(x => csv += `${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`);
-            let link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
-            link.setAttribute("download", "Sales_Report.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
 </body>
