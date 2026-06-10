@@ -14,7 +14,7 @@
     <!-- ================= FIREBASE SDK INTEGRATION ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBFM1JgizFIwUtI2uX9tQ2ZWv2Mlb_RtHo",
@@ -28,7 +28,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        window.db = db; window.doc = doc; window.setDoc = setDoc; window.onSnapshot = onSnapshot; window.getDoc = getDoc;
+        window.db = db; window.doc = doc; window.setDoc = setDoc; window.onSnapshot = onSnapshot;
 
         window.addEventListener('load', () => {
             setTimeout(() => { if (typeof window.setupRealtimeSync === "function") window.setupRealtimeSync(); }, 200);
@@ -432,49 +432,46 @@
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         function showDashboard() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardContent').classList.remove('hidden'); setTimeout(() => { setupRealtimeSync(); }, 500); }
 
-        // ================= FULL MASTER DATA RECOVERY INJECTOR ENGINE =================
+        // ================= FIX LOGIC: PREVENT ARRAYS OVERWRITE ON SNAPSHOT LOAD =================
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
             
-            // Snapshot listener targeting the main node document root
-            window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), async (docSnap) => {
+            window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
                 if (docSnap.exists()) {
                     let c = docSnap.data();
                     
-                    // Recover core arrays safely
-                    salesData = c.salesData || [];
-                    expenseData = c.expenseData || [];
-                    udhaarData = c.udhaarData || [];
+                    // Safe mapping: ONLY assign if cloud data is completely available and valid array length
+                    if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
+                    else if (c.sales && c.sales.length > 0) salesData = c.sales; // fallback check 1
                     
-                    let rawInventory = c.inventory || {};
-                    inventory = {};
+                    if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
+                    else if (c.expenses && c.expenses.length > 0) expenseData = c.expenses; // fallback check 2
+                    
+                    if (c.udhaarData) udhaarData = c.udhaarData;
 
-                    // Double loop repair system - prevents structure blocking
-                    for (const [key, val] of Object.entries(rawInventory)) {
-                        if (typeof val === 'number') {
-                            inventory[key] = { qty: val, price: 0, brand: "", imei: "" };
-                        } else if (val && typeof val === 'object') {
-                            inventory[key] = {
-                                qty: val.qty !== undefined ? val.qty : (val.count || 0),
-                                price: val.price || 0,
-                                brand: val.brand || "",
-                                imei: val.imei || ""
-                            };
+                    let rawInventory = c.inventory || {};
+                    if (Object.keys(rawInventory).length > 0) {
+                        inventory = {};
+                        for (const [key, val] of Object.entries(rawInventory)) {
+                            if (typeof val === 'number') {
+                                inventory[key] = { qty: val, price: 0, brand: "", imei: "" };
+                            } else if (val && typeof val === 'object') {
+                                inventory[key] = {
+                                    qty: val.qty !== undefined ? val.qty : (val.count || 0),
+                                    price: val.price || 0,
+                                    brand: val.brand || "",
+                                    imei: val.imei || ""
+                                };
+                            }
                         }
                     }
-                    
-                    // DEEP RECOVERY SAFETIED EXTRACTION CHECK:
-                    // If dashboard loads empty but cloud still holds isolated keys, fallback merge triggers
-                    if(salesData.length === 0 && c.sales) { salesData = c.sales; }
-                    if(expenseData.length === 0 && c.expenses) { expenseData = c.expenses; }
-                } 
+                }
                 updateDashboardUI();
             });
         }
 
         async function syncToCloud() {
             if (window.setDoc && window.db) {
-                // Save everything cleanly inside individual secure mapping tracks
                 await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { 
                     salesData, 
                     expenseData, 
