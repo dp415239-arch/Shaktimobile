@@ -1,180 +1,894 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SHAKTI MOBILE V8</title>
-<style>
-body{margin:0;background:#0a0f1f;color:white;font-family:Arial}
-.header{padding:20px;text-align:center;background:linear-gradient(135deg,#111827,#312e81)}
-.logo{width:90px;height:90px;border-radius:22px;margin:auto;background:linear-gradient(135deg,#f59e0b,#fde68a);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:bold;color:#111}
-.wrap{padding:12px}.card{background:#111827;border-radius:20px;padding:14px;margin-bottom:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.big{font-size:24px;font-weight:bold}
-input,button,select{width:100%;padding:12px;margin:5px 0;border:none;border-radius:12px;box-sizing:border-box}
-button{background:linear-gradient(135deg,#2563eb,#9333ea);color:#fff}
-.item{padding:8px;border-bottom:1px solid #243041}
-.smallbtn{width:auto;padding:8px 12px;margin-top:6px}
-#msg{display:none;padding:10px;background:#14532d;border-radius:10px;margin-bottom:10px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shakti Mobile Dashboard</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Beautiful Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070b19;
+            --bg-card: #0d142c;
+            --sidebar-bg: #050814;
+            --text-main: #ffffff;
+            --text-muted: #8492a6;
+            --accent-purple: #7000ff;
+            --accent-blue: #00b4d8;
+            --accent-green: #00e676;
+            --accent-orange: #ff9100;
+            --neon-glow: 0 0 15px rgba(112, 0, 255, 0.4);
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-section img {
+            width: 80px;
+            margin-bottom: 10px;
+        }
+
+        .logo-section h1 {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .logo-section h1 span {
+            color: var(--accent-purple);
+        }
+
+        .logo-section p {
+            font-size: 0.65rem;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: linear-gradient(90deg, var(--accent-purple), rgba(112, 0, 255, 0.2));
+            color: #fff;
+            box-shadow: var(--neon-glow);
+        }
+
+        .sidebar-footer-card {
+            margin-top: auto;
+            background: linear-gradient(145deg, #0a1024, #121b3a);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: calc(100% - 260px);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00b4d8, #b5179e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .time-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        /* Top KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #0d1532, #070c1e);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 140px;
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 80% 20%, rgba(112,0,255,0.1), transparent 50%);
+            pointer-events: none;
+        }
+
+        .kpi-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .kpi-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .trend-up { color: var(--accent-green); }
+        
+        .kpi-icon-floating {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        /* Analytics Middle Section */
+        .analytics-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card, .select-month-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        select.dark-select {
+            background-color: #050814;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .month-stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .month-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-label-side {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        /* Add Sale Section Form */
+        .add-sale-card {
+            background: linear-gradient(90deg, #0c122c, #070b1a);
+            border: 1px solid rgba(112, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--neon-glow);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: flex-end;
+            margin-top: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            background-color: #050814;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-purple);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--accent-purple), #5000b8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 42px;
+            box-shadow: 0 4px 15px rgba(112,0,255,0.4);
+        }
+
+        /* Sales History Table Section */
+        .history-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            background-color: #050814;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px 8px 35px;
+            color: white;
+            outline: none;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .table-actions-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            background-color: #050814;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-icon.delete-all {
+            color: #ff4d4d;
+            border-color: rgba(255,77,77,0.2);
+        }
+
+        /* Main Data Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            padding: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .text-blue { color: #00b4d8; }
+        .text-orange { color: #ff9100; }
+        .text-green { color: #00e676; }
+
+        .row-action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .row-action-btns button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-edit-row { color: #00b4d8; }
+        .btn-delete-row { color: #ff4d4d; }
+
+        .table-footer-row {
+            background-color: #050814;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-<div class="header"><div class="logo">SM</div><h2>SHAKTI MOBILE V8</h2></div>
-<div class="wrap">
 
-<div id="msg">✅ Sale Added Successfully</div>
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="sidebar">
+        <div class="logo-section">
+            <img src="https://i.imgur.com/8Y4XgI6.png" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3414/3414151.png'">
+            <h1>SHAKTI <span>MOBILE</span></h1>
+            <p>Trust • Quality • Service</p>
+        </div>
+        <ul class="menu-list">
+            <li><a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-plus-circle"></i> Add Sale</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-history"></i> Sales History</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-file-invoice"></i> Reports</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-cloud-upload"></i> Backup</a></li>
+            <li><a href="#" class="menu-item"><i class="fa-solid fa-cog"></i> Settings</a></li>
+        </ul>
 
-<div class="grid">
-<div class="card"><div>Today Sale</div><div id="todaySale" class="big">₹0</div></div>
-<div class="card"><div>Today Profit</div><div id="todayProfit" class="big">₹0</div></div>
-</div>
+        <div class="sidebar-footer-card">
+            <p style="font-size:0.75rem; color:var(--text-muted)">Total Sales</p>
+            <h3 style="font-size:1.3rem; margin:2px 0;" id="sidebar-total-sales">₹6,85,400</h3>
+            <p style="font-size:0.75rem; color:var(--text-muted)">Total Profit</p>
+            <h5 style="color:var(--accent-green); font-size:0.95rem;" id="sidebar-total-profit">₹1,02,380</h5>
+            <div style="height: 40px; margin-top: 10px; display:flex; align-items:flex-end; gap:3px;">
+                <!-- Dummy Sparkline columns -->
+                <div style="width:10%; background:#7000ff; height:30%; border-radius:2px;"></div>
+                <div style="width:10%; background:#7000ff; height:50%; border-radius:2px;"></div>
+                <div style="width:10%; background:#7000ff; height:40%; border-radius:2px;"></div>
+                <div style="width:10%; background:#7000ff; height:75%; border-radius:2px;"></div>
+                <div style="width:10%; background:#7000ff; height:60%; border-radius:2px;"></div>
+                <div style="width:10%; background:#7000ff; height:90%; border-radius:2px;"></div>
+                <div style="width:10%; background:#7000ff; height:100%; border-radius:2px;"></div>
+            </div>
+        </div>
+    </div>
 
-<div class="grid">
-<div class="card"><div>Total Sales</div><div id="totalSales" class="big">₹0</div></div>
-<div class="card"><div>Total Profit</div><div id="totalProfit" class="big">₹0</div></div>
-</div>
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <div class="main-content">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h2>SHAKTI MOBILE</h2>
+                <p>Your Business, Our Power ⚡</p>
+            </div>
+            <div class="header-right">
+                <div class="time-box">
+                    <i class="fa-regular fa-calendar-alt" style="color:var(--accent-blue)"></i>
+                    <div>
+                        <strong id="live-date">10 Jun 2026</strong><br>
+                        <span id="live-time" style="font-size:0.7rem; color:var(--text-muted)">09:29 AM</span>
+                    </div>
+                </div>
+                <button class="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </div>
 
- <div class="grid">
-<div class="card">
-<div>Today Expense</div>
-<div id="todayExpense" class="big">₹0</div>
-</div>
+        <!-- KPI TOP CARDS -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div>
+                    <div class="kpi-title">Today's Sale</div>
+                    <div class="kpi-value" id="kpi-today-sale">₹12,540</div>
+                </div>
+                <div class="kpi-sub"><span id="kpi-today-orders">6</span> Orders</div>
+                <div class="kpi-icon-floating" style="color:#00b4d8; opacity:0.15;"><i class="fa-solid fa-shopping-bag"></i></div>
+            </div>
+            <div class="kpi-card">
+                <div>
+                    <div class="kpi-title">Today's Profit</div>
+                    <div class="kpi-value" id="kpi-today-profit">₹2,340</div>
+                </div>
+                <div class="kpi-sub trend-up"><i class="fa-solid fa-arrow-trend-up"></i> 7.8%</div>
+                <div class="kpi-icon-floating" style="color:#00e676; opacity:0.15;"><i class="fa-solid fa-line-chart"></i></div>
+            </div>
+            <div class="kpi-card">
+                <div>
+                    <div class="kpi-title">This Month Sale</div>
+                    <div class="kpi-value" id="kpi-month-sale">₹1,25,680</div>
+                </div>
+                <div class="kpi-sub"><span id="kpi-month-orders">42</span> Orders</div>
+                <div class="kpi-icon-floating" style="color:#7000ff; opacity:0.15;"><i class="fa-solid fa-wallet"></i></div>
+            </div>
+            <div class="kpi-card">
+                <div>
+                    <div class="kpi-title">This Month Profit</div>
+                    <div class="kpi-value" id="kpi-month-profit">₹18,560</div>
+                </div>
+                <div class="kpi-sub trend-up"><i class="fa-solid fa-arrow-trend-up"></i> 10.2%</div>
+                <div class="kpi-icon-floating" style="color:#ff9100; opacity:0.15;"><i class="fa-solid fa-coins"></i></div>
+            </div>
+        </div>
 
-<div class="card">
-<div>Cash In Hand</div>
-<div id="cashInHand" class="big">₹0</div>
-</div>
-</div>
+        <!-- ANALYTICS (CHART & MONTH SELECTOR) -->
+        <div class="analytics-section">
+            <!-- Chart Left -->
+            <div class="chart-card">
+                <div class="card-header-row">
+                    <div class="card-title">Profit (Last 6 Months)</div>
+                    <i class="fa-solid fa-ellipsis-vertical" style="color:var(--text-muted); cursor:pointer"></i>
+                </div>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
 
-<div class="card">
-<div>Supplier Payable</div>
-<div id="supplierPayable" class="big">₹0</div>
-</div>
-<div class="card">🏆 Top Selling Product<br><b id="topSelling">No Data</b></div>
-<div class="card">💰 Most Profitable Product<br><b id="topProfit">No Data</b></div>
+            <!-- Month Filter Right -->
+            <div class="select-month-card">
+                <div class="card-header-row">
+                    <div class="card-title">Select Month</div>
+                </div>
+                <select class="dark-select" id="month-selector">
+                    <option value="June 2026" selected>June 2026</option>
+                    <option value="May 2026">May 2026</option>
+                    <option value="April 2026">April 2026</option>
+                </select>
 
-<div class="card">
-<input id="search" placeholder="🔍 Search Product" onkeyup="render()">
-<select id="monthFilter" onchange="render()"></select>
-<input id="date" type="date">
-<input id="product" placeholder="Product Name">
-<input id="qty" type="number" value="1">
-<input id="cost" type="number" placeholder="Cost Price">
-<input id="sale" type="number" placeholder="Sale Price">
-<button onclick="addSale()">➕ Add Sale</button>
-</div>
- 
-<input id="sale" type="number" placeholder="Sale Price">
-<button onclick="addSale()">➕ Add Sale</button>
-<div class="card">
-<h3>Sales History</h3>
-<div id="history"></div>
-</div>
- 
-<h3>Expense Entry</h3>
+                <div class="month-stats-list">
+                    <div class="month-stat-item">
+                        <div class="stat-label-side"><i class="fa-solid fa-dollar-sign text-blue"></i> Month Sale</div>
+                        <strong id="stat-month-sale">₹1,25,680</strong>
+                    </div>
+                    <div class="month-stat-item">
+                        <div class="stat-label-side"><i class="fa-solid fa-chart-bar text-green"></i> Month Profit</div>
+                        <strong id="stat-month-profit">₹18,560</strong>
+                    </div>
+                    <div class="month-stat-item">
+                        <div class="stat-label-side"><i class="fa-solid fa-users text-blue"></i> Total Orders</div>
+                        <strong id="stat-total-orders">42</strong>
+                    </div>
+                    <div class="month-stat-item">
+                        <div class="stat-label-side"><i class="fa-solid fa-box-open text-orange"></i> Total Quantity</div>
+                        <strong id="stat-total-qty">88</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<input id="expenseName" placeholder="Expense Name">
+        <!-- ADD NEW SALE FORM -->
+        <div class="add-sale-card">
+            <div class="card-title">Add New Sale</div>
+            <form id="add-sale-form" class="form-grid">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" class="form-control" id="form-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" class="form-control" id="form-name" placeholder="Enter product name" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantity (Qty)</label>
+                    <input type="number" class="form-control" id="form-qty" value="1" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Cost Price (₹)</label>
+                    <input type="number" class="form-control" id="form-cost" value="0" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Sale Price (₹)</label>
+                    <input type="number" class="form-control" id="form-sale" value="0" min="0" required>
+                </div>
+                <button type="submit" class="btn-add">
+                    <i class="fa-solid fa-plus"></i> ADD SALE
+                </button>
+            </form>
+        </div>
 
-<input id="expenseAmount"
-type="number"
-placeholder="Amount">
+        <!-- SALES HISTORY TABLE -->
+        <div class="history-card">
+            <div class="table-toolbar">
+                <div class="card-title" id="history-table-title">Sales History (June 2026)</div>
+                <div class="table-actions-right">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Search product...">
+                    </div>
+                    <button class="btn-icon"><i class="fa-solid fa-filter"></i></button>
+                    <button class="btn-icon delete-all" id="clear-all-btn" title="Clear All Data"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
 
-<button onclick="addExpense()">
-💸 Add Expense
-</button>
- 
-</div>
+            <div class="table-responsive">
+                <table class="data-table" id="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product Name</th>
+                            <th>Qty</th>
+                            <th>Cost Price</th>
+                            <th>Sale Price</th>
+                            <th>Total Cost</th>
+                            <th>Total Sale</th>
+                            <th>Profit</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Dynamic Rows Will Insert Here -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-footer-row">
+                            <td colspan="2">Total Quantity: <span id="foot-total-qty">0</span></td>
+                            <td id="foot-qty-sum">0</td>
+                            <td colspan="2"></td>
+                            <td class="text-blue" id="foot-total-cost">₹0</td>
+                            <td class="text-blue" id="foot-total-sale">₹0</td>
+                            <td class="text-green" id="foot-total-profit">₹0</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
 
-<script>
-date.value=new Date().toISOString().split('T')[0];
-let sales=JSON.parse(localStorage.getItem('shakti_v8')||'[]');
+    </div>
 
-function addSale(){
- let p=product.value.trim();
- let q=+qty.value||1;
- let c=+cost.value||0;
- let s=+sale.value||0;
- if(!p||!s) return;
+    <!-- JAVASCRIPT LOGIC FOR LIVE FUNCTIONS -->
+    <script>
+        // Default Mock Data strictly matching image 30630097-F4FA-458F-B720-34E724A1814A.png
+        let initialSalesData = [
+            { date: '2026-06-10', name: 'Lava Star 3', qty: 3, costPrice: 8800, salePrice: 9400 },
+            { date: '2026-06-10', name: 'Samsung M16', qty: 2, costPrice: 12500, salePrice: 13999 },
+            { date: '2026-06-10', name: 'Realme Narzo 70', qty: 1, costPrice: 11000, salePrice: 12500 },
+            { date: '2026-06-10', name: 'Redmi 13C', qty: 4, costPrice: 7200, salePrice: 7999 }
+        ];
 
- sales.push({date:date.value,product:p,qty:q,sale:s*q,profit:(s-c)*q});
- localStorage.setItem('shakti_v8',JSON.stringify(sales));
+        // Load data from LocalStorage or use standard initial data
+        let salesData = JSON.parse(localStorage.getItem('shakti_sales_data')) || initialSalesData;
 
- product.value='';
- qty.value='1';
- cost.value='';
- sale.value='';
+        // Set Default Date Input to Today
+        document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
 
- msg.style.display='block';
- setTimeout(()=>msg.style.display='none',2000);
+        // Format Currency Helper
+        function formatINR(amount) {
+            return '₹' + Number(amount).toLocaleString('en-IN');
+        }
 
- window.scrollTo({top:0,behavior:'smooth'});
- render();
-}
+        // Render Table and Recalculate Metrics Dynamically
+        function renderDashboard(filterText = "") {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = "";
 
-function delSale(i){
- if(confirm('Delete this sale?')){
-  sales.splice(i,1);
-  localStorage.setItem('shakti_v8',JSON.stringify(sales));
-  render();
- }
-}
+            let totalQtySum = 0;
+            let totalCostSum = 0;
+            let totalSaleSum = 0;
+            let totalProfitSum = 0;
 
-function editSale(i){
- let n=prompt('Product Name',sales[i].product);
- if(!n) return;
- sales[i].product=n;
- localStorage.setItem('shakti_v8',JSON.stringify(sales));
- render();
-}
+            const filteredData = salesData.filter(item => 
+                item.name.toLowerCase().includes(filterText.toLowerCase())
+            );
 
-function render(){
- let today=new Date().toISOString().split('T')[0];
- let currentMonth=today.substring(0,7);
- let q=(search.value||'').toLowerCase();
+            filteredData.forEach((item, index) => {
+                const tCost = item.costPrice * item.qty;
+                const tSale = item.salePrice * item.qty;
+                const profit = tSale - tCost;
 
- let ts=0,tp=0,totalS=0,totalP=0;
- let qtyMap={},profitMap={},months=new Set([currentMonth]);
- let h='';
+                // Sum items up
+                totalQtySum += Number(item.qty);
+                totalCostSum += tCost;
+                totalSaleSum += tSale;
+                totalProfitSum += profit;
 
- sales.forEach(x=>{
-  months.add(x.date.substring(0,7));
-  totalS+=x.sale; totalP+=x.profit;
-  if(x.date===today){ts+=x.sale;tp+=x.profit;}
-  qtyMap[x.product]=(qtyMap[x.product]||0)+x.qty;
-  profitMap[x.product]=(profitMap[x.product]||0)+x.profit;
- });
+                // Beautiful Formatted Date (e.g., 10 Jun 2026)
+                const dateObj = new Date(item.date);
+                const options = { day: '2-digit', month: 'short', year: 'numeric' };
+                const formattedDate = dateObj.toLocaleDateString('en-GB', options);
 
- monthFilter.innerHTML=[...months].sort().reverse().map(m=>`<option>${m}</option>`).join('');
- let sel=monthFilter.value||currentMonth;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td style="font-weight:500; color:#fff;">${item.name}</td>
+                    <td class="text-blue">${item.qty}</td>
+                    <td>${formatINR(item.costPrice)}</td>
+                    <td class="text-blue">${formatINR(item.salePrice)}</td>
+                    <td class="text-orange">${formatINR(tCost)}</td>
+                    <td>${formatINR(tSale)}</td>
+                    <td class="text-green">${formatINR(profit)}</td>
+                    <td>
+                        <div class="row-action-btns">
+                            <button class="btn-edit-row" onclick="editRow(${index})" title="Edit Row"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn-delete-row" onclick="deleteRow(${index})" title="Delete Row"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
 
- sales.forEach((x,i)=>{
-  if(x.date.startsWith(sel) && x.product.toLowerCase().includes(q)){
-   h+=`<div class="item"><b>${x.product}</b> Qty:${x.qty}<br>
-   Sale ₹${x.sale} | Profit ₹${x.profit}<br>
-   <button class="smallbtn" onclick="editSale(${i})">✏️ Edit</button>
-   <button class="smallbtn" onclick="delSale(${i})">🗑️ Delete</button></div>`;
-  }
- });
+            // Update Table Footer Values
+            document.getElementById('foot-total-qty').innerText = totalQtySum;
+            document.getElementById('foot-qty-sum').innerText = totalQtySum;
+            document.getElementById('foot-total-cost').innerText = formatINR(totalCostSum);
+            document.getElementById('foot-total-sale').innerText = formatINR(totalSaleSum);
+            document.getElementById('foot-total-profit').innerText = formatINR(totalProfitSum);
 
- let best='No Data',bq=0;
- for(let k in qtyMap){if(qtyMap[k]>bq){bq=qtyMap[k];best=k+' ('+bq+')';}}
- let prof='No Data',bp=0;
- for(let k in profitMap){if(profitMap[k]>bp){bp=profitMap[k];prof=k+' (₹'+bp+')';}}
+            // Sync with KPI cards dynamically
+            document.getElementById('kpi-today-sale').innerText = formatINR(totalSaleSum);
+            document.getElementById('kpi-today-profit').innerText = formatINR(totalProfitSum);
+            document.getElementById('kpi-today-orders').innerText = filteredData.length;
+            
+            // Sync with Month panel summary widgets
+            document.getElementById('stat-month-sale').innerText = formatINR(totalSaleSum);
+            document.getElementById('stat-month-profit').innerText = formatINR(totalProfitSum);
+            document.getElementById('stat-total-orders').innerText = filteredData.length;
+            document.getElementById('stat-total-qty').innerText = totalQtySum;
 
- todaySale.innerText='₹'+ts;
-todayProfit.innerText='₹'+tp;
-totalSales.innerText='₹'+totalS;
-totalProfit.innerText='₹'+totalP;
+            // Save state
+            localStorage.setItem('shakti_sales_data', JSON.stringify(salesData));
+        }
 
-todayExpense.innerText='₹0';
-cashInHand.innerText='₹'+(totalS-totalP);
-supplierPayable.innerText='₹0';
+        // Add Sale Logic
+        document.getElementById('add-sale-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newSale = {
+                date: document.getElementById('form-date').value,
+                name: document.getElementById('form-name').value,
+                qty: parseInt(document.getElementById('form-qty').value),
+                costPrice: parseFloat(document.getElementById('form-cost').value),
+                salePrice: parseFloat(document.getElementById('form-sale').value)
+            };
 
-topSelling.innerText=best;
-topProfit.innerText=prof;
-history.innerHTML=h||'No Sales';
-}
-render();
-</script>
+            salesData.push(newSale);
+            renderDashboard();
+
+            // Reset Form Values gracefully
+            document.getElementById('form-name').value = '';
+            document.getElementById('form-qty').value = '1';
+            document.getElementById('form-cost').value = '0';
+            document.getElementById('form-sale').value = '0';
+        });
+
+        // Delete Individual Row Logic
+        function deleteRow(index) {
+            if(confirm("Kya aap is entry ko delete karna chahte hain?")) {
+                salesData.splice(index, 1);
+                renderDashboard();
+            }
+        }
+
+        // Edit row helper logic
+        function editRow(index) {
+            const item = salesData[index];
+            document.getElementById('form-date').value = item.date;
+            document.getElementById('form-name').value = item.name;
+            document.getElementById('form-qty').value = item.qty;
+            document.getElementById('form-cost').value = item.costPrice;
+            document.getElementById('form-sale').value = item.salePrice;
+            
+            // Delete current and let user re-add / update
+            salesData.splice(index, 1);
+            renderDashboard();
+            document.getElementById('form-name').focus();
+        }
+
+        // Live Search Filter Input Event
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            renderDashboard(e.target.value);
+        });
+
+        // Clear All Records Button Action
+        document.getElementById('clear-all-btn').addEventListener('click', function() {
+            if(confirm("Kya aap saara sales history data delete karna chahte hain?")) {
+                salesData = [];
+                renderDashboard();
+            }
+        });
+
+        // Live Time Clock Setup
+        setInterval(() => {
+            const now = new Date();
+            const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+            document.getElementById('live-date').innerText = now.toLocaleDateString('en-GB', dateOptions);
+            document.getElementById('live-time').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }, 1000);
+
+        // CHART INTERACTION - Render bar charts mirroring 30630097-F4FA-458F-B720-34E724A1814A.png values
+        const ctx = document.getElementById('profitChart').getContext('2d');
+        const profitChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan 26', 'Feb 26', 'Mar 26', 'Apr 26', 'May 26', 'Jun 26'],
+                datasets: [{
+                    label: 'Profit (₹)',
+                    data: [12450, 15800, 18200, 21000, 24500, 18560],
+                    backgroundColor: [
+                        '#00b4d8', // Cyan
+                        '#0077b6', // Blue
+                        '#00e676', // Green
+                        '#ffcc00', // Yellow-gold
+                        '#ff9100', // Orange
+                        '#7000ff'  // Purple
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0,
+                    barPercentage: 0.45
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: {
+                            color: '#8492a6',
+                            callback: function(value) { return '₹' + value/1000 + 'K'; }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8492a6' }
+                    }
+                }
+            }
+        });
+
+        // Initialize Screen on Load
+        renderDashboard();
+    </script>
 </body>
 </html>
