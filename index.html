@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>KDR ORGANIC · SHAKTI MOBILE · Premium Dashboard</title>
+    <title>KDR ORGANIC · SHAKTI MOBILE</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,7 +30,7 @@
     </script>
 
     <style>
-        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Segoe UI', system-ui; }
         .card-bg { background-color: #121A2E; border: 1px solid #1E293B; }
         .input-field { background-color: #0F172A; border: 1px solid #334155; color: white; }
         .input-field:focus { border-color: #3B82F6; outline: none; }
@@ -42,44 +42,46 @@
 </head>
 <body class="p-4 max-w-md mx-auto pb-32">
 
-    <!-- ================= LOGIN SCREEN ================= -->
-    <div id="loginScreen" class="flex flex-col justify-center min-h-screen">
-        <div class="card-bg p-6 rounded-2xl shadow-2xl border border-slate-700/60">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-extrabold text-white">KDR <span class="text-emerald-400">ORGANIC</span></h1>
-                <p class="text-[11px] text-gray-400 uppercase mt-1">PREMIUM MOBILE UI • LIVE SYNC</p>
-                <div class="w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-blue-500 mx-auto mt-2 rounded-full"></div>
-            </div>
-            
-            <div id="loginError" class="hidden mb-4 p-2.5 bg-rose-950/40 border border-rose-800 text-rose-300 text-xs rounded-lg text-center">
-                ❌ Invalid PIN! Use <strong>1234</strong>
-            </div>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="flex flex-col justify-center min-h-screen">
+            <div class="card-bg p-6 rounded-2xl shadow-2xl border border-slate-700/60">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl font-extrabold text-white">KDR <span class="text-emerald-400">ORGANIC</span></h1>
+                    <p class="text-[11px] text-gray-400 uppercase mt-1">PREMIUM MOBILE UI • LIVE SYNC</p>
+                    <div class="w-12 h-0.5 bg-gradient-to-r from-emerald-500 to-blue-500 mx-auto mt-2 rounded-full"></div>
+                </div>
+                
+                <div id="loginError" class="hidden mb-4 p-2.5 bg-rose-950/40 border border-rose-800 text-rose-300 text-xs rounded-lg text-center">
+                    ❌ Invalid PIN! Use <strong>1234</strong>
+                </div>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] text-gray-400 uppercase mb-1 font-bold">📱 Mobile Number</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-phone absolute left-3 top-3 text-gray-500 text-xs"></i>
-                        <input type="tel" id="mobileNumber" value="8401463902" class="w-full input-field rounded-xl py-2.5 pl-9 pr-3 text-sm font-mono">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] text-gray-400 uppercase mb-1 font-bold">📱 Mobile Number</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-phone absolute left-3 top-3 text-gray-500 text-xs"></i>
+                            <input type="tel" id="mobileNumber" value="8401463902" class="w-full input-field rounded-xl py-2.5 pl-9 pr-3 text-sm font-mono">
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] text-gray-400 uppercase mb-1 font-bold">🔐 4-Digit PIN</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-key absolute left-3 top-3 text-gray-500 text-xs"></i>
-                        <input type="password" maxlength="4" id="loginPin" placeholder="Enter PIN" class="w-full input-field rounded-xl py-2.5 pl-9 pr-3 text-sm font-mono text-center text-lg tracking-widest">
+                    <div>
+                        <label class="block text-[10px] text-gray-400 uppercase mb-1 font-bold">🔐 4-Digit PIN</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-key absolute left-3 top-3 text-gray-500 text-xs"></i>
+                            <input type="password" maxlength="4" id="loginPin" placeholder="Enter PIN" class="w-full input-field rounded-xl py-2.5 pl-9 pr-3 text-sm font-mono text-center text-lg tracking-widest">
+                        </div>
                     </div>
+                    <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-3 rounded-xl text-sm transition mt-4 cursor-pointer">
+                        LOGIN <i class="fa-solid fa-arrow-right-to-bracket ml-1"></i>
+                    </button>
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-3 rounded-xl text-sm transition mt-4 cursor-pointer">
-                    LOGIN <i class="fa-solid fa-arrow-right-to-bracket ml-1"></i>
-                </button>
+                <p class="text-center text-[10px] text-gray-500 mt-6 pt-3 border-t border-slate-800">🔑 PIN: <strong class="text-emerald-400">1234</strong> | Multi-Device Sync</p>
             </div>
-            <p class="text-center text-[10px] text-gray-500 mt-6 pt-3 border-t border-slate-800">🔑 PIN: <strong class="text-emerald-400">1234</strong> | Multi-Device Sync</p>
         </div>
     </div>
 
-    <!-- ================= MAIN DASHBOARD ================= -->
-    <div id="dashboardContent" class="hidden">
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboardContent" style="display: none;">
         <!-- Header -->
         <div class="flex justify-between items-center mb-5">
             <div>
@@ -114,7 +116,7 @@
             <div class="flex gap-3"><span class="bg-emerald-950/50 text-emerald-300 px-2 py-1 rounded-xl">Cash: <span id="splitCashVal">₹0</span></span><span class="bg-blue-950/50 text-blue-300 px-2 py-1 rounded-xl">UPI: <span id="splitUpiVal">₹0</span></span></div>
         </div>
 
-        <!-- 4 Action Buttons -->
+        <!-- Action Buttons -->
         <div class="grid grid-cols-4 gap-2 mb-5">
             <button onclick="openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800 transition cursor-pointer"><p class="text-sm font-semibold text-emerald-400">➕ Add Sale</p></button>
             <button onclick="openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800 transition cursor-pointer"><p class="text-sm font-semibold text-blue-400">📦 Add Stock</p></button>
@@ -247,16 +249,39 @@
         function getMonthLabel(date) { let d=new Date(date); return d.toLocaleString('default',{month:'long'})+" "+d.getFullYear(); }
         async function syncToCloud() { if(window.setDoc) await window.setDoc(window.doc(window.db,"shaktiMobile","dashboardData"),{salesData,expenseData,inventory,udhaarData}); }
         
+        // Sample initial data
+        inventory = {
+            "Money Transfer": { qty: 10, price: 100, brand: "Service", imei: "N/A" },
+            "Glass": { qty: 5, price: 100, brand: "Generic", imei: "N/A" },
+            "Hero Shakti": { qty: 3, price: 3200, brand: "Hero", imei: "N/A" },
+            "Vivo y16 display": { qty: 8, price: 1500, brand: "Vivo", imei: "N/A" },
+            "OPPO a18k combo": { qty: 6, price: 1300, brand: "OPPO", imei: "N/A" }
+        };
+        
+        salesData = [
+            { id: 1, date: getToday(), brand: "Vivo", model: "Vivo y16 display", imei: "12345", qty: 1, mode: "Cash", cost: 1200, sale: 1500 },
+            { id: 2, date: getToday(), brand: "OPPO", model: "OPPO a18k combo", imei: "67890", qty: 1, mode: "UPI", cost: 1000, sale: 1300 },
+            { id: 3, date: getToday(), brand: "Service", model: "Money Transfer", imei: "N/A", qty: 1, mode: "Cash", cost: 50, sale: 100 },
+            { id: 4, date: getToday(), brand: "Lava", model: "Ramesh lava jama", imei: "N/A", qty: 1, mode: "Udhaar", cost: 2500, sale: 3000 },
+            { id: 5, date: getToday(), brand: "Generic", model: "Glass", imei: "N/A", qty: 1, mode: "Cash", cost: 80, sale: 100 }
+        ];
+        
+        udhaarData = [
+            { id: 1, date: "2026-06-01", name: "Om", phone: "7898985511", company: "Halvad", product: "Amzon", total: 5000, jama: 0 },
+            { id: 2, date: "2026-06-05", name: "Ramesh", phone: "9876543210", company: "Lava", product: "Mobile", total: 3000, jama: 0 }
+        ];
+        
         // LOGIN
         function handleLogin() {
             let pin = document.getElementById('loginPin').value;
             if(pin === '1234') {
                 sessionStorage.setItem('shaktiLoggedIn', 'true');
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('dashboardContent').classList.remove('hidden');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
                 document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
                 document.getElementById('monthSaleLabel').innerText = getMonthLabel(new Date());
                 updateMonthFilterOptions();
+                updateDashboardUI();
                 setTimeout(() => { if(window.setupRealtimeSync) window.setupRealtimeSync(); }, 200);
             } else {
                 let errorDiv = document.getElementById('loginError');
@@ -269,11 +294,12 @@
         function handleLogout() { sessionStorage.removeItem('shaktiLoggedIn'); location.reload(); }
         
         if(sessionStorage.getItem('shaktiLoggedIn') === 'true') {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboardContent').classList.remove('hidden');
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
             document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
             document.getElementById('monthSaleLabel').innerText = getMonthLabel(new Date());
             updateMonthFilterOptions();
+            updateDashboardUI();
             setTimeout(() => { if(window.setupRealtimeSync) window.setupRealtimeSync(); }, 200);
         }
         
@@ -292,6 +318,90 @@
                 updateDashboardUI();
             });
         };
+        
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); if(id==='saleModal') document.getElementById('saleDate').value = getToday(); if(id==='udhaarModal') document.getElementById('udhaarDate').value = getToday(); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function submitSaleForm() {
+            let date = document.getElementById('saleDate').value || getToday();
+            let brand = document.getElementById('modelBrand').value;
+            let model = document.getElementById('modelName').value;
+            let imei = document.getElementById('modelImei').value;
+            let qty = parseInt(document.getElementById('quantity').value) || 1;
+            let mode = document.getElementById('paymentMode').value;
+            let cost = parseFloat(document.getElementById('costPrice').value) || 0;
+            let sale = parseFloat(document.getElementById('salePrice').value) || 0;
+            if(!model) { alert("Model name required"); return; }
+            salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty });
+            if(inventory[model]) inventory[model].qty = Math.max(0, (inventory[model].qty || 0) - qty);
+            closeModal('saleModal');
+            document.getElementById('modelBrand').value = '';
+            document.getElementById('modelName').value = '';
+            document.getElementById('modelImei').value = '';
+            document.getElementById('costPrice').value = '';
+            document.getElementById('salePrice').value = '';
+            syncToCloud();
+            updateDashboardUI();
+            alert("Sale added successfully!");
+        }
+        
+        function submitStockForm() {
+            let brand = document.getElementById('stockBrand').value;
+            let model = document.getElementById('stockModelName').value;
+            let imei = document.getElementById('stockImei').value;
+            let qty = parseInt(document.getElementById('stockCount').value) || 0;
+            let price = parseFloat(document.getElementById('stockPriceInp').value) || 0;
+            if(!model) { alert("Model name required"); return; }
+            if(inventory[model]) inventory[model].qty += qty;
+            else inventory[model] = { qty, price, brand, imei };
+            closeModal('stockModal');
+            document.getElementById('stockBrand').value = '';
+            document.getElementById('stockModelName').value = '';
+            document.getElementById('stockImei').value = '';
+            document.getElementById('stockCount').value = '';
+            document.getElementById('stockPriceInp').value = '';
+            syncToCloud();
+            updateDashboardUI();
+            alert("Stock added successfully!");
+        }
+        
+        function addExpense() {
+            let name = document.getElementById('expenseName').value;
+            let amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+            if(!name || amount<=0) { alert("Enter valid expense details"); return; }
+            expenseData.push({ id: Date.now(), name, amount, date: getToday() });
+            closeModal('expenseModal');
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+            syncToCloud();
+            updateDashboardUI();
+            alert("Expense added!");
+        }
+        
+        function submitUdhaarForm() {
+            let date = document.getElementById('udhaarDate').value || getToday();
+            let name = document.getElementById('udhaarCustomerName').value;
+            let phone = document.getElementById('udhaarCustomerPhone').value;
+            let company = document.getElementById('udhaarCompanyName').value;
+            let product = document.getElementById('udhaarProductName').value;
+            let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0;
+            let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0;
+            if(!name || total<=0) { alert("Customer name and total amount required"); return; }
+            udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama });
+            closeModal('udhaarModal');
+            document.getElementById('udhaarCustomerName').value = '';
+            document.getElementById('udhaarCustomerPhone').value = '';
+            document.getElementById('udhaarCompanyName').value = '';
+            document.getElementById('udhaarProductName').value = '';
+            document.getElementById('udhaarTotalPrice').value = '';
+            document.getElementById('udhaarJamaPrice').value = '';
+            syncToCloud();
+            updateDashboardUI();
+            alert("Udhaar record added!");
+        }
+        
+        function openEditStock(key) { alert("Edit feature - can implement"); }
+        function deleteStockItem(key) { if(confirm("Delete stock?")){ delete inventory[key]; syncToCloud(); updateDashboardUI(); } }
         
         function updateDashboardUI() {
             renderStockTable(); renderUdhaarTable(); renderLog(); renderExpenseLog(); renderTopProducts();
@@ -320,7 +430,7 @@
                 if(match) {
                     let lowStock=(qty<=2 && qty>0), outStock=(qty===0);
                     let div=document.createElement('div'); div.className=`card-bg p-2.5 rounded-lg border mb-2 ${outStock?'border-red-600 bg-red-950/20':lowStock?'border-amber-600 bg-amber-950/20':'border-slate-800'}`;
-                    div.innerHTML=`<div class="flex justify-between"><div><span class="text-[10px] text-blue-400">${brand||'Generic'}</span><p class="font-bold">${model} ${lowStock?'⚠️':outStock?'❌':''}</p></div><div><span class="bg-slate-900 px-2 rounded ${lowStock?'text-amber-400':outStock?'text-red-500':''}">${qty} Left</span><button onclick='openEditStock("${model.replace(/'/g,"\\'")}")' class="text-blue-400 ml-1"><i class="fa-regular fa-pen-to-square"></i></button><button onclick='deleteStockItem("${model.replace(/'/g,"\\'")}")' class="text-rose-500 ml-1"><i class="fa-regular fa-trash-can"></i></button></div></div><p class="text-[9px] text-gray-500">IMEI: ${imei||'N/A'} | Value: ₹${qty*price}</p>`;
+                    div.innerHTML=`<div class="flex justify-between"><div><span class="text-[10px] text-blue-400">${brand||'Generic'}</span><p class="font-bold">${model} ${lowStock?'⚠️':outStock?'❌':''}</p></div><div><span class="bg-slate-900 px-2 rounded ${lowStock?'text-amber-400':outStock?'text-red-500':''}">${qty} Left</span><button onclick='deleteStockItem("${model.replace(/'/g,"\\'")}")' class="text-rose-500 ml-1"><i class="fa-regular fa-trash-can"></i></button></div></div><p class="text-[9px] text-gray-500">IMEI: ${imei||'N/A'} | Value: ₹${qty*price}</p>`;
                     container.appendChild(div);
                 }
             }
@@ -330,4 +440,45 @@
         function renderUdhaarTable() {
             let container=document.getElementById('udhaarContainer'); if(!container) return;
             let kw=document.getElementById('searchUdhaarInp')?.value.toLowerCase()||'';
-            container.innerHTML=''; let filtered=udhaarData.filter(x=>x.name.toLowerCase().includes(kw)
+            container.innerHTML=''; let filtered=udhaarData.filter(x=>x.name.toLowerCase().includes(kw) || x.phone.includes(kw));
+            let totalPending=0;
+            if(filtered.length===0){ container.innerHTML='<p class="text-center text-gray-500 py-2">No Udhaar records</p>'; document.getElementById('totalUdhaarValuation').innerHTML='₹0 Pending'; return; }
+            filtered.reverse().forEach(x=>{ let pending=x.total-x.jama; totalPending+=pending; let div=document.createElement('div'); div.className="card-bg p-3 rounded-xl mb-2"; div.innerHTML=`<div class="flex justify-between"><div><p class="font-bold">${x.name}</p><p class="text-gray-400 text-[10px]">${x.phone}</p></div><div><button onclick='deleteUdhaarItem(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></div></div><div class="bg-slate-900/50 p-2 rounded mt-1 text-[11px]"><div>Item: ${x.company} ${x.product}</div><div class="flex justify-between"><span>Total: ₹${x.total}</span><span>Jama: ₹${x.jama}</span><span class="text-rose-400">Pending: ₹${pending}</span></div></div>`; container.appendChild(div); });
+            document.getElementById('totalUdhaarValuation').innerHTML=`₹${totalPending} Pending`;
+        }
+        
+        function deleteUdhaarItem(id) { if(confirm("Delete udhaar record?")){ udhaarData=udhaarData.filter(x=>x.id!=id); syncToCloud(); updateDashboardUI(); } }
+        
+        function renderLog() {
+            let tbody=document.getElementById('logTableBody'); if(!tbody) return; tbody.innerHTML='';
+            let dateFilter=document.getElementById('salesLogDateFilter')?.value||'', kw=document.getElementById('searchLog')?.value.toLowerCase()||'', type=document.getElementById('salesSearchType')?.value||'model';
+            salesData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let match=true; if(kw){ if(type==='model') match=x.model.toLowerCase().includes(kw); else if(type==='brand') match=(x.brand||'').toLowerCase().includes(kw); else match=(x.imei||'').toLowerCase().includes(kw); } if(match){ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-1 text-[10px]">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-1 text-xs">${x.model}<br><span class="text-[9px] text-gray-500">${x.imei||'N/A'}</span></td><td class="py-1 text-center">${x.qty}</td><td class="py-1 text-right text-blue-400">₹${x.sale}</td><td class="py-1 text-center"><i class="fa-brands fa-whatsapp text-emerald-400"></i></td>`; tbody.appendChild(tr); } });
+        }
+        
+        function renderExpenseLog() {
+            let tbody=document.getElementById('expenseTableBody'); if(!tbody) return; tbody.innerHTML='';
+            let dateFilter=document.getElementById('expenseLogDateFilter')?.value||'';
+            expenseData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-1 text-[10px]">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-1">${x.name}</td><td class="py-1 text-right text-rose-400">₹${x.amount}</td><td class="py-1 text-center"><button onclick='deleteExpense(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></td>`; tbody.appendChild(tr); });
+        }
+        
+        function deleteExpense(id) { if(confirm("Delete expense?")){ expenseData=expenseData.filter(x=>x.id!=id); syncToCloud(); updateDashboardUI(); } }
+        
+        function renderTopProducts() {
+            let container=document.getElementById('topProductsContainer'); if(!container) return;
+            let cnt={}; salesData.forEach(x=>cnt[x.model]=(cnt[x.model]||0)+x.qty);
+            container.innerHTML=''; Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([m,q],i)=>{ let d=document.createElement('div'); d.className="bg-slate-900/40 p-2 rounded-lg flex justify-between"; d.innerHTML=`<span>${i+1}. ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d); });
+        }
+        
+        function showLiveStockSuggestions() {
+            let inp=document.getElementById('modelName'), q=inp.value.toLowerCase(), box=document.getElementById('stockSuggestionBox');
+            if(!box) return; box.innerHTML=''; if(q.length<1){ box.classList.add('hidden'); return; }
+            let found=0; for(let [model,data] of Object.entries(inventory)){ if(model.toLowerCase().includes(q)){ found++; let div=document.createElement('div'); div.className="suggestion-item"; div.innerHTML=`<div class="flex justify-between"><span>${model}</span><span class="text-emerald-500">${data.qty||0} left</span></div>`; div.onclick=()=>{ inp.value=model; document.getElementById('costPrice').value=data.price||0; document.getElementById('modelBrand').value=data.brand||''; if(data.imei)document.getElementById('modelImei').value=data.imei; box.classList.add('hidden'); }; box.appendChild(div); } }
+            if(found>0) box.classList.remove('hidden'); else box.classList.add('hidden');
+        }
+        
+        function exportToCSV(){ let csv="Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n"; salesData.forEach(x=>csv+=`${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`); let a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='Sales_Report.csv'; a.click(); }
+        
+        document.addEventListener('click',function(e){ if(e.target.id!=='modelName'){ let b=document.getElementById('stockSuggestionBox'); if(b) b.classList.add('hidden'); } });
+    </script>
+</body>
+</html>
