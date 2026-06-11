@@ -46,6 +46,7 @@
         .loading-spinner { border: 3px solid #1E293B; border-top: 3px solid #10B981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
+        /* FIXED BOTTOM NAVIGATION - Always visible */
         .bottom-nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 28rem; margin: 0 auto; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-top: 1px solid rgba(30, 41, 59, 0.8); padding: 10px 16px; display: flex; justify-content: space-around; z-index: 50; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; padding: 6px 12px; border-radius: 16px; color: #94A3B8; }
         .nav-item:hover { background: #1E293B; color: #10b981; transform: translateY(-2px); }
@@ -59,6 +60,13 @@
         
         .whatsapp-btn { background: #075E54; padding: 4px 8px; border-radius: 20px; font-size: 9px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; }
         .whatsapp-btn:hover { background: #128C7E; transform: scale(1.02); }
+        
+        /* Top Action Buttons */
+        .action-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .action-btn { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid #334155; padding: 12px 8px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .action-btn:hover { transform: translateY(-2px); border-color: #10b981; }
+        .action-btn i { font-size: 20px; margin-bottom: 4px; display: block; }
+        .action-btn span { font-size: 11px; font-weight: 600; }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto">
@@ -107,49 +115,50 @@
 
     <!-- MAIN DASHBOARD -->
     <div id="dashboardContent" style="display: none;">
+        <!-- Header -->
         <div class="text-center mb-5">
             <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
-            <p class="text-xs text-gray-400 uppercase tracking-widest">TRUST • QUALITY • SERVICE</p>
+            <p class="text-xs text-gray-400 uppercase tracking-widest">TRUST · QUALITY · SERVICE</p>
             <div class="flex justify-between items-center mt-2">
                 <span class="text-[10px] text-gray-500" id="liveHeaderDate">11 Jun 2026</span>
                 <button onclick="doLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-0.5 rounded border border-rose-900 cursor-pointer"><i class="fa-solid fa-power-off"></i> Logout</button>
             </div>
         </div>
 
-        <!-- Stats Row 1 - EXACT NUMBERS -->
+        <!-- Stats Row 1 -->
         <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">Cash In Hand</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹22,450</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">Total Products</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">128</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">Total Customers</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">56</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">Pending Udhaar</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹22,450</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">128</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">56</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
         </div>
 
-        <!-- Stats Row 2 - EXACT NUMBERS -->
+        <!-- Stats Row 2 -->
         <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">Today's Sale</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹11,040</p><p id="todayOrders" class="text-xs text-gray-500">7 Orders</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">Today's Profit</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹6,470</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">Month Sale</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹35,040</p><p id="monthSaleLabel" class="text-xs text-gray-500">June 2026</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">Month Profit</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹10,370</p><p class="text-xs text-gray-500">Margin Target</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹11,040</p><p id="todayOrders" class="text-xs text-gray-500">7 Orders</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹6,470</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH SALE</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹35,040</p><p id="monthSaleLabel" class="text-xs text-gray-500">June 2026</p></div>
+            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹10,370</p><p class="text-xs text-gray-500">Margin Target</p></div>
         </div>
 
-        <!-- Cash Flow Split - EXACT NUMBERS -->
+        <!-- Cash Flow Split -->
         <div class="bg-[#0A1022] border border-slate-800/80 p-2.5 rounded-2xl mb-4 flex justify-between items-center text-xs font-semibold">
             <span class="text-gray-300">Cash Flow Split:</span>
             <div class="flex gap-3"><span class="bg-emerald-950/50 text-emerald-300 px-2 py-1 rounded-xl">Cash: <span id="splitCashVal">₹10,940</span></span><span class="bg-blue-950/50 text-blue-300 px-2 py-1 rounded-xl">UPI: <span id="splitUpiVal">₹100</span></span></div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-4 gap-2 mb-5">
-            <button onclick="playSound(); openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800 transition cursor-pointer"><p class="text-sm font-semibold text-emerald-400">➕ Add Sale</p></button>
-            <button onclick="playSound(); openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800 transition cursor-pointer"><p class="text-sm font-semibold text-blue-400">📦 Add Stock</p></button>
-            <button onclick="playSound(); openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800 transition cursor-pointer"><p class="text-sm font-semibold text-amber-400">💸 Expense</p></button>
-            <button onclick="playSound(); openModal('udhaarModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800 transition cursor-pointer"><p class="text-sm font-semibold text-purple-400">🔴 Udhaar</p></button>
+        <!-- TOP ACTION BUTTONS - Now visible at top (not fixed) -->
+        <div class="action-buttons">
+            <div onclick="playSound(); openModal('saleModal')" class="action-btn bg-emerald-900/20 border-emerald-800/50"><i class="fa-solid fa-cart-plus text-emerald-400"></i><span class="text-emerald-400">Add Sale</span></div>
+            <div onclick="playSound(); openModal('stockModal')" class="action-btn bg-blue-900/20 border-blue-800/50"><i class="fa-solid fa-boxes text-blue-400"></i><span class="text-blue-400">Add Stock</span></div>
+            <div onclick="playSound(); openModal('expenseModal')" class="action-btn bg-amber-900/20 border-amber-800/50"><i class="fa-solid fa-receipt text-amber-400"></i><span class="text-amber-400">Expense</span></div>
+            <div onclick="playSound(); openModal('udhaarModal')" class="action-btn bg-rose-900/20 border-rose-800/50"><i class="fa-solid fa-book text-rose-400"></i><span class="text-rose-400">Udhaar</span></div>
         </div>
 
         <!-- Last 7 Days Sale Chart -->
         <div class="card-bg p-4 rounded-2xl mb-5">
-            <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider">📊 Last 7 Days Sale</h3>
-            <div class="h-48 w-full mt-3"><canvas id="weeklyChart"></canvas></div>
+            <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider">📊 LAST 7 DAYS SALE</h3>
+            <div class="h-56 w-full mt-3"><canvas id="weeklyChart"></canvas></div>
         </div>
 
         <!-- Stock Section -->
@@ -187,7 +196,7 @@
 
             <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300">🏆 TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-sm mt-3"></div></div>
             
-            <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300 flex justify-between mb-3">📋 EXPENSE HISTORY LOG <input type="date" id="expenseLogDateFilter" onchange="playSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-1"></h3><div class="overflow-x-auto"><table class="premium-table"><thead>胰腺<th>DATE</th><th>EXPENSE DETAILS</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+            <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300 flex justify-between mb-3">📋 EXPENSE HISTORY LOG <input type="date" id="expenseLogDateFilter" onchange="playSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-1"></h3><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>EXPENSE DETAILS</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
             
             <div class="card-bg p-4 rounded-2xl mb-6"><div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-300">🛒 SALES HISTORY LOG</h3><button onclick="playSound(); exportToCSV()" class="text-[10px] bg-blue-950/50 text-blue-300 px-2 py-1 rounded-full cursor-pointer"><i class="fa-regular fa-file-excel"></i> Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[10px] rounded-lg p-2"></div><div><label class="text-[9px] text-gray-400">Search Sales</label><input type="text" id="searchLog" oninput="playSound(); renderLog()" placeholder="Type text..." class="w-full input-field rounded-lg p-2 text-xs"></div></div><select id="salesSearchType" class="input-field rounded-lg p-2 text-xs w-full mb-3" onchange="playSound(); renderLog()"><option value="model">Search by Model Name</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>PRODUCT NAME</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
         </div>
@@ -202,7 +211,7 @@
 
     <div id="udhaarModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5"><div class="flex justify-between items-center mb-3"><h3 class="text-rose-400 font-bold text-lg">🔴 Udhaar Entry</h3><button onclick="playSound(); closeModal('udhaarModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="hidden" id="editUdhaarId"><input type="date" id="udhaarDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="udhaarJamaPrice" placeholder="Jama Amount ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="udhaarPhotoBase64"><button onclick="playSaveSound(); submitUdhaarForm()" class="w-full bg-rose-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE UDHAAR</button></div></div>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- FIXED BOTTOM NAVIGATION - Always visible, doesn't scroll -->
     <div class="bottom-nav-bar">
         <div onclick="playSound(); scrollToTop()" id="navHome" class="nav-item active"><i class="fa-solid fa-house text-sm"></i><span>Home</span></div>
         <div onclick="playSound(); scrollToSection('stockSection')" id="navStock" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Stock</span></div>
@@ -234,11 +243,10 @@
         function playSaveSound() {
             try {
                 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                // Premium success sound - two notes
                 let osc1 = audioContext.createOscillator();
                 let gain1 = audioContext.createGain();
                 osc1.type = 'triangle';
-                osc1.frequency.value = 523.25; // C5
+                osc1.frequency.value = 523.25;
                 gain1.gain.value = 0.1;
                 gain1.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
                 osc1.connect(gain1);
@@ -250,7 +258,7 @@
                     let osc2 = audioContext.createOscillator();
                     let gain2 = audioContext.createGain();
                     osc2.type = 'triangle';
-                    osc2.frequency.value = 659.25; // E5
+                    osc2.frequency.value = 659.25;
                     gain2.gain.value = 0.1;
                     gain2.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.25);
                     osc2.connect(gain2);
