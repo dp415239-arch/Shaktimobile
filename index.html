@@ -33,45 +33,116 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Inter', 'Segoe UI', sans-serif; padding: 16px 16px 85px 16px; max-width: 28rem; margin: 0 auto; min-height: 100vh; }
+        body { 
+            background-color: #0B111E; 
+            color: #FFFFFF; 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            padding: 16px 16px 85px 16px; 
+            max-width: 28rem; 
+            margin: 0 auto; 
+            min-height: 100vh;
+            font-size: 16px;
+        }
         
-        .card-bg { background-color: #121A2E; border: 1px solid #1E293B; backdrop-filter: blur(2px); border-radius: 16px; }
-        .input-field { background-color: #0F172A; border: 1px solid #334155; color: white; transition: all 0.2s; border-radius: 12px; }
-        .input-field:focus { border-color: #3B82F6; outline: none; box-shadow: 0 0 0 1px #3B82F6; }
+        /* Larger cards and text */
+        .card-bg { 
+            background-color: #121A2E; 
+            border: 1px solid #1E293B; 
+            backdrop-filter: blur(2px); 
+            border-radius: 20px; 
+        }
+        .input-field { 
+            background-color: #0F172A; 
+            border: 1px solid #334155; 
+            color: white; 
+            transition: all 0.2s; 
+            border-radius: 14px; 
+            padding: 12px;
+            font-size: 14px;
+        }
+        .input-field:focus { border-color: #3B82F6; outline: none; box-shadow: 0 0 0 2px #3B82F6; }
         .modal-bg { background-color: rgba(11, 17, 30, 0.95); backdrop-filter: blur(5px); }
-        .low-stock-badge { background-color: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fbbf24; padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: bold; }
-        .suggestion-box { background-color: #0F172A; border: 1px solid #334155; max-height: 180px; overflow-y: auto; z-index: 100; border-radius: 12px; }
-        .suggestion-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #1E293B; font-size: 12px; }
+        .low-stock-badge { background-color: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fbbf24; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; }
+        .suggestion-box { background-color: #0F172A; border: 1px solid #334155; max-height: 200px; overflow-y: auto; z-index: 1000; border-radius: 16px; }
+        .suggestion-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #1E293B; font-size: 13px; }
         .suggestion-item:hover { background-color: #1E2A48; color: #60A5FA; }
-        .customer-photo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #1E293B; border: 2px solid #3B82F6; }
-        .stock-photo { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #1E293B; }
+        .customer-photo { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #1E293B; border: 2px solid #3B82F6; }
+        .stock-photo { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; background: #1E293B; }
         .loading-spinner { border: 3px solid #1E293B; border-top: 3px solid #10B981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* FIXED BOTTOM NAVIGATION - Always visible at bottom, never scrolls away */
-        .bottom-nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 28rem; margin: 0 auto; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(30, 41, 59, 0.8); padding: 10px 16px; display: flex; justify-content: space-around; z-index: 1000; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; padding: 6px 12px; border-radius: 16px; color: #94A3B8; background: transparent; }
+        /* FIXED BOTTOM NAVIGATION - Always visible */
+        .bottom-nav-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            max-width: 28rem; 
+            margin: 0 auto; 
+            background: rgba(15, 23, 42, 0.98); 
+            backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(30, 41, 59, 0.8); 
+            padding: 12px 16px; 
+            display: flex; 
+            justify-content: space-around; 
+            z-index: 1000; 
+            border-radius: 28px 28px 0 0; 
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.4); 
+        }
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 5px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            padding: 8px 14px; 
+            border-radius: 20px; 
+            color: #94A3B8; 
+            background: transparent; 
+        }
         .nav-item:hover { background: #1E293B; color: #10b981; transform: translateY(-2px); }
         .nav-item.active { color: #10b981; background: #1E293B; }
         
-        /* TOP ACTION BUTTONS - At the top of page content */
-        .action-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 20px 0; }
-        .action-btn { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid #334155; padding: 12px 8px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .action-btn:hover { transform: translateY(-2px); border-color: #10b981; }
-        .action-btn i { font-size: 20px; margin-bottom: 4px; display: block; }
-        .action-btn span { font-size: 11px; font-weight: 600; }
+        /* TOP ACTION BUTTONS - Large and clickable */
+        .action-buttons { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 12px; 
+            margin: 20px 0 24px 0; 
+        }
+        .action-btn { 
+            background: linear-gradient(135deg, #1E293B, #0F172A); 
+            border: 1px solid #334155; 
+            padding: 14px 8px; 
+            border-radius: 20px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+        }
+        .action-btn:hover { transform: translateY(-3px); border-color: #10b981; background: linear-gradient(135deg, #2D3A5E, #1E293B); }
+        .action-btn i { font-size: 24px; margin-bottom: 6px; display: block; }
+        .action-btn span { font-size: 12px; font-weight: 600; }
         
-        .premium-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        .premium-table th { padding: 8px 6px; font-size: 10px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #1E293B; }
-        .premium-table td { padding: 10px 6px; font-size: 11px; background: #0F172A; border-radius: 10px; }
-        .premium-table tr td:first-child { border-radius: 10px 0 0 10px; }
-        .premium-table tr td:last-child { border-radius: 0 10px 10px 0; }
+        /* Tables */
+        .premium-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .premium-table th { padding: 10px 8px; font-size: 11px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #1E293B; }
+        .premium-table td { padding: 12px 8px; font-size: 12px; background: #0F172A; border-radius: 12px; }
+        .premium-table tr td:first-child { border-radius: 12px 0 0 12px; }
+        .premium-table tr td:last-child { border-radius: 0 12px 12px 0; }
         
-        .whatsapp-btn { background: #075E54; padding: 4px 8px; border-radius: 20px; font-size: 9px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; }
+        .whatsapp-btn { background: #075E54; padding: 6px 12px; border-radius: 25px; font-size: 10px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; }
         .whatsapp-btn:hover { background: #128C7E; transform: scale(1.02); }
         
-        /* Main content wrapper - gives space for fixed bottom nav */
-        .main-content { padding-bottom: 10px; }
+        /* Stats cards larger */
+        .stat-card { padding: 14px 12px; border-radius: 20px; }
+        .stat-label { font-size: 11px; letter-spacing: 0.5px; }
+        .stat-value { font-size: 22px; font-weight: 800; }
+        
+        /* Modal styling */
+        .modal-container { max-height: 85vh; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -120,117 +191,159 @@
 
     <!-- MAIN DASHBOARD -->
     <div id="dashboardContent" style="display: none;">
-        <div class="main-content">
-            <!-- Header -->
-            <div class="text-center mb-4">
-                <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
-                <p class="text-xs text-gray-400 uppercase tracking-widest">TRUST · QUALITY · SERVICE</p>
-                <div class="flex justify-between items-center mt-2">
-                    <span class="text-[10px] text-gray-500" id="liveHeaderDate">11 Jun 2026</span>
-                    <button onclick="doLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-0.5 rounded border border-rose-900 cursor-pointer"><i class="fa-solid fa-power-off"></i> Logout</button>
-                </div>
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="text-2xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
+            <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">TRUST · QUALITY · SERVICE</p>
+            <div class="flex justify-between items-center mt-3">
+                <span class="text-[11px] text-gray-500" id="liveHeaderDate">11 Jun 2026</span>
+                <button onclick="doLogout()" class="text-[10px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-3 py-1 rounded-full border border-rose-900 cursor-pointer"><i class="fa-solid fa-power-off"></i> Logout</button>
             </div>
+        </div>
 
-            <!-- Stats Row 1 -->
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹22,450</p></div>
-                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">128</p></div>
-                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">56</p></div>
-                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
+        <!-- Stats Row 1 -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">CASH IN HAND</p><p id="cashInHandValue" class="text-2xl font-black text-emerald-400 mt-1">₹22,450</p></div>
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-2xl font-black text-blue-400 mt-1">128</p></div>
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-2xl font-black text-amber-400 mt-1">56</p></div>
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-2xl font-black text-rose-400 mt-1">₹5,000</p></div>
+        </div>
+
+        <!-- Stats Row 2 -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">TODAY'S SALE</p><p id="todaySale" class="text-2xl font-black text-blue-500 mt-1">₹11,040</p><p id="todayOrders" class="text-xs text-gray-500 mt-1">7 Orders</p></div>
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">TODAY'S PROFIT</p><p id="todayProfit" class="text-2xl font-black text-emerald-500 mt-1">₹6,470</p><p class="text-xs text-gray-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-sync-alt text-green-500 text-[9px]"></i> Live Sync Active</p></div>
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">MONTH SALE</p><p id="monthSale" class="text-2xl font-black text-blue-500 mt-1">₹35,040</p><p id="monthSaleLabel" class="text-xs text-gray-500 mt-1">June 2026</p></div>
+            <div class="card-bg p-4 rounded-xl"><p class="text-[11px] text-gray-400 uppercase font-semibold">MONTH PROFIT</p><p id="monthProfit" class="text-2xl font-black text-amber-500 mt-1">₹10,370</p><p class="text-xs text-gray-500 mt-1">Margin Target</p></div>
+        </div>
+
+        <!-- Cash Flow Split -->
+        <div class="bg-[#0A1022] border border-slate-800/80 p-3 rounded-2xl mb-5 flex justify-between items-center text-sm font-semibold">
+            <span class="text-gray-300"><i class="fa-solid fa-chart-simple text-indigo-400 mr-2"></i> Cash Flow Split:</span>
+            <div class="flex gap-3"><span class="bg-emerald-950/50 text-emerald-300 px-3 py-1.5 rounded-xl"><i class="fa-solid fa-money-bill-wave mr-1"></i> Cash: <span id="splitCashVal">₹10,940</span></span><span class="bg-blue-950/50 text-blue-300 px-3 py-1.5 rounded-xl"><i class="fa-brands fa-google-pay mr-1"></i> UPI: <span id="splitUpiVal">₹100</span></span></div>
+        </div>
+
+        <!-- TOP ACTION BUTTONS - Modal opens without page scroll -->
+        <div class="action-buttons">
+            <div onclick="playSound(); openModal('saleModal')" class="action-btn bg-emerald-900/20 border-emerald-800/50"><i class="fa-solid fa-cart-plus text-emerald-400"></i><span class="text-emerald-400">Add Sale</span></div>
+            <div onclick="playSound(); openModal('stockModal')" class="action-btn bg-blue-900/20 border-blue-800/50"><i class="fa-solid fa-boxes text-blue-400"></i><span class="text-blue-400">Add Stock</span></div>
+            <div onclick="playSound(); openModal('expenseModal')" class="action-btn bg-amber-900/20 border-amber-800/50"><i class="fa-solid fa-receipt text-amber-400"></i><span class="text-amber-400">Expense</span></div>
+            <div onclick="playSound(); openModal('udhaarModal')" class="action-btn bg-rose-900/20 border-rose-800/50"><i class="fa-solid fa-book text-rose-400"></i><span class="text-rose-400">Udhaar</span></div>
+        </div>
+
+        <!-- Last 7 Days Sale Chart -->
+        <div class="card-bg p-4 rounded-2xl mb-5">
+            <h3 class="text-base font-bold text-gray-300 uppercase tracking-wider">📊 LAST 7 DAYS SALE</h3>
+            <div class="h-60 w-full mt-3"><canvas id="weeklyChart"></canvas></div>
+        </div>
+
+        <!-- Stock Section -->
+        <div id="stockSection" class="card-bg p-4 rounded-2xl mb-5">
+            <div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="text-base font-bold text-gray-200">📟 CURRENT STOCK & INVENTORY</h3><span class="text-[10px] bg-emerald-950/40 text-emerald-300 px-3 py-1 rounded-full flex items-center gap-1"><span class="h-2 w-2 bg-emerald-400 rounded-full animate-pulse"></span> Multi-Device Sync</span></div>
+            <div class="bg-indigo-950/30 border border-indigo-900/60 rounded-xl p-4 mb-4 flex justify-between items-center"><div><p class="text-[10px] text-gray-400 uppercase font-semibold">Total Shop Stock Value</p><p id="totalStockValuation" class="text-2xl font-black text-indigo-300 mt-1">₹49,615</p></div><i class="fa-solid fa-cubes text-indigo-700 text-3xl"></i></div>
+            
+            <div class="mb-4">
+                <select id="stockSearchType" class="input-field rounded-xl p-2.5 text-sm w-full mb-2"><option value="model">Model Name</option><option value="brand">Brand</option><option value="imei">IMEI</option></select>
+                <div class="relative"><i class="fa-solid fa-search absolute left-3 top-3.5 text-gray-500 text-sm"></i><input type="text" id="searchStockInp" oninput="playSound(); renderStockTable()" placeholder="Search stock..." class="w-full input-field rounded-xl py-3 pl-9 pr-3 text-sm"></div>
             </div>
+            
+            <div id="stockContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
+        </div>
 
-            <!-- Stats Row 2 -->
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹11,040</p><p id="todayOrders" class="text-xs text-gray-500">7 Orders</p></div>
-                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹6,470</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
-                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH SALE</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹35,040</p><p id="monthSaleLabel" class="text-xs text-gray-500">June 2026</p></div>
-                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹10,370</p><p class="text-xs text-gray-500">Margin Target</p></div>
-            </div>
+        <!-- Udhaar Section -->
+        <div id="udhaarSection" class="card-bg p-4 rounded-2xl mb-5 border-t-4 border-rose-500/80">
+            <div class="flex justify-between items-center pb-3 mb-3 flex-wrap gap-2"><h3 class="text-base font-bold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-base font-black text-rose-400 bg-rose-950/40 px-3 py-1 rounded-full">₹5,000 Pending</span></div>
+            <input type="text" id="searchUdhaarInp" oninput="playSound(); renderUdhaarTable()" placeholder="Search Customer Name or Number..." class="w-full input-field rounded-xl p-3 text-sm mb-4">
+            <div id="udhaarContainer" class="space-y-3 max-h-72 overflow-y-auto"></div>
+        </div>
 
-            <!-- Cash Flow Split -->
-            <div class="bg-[#0A1022] border border-slate-800/80 p-2.5 rounded-2xl mb-4 flex justify-between items-center text-xs font-semibold">
-                <span class="text-gray-300">Cash Flow Split:</span>
-                <div class="flex gap-3"><span class="bg-emerald-950/50 text-emerald-300 px-2 py-1 rounded-xl">Cash: <span id="splitCashVal">₹10,940</span></span><span class="bg-blue-950/50 text-blue-300 px-2 py-1 rounded-xl">UPI: <span id="splitUpiVal">₹100</span></span></div>
-            </div>
-
-            <!-- TOP ACTION BUTTONS - At the top, not fixed -->
-            <div class="action-buttons">
-                <div onclick="playSound(); openModal('saleModal')" class="action-btn bg-emerald-900/20 border-emerald-800/50"><i class="fa-solid fa-cart-plus text-emerald-400"></i><span class="text-emerald-400">Add Sale</span></div>
-                <div onclick="playSound(); openModal('stockModal')" class="action-btn bg-blue-900/20 border-blue-800/50"><i class="fa-solid fa-boxes text-blue-400"></i><span class="text-blue-400">Add Stock</span></div>
-                <div onclick="playSound(); openModal('expenseModal')" class="action-btn bg-amber-900/20 border-amber-800/50"><i class="fa-solid fa-receipt text-amber-400"></i><span class="text-amber-400">Expense</span></div>
-                <div onclick="playSound(); openModal('udhaarModal')" class="action-btn bg-rose-900/20 border-rose-800/50"><i class="fa-solid fa-book text-rose-400"></i><span class="text-rose-400">Udhaar</span></div>
-            </div>
-
-            <!-- Last 7 Days Sale Chart -->
+        <!-- Report Section -->
+        <div id="reportSection" class="mb-5">
             <div class="card-bg p-4 rounded-2xl mb-5">
-                <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider">📊 LAST 7 DAYS SALE</h3>
-                <div class="h-56 w-full mt-3"><canvas id="weeklyChart"></canvas></div>
-            </div>
-
-            <!-- Stock Section -->
-            <div id="stockSection" class="card-bg p-4 rounded-2xl mb-5">
-                <div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-200">📟 CURRENT STOCK & INVENTORY</h3><span class="text-[9px] bg-emerald-950/40 text-emerald-300 px-2 py-0.5 rounded-full flex items-center gap-1"><span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Multi-Device Sync</span></div>
-                <div class="bg-indigo-950/30 border border-indigo-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400 uppercase">Total Shop Stock Value</p><p id="totalStockValuation" class="text-xl font-black text-indigo-300">₹49,615</p></div><i class="fa-solid fa-cubes text-indigo-800 text-2xl"></i></div>
-                
-                <div class="mb-3">
-                    <select id="stockSearchType" class="input-field rounded-xl p-2 text-xs w-full mb-2"><option value="model">Model Name</option><option value="brand">Brand</option><option value="imei">IMEI</option></select>
-                    <div class="relative"><i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-[10px]"></i><input type="text" id="searchStockInp" oninput="playSound(); renderStockTable()" placeholder="Search stock..." class="w-full input-field rounded-xl py-2 pl-8 pr-2 text-xs"></div>
+                <label class="block text-sm text-gray-400 font-bold mb-3 uppercase">📅 SELECT FILTER MONTH</label>
+                <select id="monthFilter" class="w-full input-field rounded-xl p-3 text-base mb-5" onchange="playSound(); updateDashboardUI()"></select>
+                <div class="grid grid-cols-2 gap-4 text-sm border-t border-slate-800 pt-4">
+                    <div class="text-gray-300 font-medium">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono font-bold text-white text-base">19</div>
+                    <div class="text-gray-300 font-medium">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono font-bold text-gray-300 text-base">₹24,670</div>
+                    <div class="text-gray-300 font-medium">Other Expenses:</div><div id="totalOtherExpenses" class="text-right font-mono font-bold text-rose-400 text-base">₹0</div>
+                    <div class="text-emerald-400 font-bold">Actual Net Margin:</div><div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400 text-base">₹10,370</div>
                 </div>
-                
-                <div id="stockContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
             </div>
 
-            <!-- Udhaar Section -->
-            <div id="udhaarSection" class="card-bg p-4 rounded-2xl mb-5 border-t-4 border-rose-500/80">
-                <div class="flex justify-between items-center pb-2 mb-3"><h3 class="text-sm font-bold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-black text-rose-400 bg-rose-950/40 px-2 py-0.5 rounded-full">₹5,000 Pending</span></div>
-                <input type="text" id="searchUdhaarInp" oninput="playSound(); renderUdhaarTable()" placeholder="Search Customer Name or Number..." class="w-full input-field rounded-xl p-2 text-xs mb-3">
-                <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
-            </div>
-
-            <!-- Report Section -->
-            <div id="reportSection" class="mb-5">
-                <div class="card-bg p-4 rounded-2xl mb-5">
-                    <label class="block text-xs text-gray-400 font-bold mb-2 uppercase">📅 SELECT FILTER MONTH</label>
-                    <select id="monthFilter" class="w-full input-field rounded-xl p-2.5 text-sm mb-4" onchange="playSound(); updateDashboardUI()"></select>
-                    <div class="grid grid-cols-2 gap-3 text-sm border-t border-slate-800 pt-3">
-                        <div class="text-gray-300">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono font-bold text-white">19</div>
-                        <div class="text-gray-300">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono font-bold text-gray-300">₹24,670</div>
-                        <div class="text-gray-300">Other Expenses:</div><div id="totalOtherExpenses" class="text-right font-mono font-bold text-rose-400">₹0</div>
-                        <div class="text-emerald-400 font-bold">Actual Net Margin:</div><div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400">₹10,370</div>
-                    </div>
-                </div>
-
-                <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300">🏆 TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-sm mt-3"></div></div>
-                
-                <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300 flex justify-between mb-3">📋 EXPENSE HISTORY LOG <input type="date" id="expenseLogDateFilter" onchange="playSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-1"></h3><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>EXPENSE DETAILS</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
-                
-                <div class="card-bg p-4 rounded-2xl mb-6"><div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-300">🛒 SALES HISTORY LOG</h3><button onclick="playSound(); exportToCSV()" class="text-[10px] bg-blue-950/50 text-blue-300 px-2 py-1 rounded-full cursor-pointer"><i class="fa-regular fa-file-excel"></i> Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[10px] rounded-lg p-2"></div><div><label class="text-[9px] text-gray-400">Search Sales</label><input type="text" id="searchLog" oninput="playSound(); renderLog()" placeholder="Type text..." class="w-full input-field rounded-lg p-2 text-xs"></div></div><select id="salesSearchType" class="input-field rounded-lg p-2 text-xs w-full mb-3" onchange="playSound(); renderLog()"><option value="model">Search by Model Name</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>PRODUCT NAME</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
-            </div>
+            <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-base font-bold text-gray-300">🏆 TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-base mt-3"></div></div>
+            
+            <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-base font-bold text-gray-300 flex justify-between items-center flex-wrap gap-2 mb-4">📋 EXPENSE HISTORY LOG <input type="date" id="expenseLogDateFilter" onchange="playSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-sm rounded-xl px-3 py-2"></h3><div class="overflow-x-auto"><table class="premium-table"><thead>十一<th>DATE</th><th>EXPENSE DETAILS</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+            
+            <div class="card-bg p-4 rounded-2xl mb-6"><div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h3 class="text-base font-bold text-gray-300">🛒 SALES HISTORY LOG</h3><button onclick="playSound(); exportToCSV()" class="text-xs bg-blue-950/50 text-blue-300 px-3 py-1.5 rounded-full cursor-pointer"><i class="fa-regular fa-file-excel"></i> Export Excel</button></div><div class="grid grid-cols-2 gap-3 mb-4"><div><label class="text-[10px] text-gray-400 block mb-1">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-sm rounded-xl p-2.5"></div><div><label class="text-[10px] text-gray-400 block mb-1">Search Sales</label><input type="text" id="searchLog" oninput="playSound(); renderLog()" placeholder="Type text..." class="w-full input-field rounded-xl p-2.5 text-sm"></div></div><select id="salesSearchType" class="input-field rounded-xl p-2.5 text-sm w-full mb-4" onchange="playSound(); renderLog()"><option value="model">Search by Model Name</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="premium-table"><thead>十一<th>DATE</th><th>PRODUCT NAME</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></thead><tbody id="logTableBody"></tbody>}</div></div>
         </div>
     </div>
 
-    <!-- MODALS -->
-    <div id="saleModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5 max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-3"><h3 class="text-emerald-400 font-bold text-lg">🟢 Add Sale</h3><button onclick="playSound(); closeModal('saleModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="date" id="saleDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="modelBrand" placeholder="Brand Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="relative"><input type="text" id="modelName" oninput="showLiveStockSuggestions()" placeholder="Model Name" class="input-field rounded-xl p-2 w-full text-xs"><div id="stockSuggestionBox" class="hidden absolute left-0 right-0 suggestion-box z-[201]"></div></div><input type="text" id="modelImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-2 w-full text-xs mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="quantity" value="1" class="input-field rounded-xl p-2 text-xs"><select id="paymentMode" class="input-field rounded-xl p-2 text-xs"><option>UPI</option><option>Cash</option><option>Udhaar</option></select></div><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="costPrice" placeholder="Cost Price ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="salePrice" placeholder="Sale Price ₹" class="input-field rounded-xl p-2 text-xs"></div><button onclick="playSaveSound(); submitSaleForm()" class="w-full bg-emerald-600 p-3 rounded-xl text-white font-bold mt-4 cursor-pointer">SAVE SALE</button></div></div>
+    <!-- MODALS - Same as before -->
+    <div id="saleModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4">
+        <div class="card-bg w-full max-w-sm rounded-2xl p-5 modal-container">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-emerald-400 font-bold text-xl">🟢 Add Sale</h3><button onclick="playSound(); closeModal('saleModal')" class="text-gray-400 text-2xl font-bold cursor-pointer">✖</button></div>
+            <input type="date" id="saleDate" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="text" id="modelBrand" placeholder="Brand Name" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <div class="relative"><input type="text" id="modelName" oninput="showLiveStockSuggestions()" placeholder="Model Name" class="input-field rounded-xl p-3 w-full text-sm"><div id="stockSuggestionBox" class="hidden absolute left-0 right-0 suggestion-box z-[201]"></div></div>
+            <input type="text" id="modelImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-3 w-full text-sm mt-3">
+            <div class="grid grid-cols-2 gap-3 mt-3"><input type="number" id="quantity" value="1" class="input-field rounded-xl p-3 text-sm"><select id="paymentMode" class="input-field rounded-xl p-3 text-sm"><option>UPI</option><option>Cash</option><option>Udhaar</option></select></div>
+            <div class="grid grid-cols-2 gap-3 mt-3"><input type="number" id="costPrice" placeholder="Cost Price ₹" class="input-field rounded-xl p-3 text-sm"><input type="number" id="salePrice" placeholder="Sale Price ₹" class="input-field rounded-xl p-3 text-sm"></div>
+            <button onclick="playSaveSound(); submitSaleForm()" class="w-full bg-emerald-600 p-3 rounded-xl text-white font-bold mt-5 cursor-pointer text-base">SAVE SALE</button>
+        </div>
+    </div>
 
-    <div id="stockModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg rounded-2xl p-5 w-full max-w-sm"><div class="flex justify-between items-center mb-3"><h3 class="text-blue-400 font-bold text-lg">🔵 Add Stock</h3><button onclick="playSound(); closeModal('stockModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="stockImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="stockCount" placeholder="Quantity" class="input-field rounded-xl p-2 text-xs"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Product Photo</label><input type="file" id="stockPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="stockPhotoBase64"><button onclick="playSaveSound(); submitStockForm()" class="w-full bg-blue-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE STOCK</button></div></div>
+    <div id="stockModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4">
+        <div class="card-bg rounded-2xl p-5 w-full max-w-sm modal-container">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-blue-400 font-bold text-xl">🔵 Add Stock</h3><button onclick="playSound(); closeModal('stockModal')" class="text-gray-400 text-2xl font-bold cursor-pointer">✖</button></div>
+            <input type="text" id="stockBrand" placeholder="Brand Name" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="text" id="stockModelName" placeholder="Model Name" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="text" id="stockImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <div class="grid grid-cols-2 gap-3 mb-3"><input type="number" id="stockCount" placeholder="Quantity" class="input-field rounded-xl p-3 text-sm"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field rounded-xl p-3 text-sm"></div>
+            <label class="text-xs text-gray-400 mb-2 block">📸 Product Photo</label>
+            <input type="file" id="stockPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-3">
+            <input type="hidden" id="stockPhotoBase64">
+            <button onclick="playSaveSound(); submitStockForm()" class="w-full bg-blue-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer text-base">SAVE STOCK</button>
+        </div>
+    </div>
 
-    <div id="expenseModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg rounded-2xl p-5 w-full max-w-sm"><div class="flex justify-between items-center mb-3"><h3 class="text-amber-500 font-bold text-lg">🟠 Add Expense</h3><button onclick="playSound(); closeModal('expenseModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="text" id="expenseName" placeholder="Expense Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="number" id="expenseAmount" placeholder="Amount ₹" class="input-field rounded-xl p-2 w-full text-xs"><button onclick="playSaveSound(); addExpense()" class="w-full bg-amber-600 p-3 rounded-xl text-white font-bold mt-4 cursor-pointer">ADD EXPENSE</button></div></div>
+    <div id="expenseModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4">
+        <div class="card-bg rounded-2xl p-5 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-amber-500 font-bold text-xl">🟠 Add Expense</h3><button onclick="playSound(); closeModal('expenseModal')" class="text-gray-400 text-2xl font-bold cursor-pointer">✖</button></div>
+            <input type="text" id="expenseName" placeholder="Expense Name" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="number" id="expenseAmount" placeholder="Amount ₹" class="input-field rounded-xl p-3 w-full text-sm">
+            <button onclick="playSaveSound(); addExpense()" class="w-full bg-amber-600 p-3 rounded-xl text-white font-bold mt-5 cursor-pointer text-base">ADD EXPENSE</button>
+        </div>
+    </div>
 
-    <div id="udhaarModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5"><div class="flex justify-between items-center mb-3"><h3 class="text-rose-400 font-bold text-lg">🔴 Udhaar Entry</h3><button onclick="playSound(); closeModal('udhaarModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="hidden" id="editUdhaarId"><input type="date" id="udhaarDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="udhaarJamaPrice" placeholder="Jama Amount ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="udhaarPhotoBase64"><button onclick="playSaveSound(); submitUdhaarForm()" class="w-full bg-rose-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE UDHAAR</button></div></div>
+    <div id="udhaarModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4">
+        <div class="card-bg w-full max-w-sm rounded-2xl p-5 modal-container">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-rose-400 font-bold text-xl">🔴 Udhaar Entry</h3><button onclick="playSound(); closeModal('udhaarModal')" class="text-gray-400 text-2xl font-bold cursor-pointer">✖</button></div>
+            <input type="hidden" id="editUdhaarId">
+            <input type="date" id="udhaarDate" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field rounded-xl p-3 w-full text-sm mb-3">
+            <div class="grid grid-cols-2 gap-3 mb-3"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field rounded-xl p-3 text-sm"><input type="number" id="udhaarJamaPrice" placeholder="Jama Amount ₹" class="input-field rounded-xl p-3 text-sm"></div>
+            <label class="text-xs text-gray-400 mb-2 block">📸 Customer Photo</label>
+            <input type="file" id="udhaarPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-3">
+            <input type="hidden" id="udhaarPhotoBase64">
+            <button onclick="playSaveSound(); submitUdhaarForm()" class="w-full bg-rose-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer text-base">SAVE UDHAAR</button>
+        </div>
+    </div>
 
-    <!-- FIXED BOTTOM NAVIGATION - Always visible, never scrolls -->
+    <!-- FIXED BOTTOM NAVIGATION -->
     <div class="bottom-nav-bar">
-        <div onclick="playSound(); scrollToTop()" id="navHome" class="nav-item active"><i class="fa-solid fa-house text-sm"></i><span>Home</span></div>
-        <div onclick="playSound(); scrollToSection('stockSection')" id="navStock" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Stock</span></div>
-        <div onclick="playSound(); openModal('saleModal')" id="navSale" class="nav-item"><i class="fa-solid fa-cart-plus text-sm"></i><span>Sale</span></div>
-        <div onclick="playSound(); scrollToSection('udhaarSection')" id="navUdhaar" class="nav-item"><i class="fa-solid fa-book text-sm"></i><span>Udhaar</span></div>
-        <div onclick="playSound(); scrollToSection('reportSection')" id="navReports" class="nav-item"><i class="fa-solid fa-chart-line text-sm"></i><span>Reports</span></div>
+        <div onclick="playSound(); scrollToTop()" id="navHome" class="nav-item active"><i class="fa-solid fa-house text-base"></i><span>Home</span></div>
+        <div onclick="playSound(); scrollToSection('stockSection')" id="navStock" class="nav-item"><i class="fa-solid fa-boxes text-base"></i><span>Stock</span></div>
+        <div onclick="playSound(); openModal('saleModal')" id="navSale" class="nav-item"><i class="fa-solid fa-cart-plus text-base"></i><span>Sale</span></div>
+        <div onclick="playSound(); scrollToSection('udhaarSection')" id="navUdhaar" class="nav-item"><i class="fa-solid fa-book text-base"></i><span>Udhaar</span></div>
+        <div onclick="playSound(); scrollToSection('reportSection')" id="navReports" class="nav-item"><i class="fa-solid fa-chart-line text-base"></i><span>Reports</span></div>
     </div>
 
     <script>
         let salesData = [], expenseData = [], inventory = {}, udhaarData = [], myChart = null, weeklyChart = null;
         
-        // ========== PREMIUM SOUND EFFECTS ==========
         function playSound() {
             try {
                 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -289,7 +402,6 @@
             window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${msg}`, '_blank');
         }
         
-        // ORIGINAL DATA from your screenshot
         function setDefaultData() {
             inventory = {
                 "Money Transfer": { qty: 6, price: 100, brand: "SERVICE", imei: "N/A", photo: "" },
@@ -400,7 +512,11 @@
             for(let i=0;i<3;i++) { let label=getMonthLabel(d); let opt=document.createElement('option'); opt.value=label; opt.innerText=label; sel.appendChild(opt); d.setMonth(d.getMonth()-1); }
         }
         
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); if(id==='saleModal') document.getElementById('saleDate').value = getToday(); if(id==='udhaarModal') document.getElementById('udhaarDate').value = getToday(); }
+        function openModal(id) { 
+            document.getElementById(id).classList.remove('hidden'); 
+            if(id==='saleModal') document.getElementById('saleDate').value = getToday(); 
+            if(id==='udhaarModal') document.getElementById('udhaarDate').value = getToday(); 
+        }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         
         function submitSaleForm() {
@@ -502,14 +618,14 @@
             
             if(myChart) myChart.destroy();
             let ctx=document.getElementById('analyticsChart')?.getContext('2d');
-            if(ctx) myChart=new Chart(ctx,{type:'doughnut',data:{labels:['Stock Cost','Expenses','Net Profit'],datasets:[{data:[cCost||24670,expT||1,Math.max(0,(mProfit-expT)||10370)],backgroundColor:['#3B82F6','#F43F5E','#10B981'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',font:{size:9}}}}}});
+            if(ctx) myChart=new Chart(ctx,{type:'doughnut',data:{labels:['Stock Cost','Expenses','Net Profit'],datasets:[{data:[cCost||24670,expT||1,Math.max(0,(mProfit-expT)||10370)],backgroundColor:['#3B82F6','#F43F5E','#10B981'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',font:{size:11}}}}}});
         }
         
         function renderWeeklyChart() {
             let last7Days = []; let last7Sales = [];
             for(let i=6;i>=0;i--){ let d=new Date(); d.setDate(d.getDate()-i); let dateStr=d.toISOString().split('T')[0]; let dayName=d.toLocaleDateString('en-IN',{weekday:'short'}); last7Days.push(dayName); let daySale=salesData.filter(x=>x.date===dateStr).reduce((s,x)=>s+x.sale,0); last7Sales.push(daySale); }
             let ctx=document.getElementById('weeklyChart')?.getContext('2d');
-            if(ctx){ if(weeklyChart) weeklyChart.destroy(); weeklyChart=new Chart(ctx,{type:'bar',data:{labels:last7Days,datasets:[{label:'Sale Amount (₹)',data:last7Sales,backgroundColor:'#3B82F6',borderRadius:8,barPercentage:0.6}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#94A3B8',font:{size:10}}}}}}); }
+            if(ctx){ if(weeklyChart) weeklyChart.destroy(); weeklyChart=new Chart(ctx,{type:'bar',data:{labels:last7Days,datasets:[{label:'Sale Amount (₹)',data:last7Sales,backgroundColor:'#3B82F6',borderRadius:8,barPercentage:0.6}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#94A3B8',font:{size:12}}}}}}); }
         }
         
         function renderStockTable() {
@@ -521,8 +637,8 @@
                 let match=false; if(type==='model' && model.toLowerCase().includes(kw)) match=true; if(type==='brand' && brand.toLowerCase().includes(kw)) match=true; if(type==='imei' && imei.toLowerCase().includes(kw)) match=true; if(kw==='') match=true;
                 if(match) {
                     let lowStock=(qty<=2 && qty>0), outStock=(qty===0);
-                    let div=document.createElement('div'); div.className=`card-bg p-2.5 rounded-lg border mb-2 ${outStock?'border-red-600 bg-red-950/20':lowStock?'border-amber-600 bg-amber-950/20':'border-slate-800'}`;
-                    div.innerHTML=`<div class="flex justify-between items-start"><div class="flex gap-2"><div>${photo?`<img src="${photo}" class="stock-photo">`:`<div class="stock-photo flex items-center justify-center bg-slate-700"><i class="fa-solid fa-box text-gray-400"></i></div>`}</div><div><span class="text-[10px] text-blue-400">${brand||'GENERIC'}</span><p class="font-bold text-sm">${model}</p><p class="text-[9px] text-gray-500">IMEI: ${imei||'N/A'} | Value: ₹${qty*price}</p></div></div><div><span class="bg-slate-900 px-2 py-1 rounded text-xs font-mono ${lowStock?'text-amber-400':outStock?'text-red-500':''}">${qty} Left</span>${lowStock?'<span class="low-stock-badge ml-1">⚠️ LOW STOCK!</span>':''}<button onclick='playSound(); deleteStockItem("${model.replace(/'/g,"\\'")}")' class="text-rose-500 ml-2"><i class="fa-regular fa-trash-can"></i></button></div></div>`;
+                    let div=document.createElement('div'); div.className=`card-bg p-3 rounded-xl border mb-3 ${outStock?'border-red-600 bg-red-950/20':lowStock?'border-amber-600 bg-amber-950/20':'border-slate-800'}`;
+                    div.innerHTML=`<div class="flex justify-between items-start"><div class="flex gap-3"><div>${photo?`<img src="${photo}" class="stock-photo">`:`<div class="stock-photo flex items-center justify-center bg-slate-700"><i class="fa-solid fa-box text-gray-400 text-xl"></i></div>`}</div><div><span class="text-xs text-blue-400 font-bold">${brand||'GENERIC'}</span><p class="font-bold text-base mt-1">${model}</p><p class="text-[10px] text-gray-500 mt-1">IMEI: ${imei||'N/A'} | Value: ₹${qty*price}</p></div></div><div class="text-right"><span class="bg-slate-900 px-2 py-1 rounded text-sm font-mono ${lowStock?'text-amber-400':outStock?'text-red-500':''}">${qty} Left</span>${lowStock?'<div class="low-stock-badge mt-1">⚠️ LOW STOCK!</div>':''}<button onclick='playSound(); deleteStockItem("${model.replace(/'/g,"\\'")}")' class="text-rose-500 ml-2 mt-1"><i class="fa-regular fa-trash-can text-lg"></i></button></div></div>`;
                     container.appendChild(div);
                 }
             }
@@ -532,20 +648,20 @@
             let container=document.getElementById('udhaarContainer'); if(!container) return;
             let kw=document.getElementById('searchUdhaarInp')?.value.toLowerCase()||'';
             container.innerHTML=''; let filtered=udhaarData.filter(x=>x.name.toLowerCase().includes(kw) || x.phone.includes(kw));
-            if(filtered.length===0){ container.innerHTML='<p class="text-center text-gray-500 py-2">No Udhaar records</p>'; return; }
-            filtered.reverse().forEach(x=>{ let pending=x.total-x.jama; let photoHtml = x.photo ? `<img src="${x.photo}" class="customer-photo">` : `<div class="customer-photo flex items-center justify-center bg-slate-700"><i class="fa-solid fa-user text-gray-400 text-xl"></i></div>`; let div=document.createElement('div'); div.className="card-bg p-3 rounded-xl mb-2 flex gap-3 items-center"; div.innerHTML=`${photoHtml}<div class="flex-1"><div class="flex justify-between"><div><p class="font-bold">${x.name}</p><p class="text-gray-400 text-[10px]">${x.phone}</p></div><div><button onclick='playSound(); deleteUdhaarItem(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></div></div><div class="grid grid-cols-2 gap-1 text-[11px] mt-1"><div>Item: ${x.company} ${x.product}</div><div>Total: ₹${x.total}</div><div>Jama: ₹${x.jama}</div><div class="text-rose-400 font-bold">Pending: ₹${pending}</div></div></div>`; container.appendChild(div); });
+            if(filtered.length===0){ container.innerHTML='<p class="text-center text-gray-500 py-4">No Udhaar records</p>'; return; }
+            filtered.reverse().forEach(x=>{ let pending=x.total-x.jama; let photoHtml = x.photo ? `<img src="${x.photo}" class="customer-photo">` : `<div class="customer-photo flex items-center justify-center bg-slate-700"><i class="fa-solid fa-user text-gray-400 text-2xl"></i></div>`; let div=document.createElement('div'); div.className="card-bg p-3 rounded-xl mb-3 flex gap-3 items-center"; div.innerHTML=`${photoHtml}<div class="flex-1"><div class="flex justify-between items-center"><div><p class="font-bold text-base">${x.name}</p><p class="text-gray-400 text-xs mt-1">${x.phone}</p></div><button onclick='playSound(); deleteUdhaarItem(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can text-lg"></i></button></div><div class="grid grid-cols-2 gap-2 text-xs mt-2 bg-slate-900/50 p-2 rounded-lg"><div>Item: ${x.company} ${x.product}</div><div>Total: ₹${x.total}</div><div>Jama: ₹${x.jama}</div><div class="text-rose-400 font-bold">Pending: ₹${pending}</div></div></div>`; container.appendChild(div); });
         }
         
         function renderLog() {
             let tbody=document.getElementById('logTableBody'); if(!tbody) return; tbody.innerHTML='';
             let dateFilter=document.getElementById('salesLogDateFilter')?.value||'', kw=document.getElementById('searchLog')?.value.toLowerCase()||'', type=document.getElementById('salesSearchType')?.value||'model';
-            salesData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let match=true; if(kw){ if(type==='model') match=x.model.toLowerCase().includes(kw); else if(type==='brand') match=(x.brand||'').toLowerCase().includes(kw); else match=(x.imei||'').toLowerCase().includes(kw); } if(match){ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-2 text-[10px] font-mono">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-2"><span class="font-medium text-gray-200">${x.model}</span><br><span class="text-[9px] text-gray-500">${x.brand||'Generic'} | ${x.imei||'N/A'}</span></td><td class="py-2 text-center font-mono">${x.qty}</td><td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td><td class="py-2 text-center"><div class="whatsapp-btn" onclick='sendWhatsAppBill("${x.customerPhone||""}", "${x.model.replace(/'/g,"\\'")}", ${x.sale})'><i class="fa-brands fa-whatsapp"></i> Bill</div></td>`; tbody.appendChild(tr); } });
+            salesData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let match=true; if(kw){ if(type==='model') match=x.model.toLowerCase().includes(kw); else if(type==='brand') match=(x.brand||'').toLowerCase().includes(kw); else match=(x.imei||'').toLowerCase().includes(kw); } if(match){ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-2 text-sm font-mono">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-2"><span class="font-semibold text-gray-200">${x.model}</span><br><span class="text-[10px] text-gray-500">${x.brand||'Generic'} | ${x.imei||'N/A'}</span></td><td class="py-2 text-center font-mono">${x.qty}</td><td class="py-2 text-right font-bold text-blue-500">₹${x.sale}</td><td class="py-2 text-center"><div class="whatsapp-btn" onclick='sendWhatsAppBill("${x.customerPhone||""}", "${x.model.replace(/'/g,"\\'")}", ${x.sale})'><i class="fa-brands fa-whatsapp"></i> Bill</div></td>`; tbody.appendChild(tr); } });
         }
         
         function renderExpenseLog() {
             let tbody=document.getElementById('expenseTableBody'); if(!tbody) return; tbody.innerHTML='';
             let dateFilter=document.getElementById('expenseLogDateFilter')?.value||'';
-            expenseData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-2 text-[10px] font-mono">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-2">${x.name}</td><td class="py-2 text-right font-mono text-rose-400">₹${x.amount}</td><td class="py-2 text-center"><button onclick='playSound(); deleteExpense(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></td>`; tbody.appendChild(tr); });
+            expenseData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-2 text-sm font-mono">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-2">${x.name}</td><td class="py-2 text-right font-mono text-rose-400">₹${x.amount}</td><td class="py-2 text-center"><button onclick='playSound(); deleteExpense(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can text-base"></i></button></td>`; tbody.appendChild(tr); });
         }
         
         function renderTopProducts() {
@@ -554,9 +670,9 @@
             container.innerHTML='';
             let topItems = Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
             if(topItems.length === 0) {
-                container.innerHTML = `<div class="bg-slate-900/40 p-3 rounded-xl flex justify-between"><span>1. Money Transfer</span><span class="text-blue-400 font-bold">4 sold</span></div>
-                                       <div class="bg-slate-900/40 p-3 rounded-xl flex justify-between"><span>2. Glass</span><span class="text-blue-400 font-bold">3 sold</span></div>
-                                       <div class="bg-slate-900/40 p-3 rounded-xl flex justify-between"><span>3. Hero Shakti</span><span class="text-blue-400 font-bold">1 sold</span></div>`;
+                container.innerHTML = `<div class="bg-slate-900/40 p-3 rounded-xl flex justify-between items-center"><div><span class="text-amber-400 font-bold text-lg mr-2">1.</span><span class="font-semibold">Money Transfer</span></div><div><span class="text-blue-400 font-bold text-lg">4</span><span class="text-gray-400 text-xs ml-1">sold</span></div></div>
+                                       <div class="bg-slate-900/40 p-3 rounded-xl flex justify-between items-center"><div><span class="text-amber-400 font-bold text-lg mr-2">2.</span><span class="font-semibold">Glass</span></div><div><span class="text-blue-400 font-bold text-lg">3</span><span class="text-gray-400 text-xs ml-1">sold</span></div></div>
+                                       <div class="bg-slate-900/40 p-3 rounded-xl flex justify-between items-center"><div><span class="text-amber-400 font-bold text-lg mr-2">3.</span><span class="font-semibold">Hero Shakti</span></div><div><span class="text-blue-400 font-bold text-lg">1</span><span class="text-gray-400 text-xs ml-1">sold</span></div></div>`;
             } else {
                 topItems.slice(0,3).forEach(([m,q],i)=>{ let d=document.createElement('div'); d.className="bg-slate-900/40 p-3 rounded-xl flex justify-between items-center"; d.innerHTML=`<div><span class="text-amber-400 font-bold text-lg mr-2">${i+1}.</span><span class="font-semibold">${m}</span></div><div><span class="text-blue-400 font-bold text-lg">${q}</span><span class="text-gray-400 text-xs ml-1">sold</span></div>`; container.appendChild(d); });
             }
@@ -565,7 +681,7 @@
         function showLiveStockSuggestions() {
             let inp=document.getElementById('modelName'), q=inp.value.toLowerCase(), box=document.getElementById('stockSuggestionBox');
             if(!box) return; box.innerHTML=''; if(q.length<1){ box.classList.add('hidden'); return; }
-            let found=0; for(let [model,data] of Object.entries(inventory)){ if(model.toLowerCase().includes(q)){ found++; let div=document.createElement('div'); div.className="suggestion-item"; div.innerHTML=`<div class="flex justify-between"><span>${model}</span><span class="text-emerald-500">${data.qty||0} left</span><span class="text-gray-500">₹${data.price||0}</span></div>`; div.onclick=()=>{ playSound(); inp.value=model; document.getElementById('costPrice').value=data.price||0; document.getElementById('modelBrand').value=data.brand||''; if(data.imei)document.getElementById('modelImei').value=data.imei; box.classList.add('hidden'); }; box.appendChild(div); } }
+            let found=0; for(let [model,data] of Object.entries(inventory)){ if(model.toLowerCase().includes(q)){ found++; let div=document.createElement('div'); div.className="suggestion-item"; div.innerHTML=`<div class="flex justify-between items-center"><span class="font-medium">${model}</span><span class="text-emerald-500">${data.qty||0} left</span><span class="text-gray-400">₹${data.price||0}</span></div>`; div.onclick=()=>{ playSound(); inp.value=model; document.getElementById('costPrice').value=data.price||0; document.getElementById('modelBrand').value=data.brand||''; if(data.imei)document.getElementById('modelImei').value=data.imei; box.classList.add('hidden'); }; box.appendChild(div); } }
             if(found>0) box.classList.remove('hidden'); else box.classList.add('hidden');
         }
         
