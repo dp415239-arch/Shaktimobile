@@ -11,6 +11,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyBFM1JgizFIwUtI2uX9tQ2ZWv2Mlb_RtHo",
             authDomain: "shakti-mobile-dashboard.firebaseapp.com",
@@ -23,7 +24,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         window.db = db; window.doc = doc; window.setDoc = setDoc; window.onSnapshot = onSnapshot;
-        window.addEventListener('load', () => { setTimeout(() => { if (typeof window.setupRealtimeSync === "function") window.setupRealtimeSync(); }, 200); });
+
+        window.addEventListener('load', () => { 
+            if (localStorage.getItem('isLoggedIn') === 'true') { showDashboard(); }
+            setTimeout(() => { if (typeof window.setupRealtimeSync === "function") window.setupRealtimeSync(); }, 200); 
+        });
     </script>
 
     <style>
@@ -42,34 +47,34 @@
     <div id="loginScreen" class="flex flex-col justify-center min-h-[100vh] p-4 max-w-md mx-auto">
         <div class="card-bg p-8 rounded-3xl shadow-2xl border border-slate-800 text-center">
             <h1 class="text-3xl font-bold text-white mb-6">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
-            <input type="tel" id="mobileNumber" value="8401463902" class="w-full input-field rounded-xl py-3 px-4 text-center text-lg">
-            <button onclick="sendOTPToken()" class="w-full bg-blue-600 py-3 rounded-xl mt-4 font-bold text-white">SEND OTP</button>
+            <div id="mobileInputDiv">
+                <input type="tel" id="mobileNumber" value="8401463902" class="w-full input-field rounded-xl py-3 px-4 text-center text-lg">
+                <button onclick="sendOTPToken()" class="w-full bg-blue-600 py-3 rounded-xl mt-4 font-bold text-white">SEND OTP</button>
+            </div>
             <div id="otpInputDiv" class="hidden mt-6">
-                <input type="number" id="otpCode" placeholder="Enter OTP" class="w-full input-field rounded-xl py-3 px-4 text-center text-lg">
+                <input type="number" id="otpCode" placeholder="Enter OTP (1234)" class="w-full input-field rounded-xl py-3 px-4 text-center text-lg">
                 <button onclick="handleVerifyLogin()" class="w-full bg-emerald-600 py-3 rounded-xl mt-4 font-bold text-white">VERIFY & LOGIN</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
+    <!-- MAIN CONTENT -->
     <div id="dashboardContent" class="hidden p-4 max-w-md mx-auto">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-xl font-bold text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
             <span id="liveHeaderDate" class="bg-slate-800 text-[10px] px-3 py-1 rounded-full text-gray-300"></span>
         </div>
-        
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="card-bg p-4 rounded-2xl"><p class="text-[10px] uppercase text-gray-500">Today's Sale</p><p id="todaySale" class="text-2xl font-bold text-white">₹0</p></div>
             <div class="card-bg p-4 rounded-2xl"><p class="text-[10px] uppercase text-gray-500">Today's Profit</p><p id="todayProfit" class="text-2xl font-bold text-emerald-400">₹0</p></div>
         </div>
-
         <div id="stockContainer" class="space-y-3 mb-6"></div>
         <div id="udhaarContainer" class="space-y-3 mb-6"></div>
         <div id="reportSection" class="card-bg p-5 rounded-2xl mb-6">...Reports...</div>
         <div id="logTableBody" class="space-y-3 mb-20">...Sales Logs...</div>
     </div>
 
-    <!-- PREMIUM NAVIGATION BAR -->
+    <!-- PREMIUM NAVIGATION -->
     <nav class="fixed bottom-0 left-0 right-0 bg-[#121A2E] border-t border-slate-800 flex justify-around items-center h-16 shadow-2xl max-w-md mx-auto z-50">
         <a href="#" class="flex flex-col items-center justify-center w-full h-full text-blue-500" onclick="playClickSound()"><i class="fa-solid fa-house text-lg"></i><span class="text-[9px] mt-0.5 font-bold">Home</span></a>
         <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-400" onclick="playClickSound(); openModal('stockModal')"><i class="fa-solid fa-box text-lg"></i><span class="text-[9px] mt-0.5 font-bold">Stock</span></a>
@@ -78,10 +83,33 @@
         <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-400" onclick="playClickSound(); document.getElementById('reportSection').scrollIntoView({behavior: 'smooth'})"><i class="fa-solid fa-chart-line text-lg"></i><span class="text-[9px] mt-0.5 font-bold">Reports</span></a>
     </nav>
 
-    <!-- Modals waisa hi rahenge jaise pehle setup the -->
     <script>
-        // Copy-paste apna pura purana JS logic (updateDashboardUI, render functions, etc.) yahan par.
-        // Bass 'openModal' function mein 'playClickSound()' add kar lena.
+        let generatedOTP = null;
+        function sendOTPToken() {
+            let mobile = document.getElementById('mobileNumber').value.trim();
+            if (mobile !== '8401463902') { alert("Invalid Number!"); return; }
+            generatedOTP = Math.floor(1000 + Math.random() * 9000); 
+            alert(`OTP: ${generatedOTP}`);
+            document.getElementById('mobileInputDiv').classList.add('hidden'); 
+            document.getElementById('otpInputDiv').classList.remove('hidden');
+        }
+        function handleVerifyLogin() {
+            let InpCode = document.getElementById('otpCode').value.trim();
+            if (InpCode === String(generatedOTP) || InpCode === '1234') { 
+                localStorage.setItem('isLoggedIn', 'true'); showDashboard(); 
+            } else { alert("Wrong OTP!"); }
+        }
+        function showDashboard() { 
+            document.getElementById('loginScreen').style.display = 'none'; 
+            document.getElementById('dashboardContent').classList.remove('hidden'); 
+            document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN');
+        }
+        function playClickSound() {
+            let context = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = context.createOscillator(); osc.frequency.setValueAtTime(800, context.currentTime); osc.connect(context.destination); osc.start(); osc.stop(context.currentTime + 0.05);
+        }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); playClickSound(); }
+        // ... (Baaki saare purane functions updateDashboardUI, renderLog, etc. yahan rakhein)
     </script>
 </body>
 </html>
