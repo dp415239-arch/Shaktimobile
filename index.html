@@ -71,7 +71,7 @@
                             <input type="password" maxlength="4" id="loginPin" placeholder="Enter PIN" class="w-full input-field rounded-xl py-2.5 pl-9 pr-3 text-sm font-mono text-center text-lg tracking-widest">
                         </div>
                     </div>
-                    <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-3 rounded-xl text-sm transition mt-4 cursor-pointer">
+                    <button onclick="doLogin()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-3 rounded-xl text-sm transition mt-4 cursor-pointer">
                         LOGIN <i class="fa-solid fa-arrow-right-to-bracket ml-1"></i>
                     </button>
                 </div>
@@ -89,7 +89,7 @@
                 <p class="text-[9px] text-gray-400 tracking-widest">TRUST • QUALITY • SERVICE</p>
             </div>
             <div class="text-right">
-                <button onclick="handleLogout()" class="text-[9px] bg-rose-950/70 hover:bg-rose-900 text-rose-300 px-2 py-1 rounded-full border border-rose-800 mb-1 cursor-pointer"><i class="fa-solid fa-power-off"></i> Exit</button>
+                <button onclick="doLogout()" class="text-[9px] bg-rose-950/70 hover:bg-rose-900 text-rose-300 px-2 py-1 rounded-full border border-rose-800 mb-1 cursor-pointer"><i class="fa-solid fa-power-off"></i> Exit</button>
                 <span id="liveHeaderDate" class="bg-slate-900 text-gray-300 text-[10px] px-2 py-0.5 rounded-full block">--</span>
             </div>
         </div>
@@ -271,8 +271,8 @@
             { id: 2, date: "2026-06-05", name: "Ramesh", phone: "9876543210", company: "Lava", product: "Mobile", total: 3000, jama: 0 }
         ];
         
-        // LOGIN
-        function handleLogin() {
+        // ========== LOGIN FUNCTIONS ==========
+        function doLogin() {
             let pin = document.getElementById('loginPin').value;
             if(pin === '1234') {
                 sessionStorage.setItem('shaktiLoggedIn', 'true');
@@ -291,8 +291,14 @@
             }
         }
         
-        function handleLogout() { sessionStorage.removeItem('shaktiLoggedIn'); location.reload(); }
+        function doLogout() {
+            sessionStorage.removeItem('shaktiLoggedIn');
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('dashboardContent').style.display = 'none';
+            document.getElementById('loginPin').value = '';
+        }
         
+        // Auto login check
         if(sessionStorage.getItem('shaktiLoggedIn') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardContent').style.display = 'block';
@@ -400,8 +406,9 @@
             alert("Udhaar record added!");
         }
         
-        function openEditStock(key) { alert("Edit feature - can implement"); }
         function deleteStockItem(key) { if(confirm("Delete stock?")){ delete inventory[key]; syncToCloud(); updateDashboardUI(); } }
+        function deleteUdhaarItem(id) { if(confirm("Delete udhaar record?")){ udhaarData=udhaarData.filter(x=>x.id!=id); syncToCloud(); updateDashboardUI(); } }
+        function deleteExpense(id) { if(confirm("Delete expense?")){ expenseData=expenseData.filter(x=>x.id!=id); syncToCloud(); updateDashboardUI(); } }
         
         function updateDashboardUI() {
             renderStockTable(); renderUdhaarTable(); renderLog(); renderExpenseLog(); renderTopProducts();
@@ -447,8 +454,6 @@
             document.getElementById('totalUdhaarValuation').innerHTML=`₹${totalPending} Pending`;
         }
         
-        function deleteUdhaarItem(id) { if(confirm("Delete udhaar record?")){ udhaarData=udhaarData.filter(x=>x.id!=id); syncToCloud(); updateDashboardUI(); } }
-        
         function renderLog() {
             let tbody=document.getElementById('logTableBody'); if(!tbody) return; tbody.innerHTML='';
             let dateFilter=document.getElementById('salesLogDateFilter')?.value||'', kw=document.getElementById('searchLog')?.value.toLowerCase()||'', type=document.getElementById('salesSearchType')?.value||'model';
@@ -458,10 +463,8 @@
         function renderExpenseLog() {
             let tbody=document.getElementById('expenseTableBody'); if(!tbody) return; tbody.innerHTML='';
             let dateFilter=document.getElementById('expenseLogDateFilter')?.value||'';
-            expenseData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-1 text-[10px]">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-1">${x.name}</td><td class="py-1 text-right text-rose-400">₹${x.amount}</td><td class="py-1 text-center"><button onclick='deleteExpense(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></td>`; tbody.appendChild(tr); });
+            expenseData.filter(x=>!dateFilter || x.date===dateFilter).forEach(x=>{ let tr=document.createElement('tr'); tr.innerHTML=`<td class="py-1 text-[10px]">${x.date?.split('-').reverse().slice(0,2).join('/')||''}<tr><td class="py-1">${x.name}</td><td class="py-1 text-right text-rose-400">₹${x.amount}</td><td class="py-1 text-center"><button onclick='deleteExpense(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></td>`; tbody.appendChild(tr); });
         }
-        
-        function deleteExpense(id) { if(confirm("Delete expense?")){ expenseData=expenseData.filter(x=>x.id!=id); syncToCloud(); updateDashboardUI(); } }
         
         function renderTopProducts() {
             let container=document.getElementById('topProductsContainer'); if(!container) return;
