@@ -43,6 +43,10 @@
         .modal-bg { background-color: rgba(11, 17, 30, 0.85); backdrop-filter: blur(4px); }
         .alert-blink { border: 2px solid #EF4444; animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { border-color: transparent; } }
+        /* Style for Stock Suggestion Dropdown */
+        .suggestion-box { background-color: #0F172A; border: 1px solid #334155; max-height: 150px; overflow-y: auto; z-index: 100; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #1E293B; font-size: 12px; }
+        .suggestion-item:hover { background-color: #1E293B; color: #3B82F6; }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto pb-32">
@@ -334,7 +338,7 @@
         </div>
     </div>
 
-    <!-- 🟢 ADD/EDIT SALE MODAL -->
+    <!-- 🟢 ADD/EDIT SALE MODAL (WITH LIVE AUTO-SUGGESTION DROPDOWN ENGINE) -->
     <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -342,10 +346,17 @@
                 <button onclick="closeModal('saleModal')" class="text-gray-400 text-lg font-bold">×</button>
             </div>
             <input type="hidden" id="editSaleId">
-            <div class="space-y-2 text-xs">
+            <div class="space-y-2 text-xs relative">
                 <input type="date" id="saleDate" class="w-full input-field rounded-lg p-2 font-mono">
                 <input type="text" id="modelBrand" placeholder="Brand Name" class="w-full input-field rounded-lg p-2">
-                <input type="text" id="modelName" oninput="checkAndAutoFillCost()" placeholder="Model Name" class="w-full input-field rounded-lg p-2">
+                
+                <!-- MODEL NAME INPUT WITH DROPDOWN INJECTOR -->
+                <div class="relative">
+                    <input type="text" id="modelName" oninput="showLiveStockSuggestions()" placeholder="Model Name (Type text... e.g. H)" class="w-full input-field rounded-lg p-2">
+                    <!-- Live suggestion box populates here container -->
+                    <div id="stockSuggestionBox" class="hidden absolute left-0 right-0 suggestion-box rounded-lg mt-1 shadow-2xl"></div>
+                </div>
+
                 <input type="text" id="modelImei" placeholder="IMEI / Serial Number" class="w-full input-field rounded-lg p-2 font-mono">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="quantity" value="1" class="w-full input-field rounded-lg p-2 font-mono">
@@ -418,11 +429,9 @@
                 let context = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = context.createOscillator(); let gain = context.createGain();
                 osc.type = 'sine'; osc.frequency.setValueAtTime(800, context.currentTime); 
-                gain.gain.setValueAtTime(0.05, context.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.05);
-                osc.connect(gain); gain.connect(context.destination);
-                osc.start(); osc.stop(context.currentTime + 0.05);
-            } catch(e) { console.log("Audio waiting for interaction"); }
+                gain.gain.setValueAtTime(0.05, context.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.05);
+                osc.connect(gain); gain.connect(context.destination); osc.start(); osc.stop(context.currentTime + 0.05);
+            } catch(e) {}
         }
 
         function playSuccessSound() {
@@ -430,20 +439,16 @@
                 let context = new (window.AudioContext || window.webkitAudioContext)();
                 let osc1 = context.createOscillator(); let gain1 = context.createGain();
                 osc1.type = 'triangle'; osc1.frequency.setValueAtTime(523.25, context.currentTime); 
-                gain1.gain.setValueAtTime(0.08, context.currentTime);
-                gain1.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
-                osc1.connect(gain1); gain1.connect(context.destination);
-                osc1.start(); osc1.stop(context.currentTime + 0.12);
+                gain1.gain.setValueAtTime(0.08, context.currentTime); gain1.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
+                osc1.connect(gain1); gain1.connect(context.destination); osc1.start(); osc1.stop(context.currentTime + 0.12);
 
                 setTimeout(() => {
                     let osc2 = context.createOscillator(); let gain2 = context.createGain();
                     osc2.type = 'triangle'; osc2.frequency.setValueAtTime(659.25, context.currentTime); 
-                    gain2.gain.setValueAtTime(0.08, context.currentTime);
-                    gain2.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.15);
-                    osc2.connect(gain2); gain2.connect(context.destination);
-                    osc2.start(); osc2.stop(context.currentTime + 0.15);
+                    gain2.gain.setValueAtTime(0.08, context.currentTime); gain2.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.15);
+                    osc2.connect(gain2); gain2.connect(context.destination); osc2.start(); osc2.stop(context.currentTime + 0.15);
                 }, 100);
-            } catch(e) { console.log("Audio failure"); }
+            } catch(e) {}
         }
 
         function getSystemTodayDateString() {
@@ -478,20 +483,17 @@
             }
         });
 
-        // FIXED MODAL TRIGGER METHOD GATEWAY WITH RE-ORDERED CLICK SOUND AUDIO LOGIC
         function openModal(id) { 
-            // 1. Open the popup gateway directly on screen instant
             document.getElementById(id).classList.remove('hidden'); 
-            
-            // 2. Safely trigger click chime tone without halting loop logic
             playClickSound();
-
             let todayStr = getSystemTodayDateString();
-            if(id === 'saleModal') { document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; }
+            if(id === 'saleModal') { 
+                document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; 
+                document.getElementById('stockSuggestionBox').classList.add('hidden'); // Hide dropdown on open
+            }
             else if(id === 'stockModal') { document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; document.getElementById('editStockKey').value = ""; }
             else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
         }
-
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function sendOTPToken() {
@@ -538,14 +540,69 @@
             });
         }
 
-        window.checkAndAutoFillCost = function() {
-            let inputtedModelName = document.getElementById('modelName').value.trim();
+        // ================= NEW ENGINE: LIVE DROPDOWN AUTO-SUGGESTION FOR MODEL TYPE =================
+        window.showLiveStockSuggestions = function() {
+            let inputField = document.getElementById('modelName');
+            let query = inputField.value.trim().toLowerCase();
+            let suggestionBox = document.getElementById('stockSuggestionBox');
+            
+            suggestionBox.innerHTML = "";
+            
+            // Check if text input has at least 1 character typed
+            if (query.length === 0) {
+                suggestionBox.classList.add('hidden');
+                return;
+            }
+
+            let foundMatchesCount = 0;
+
+            // Loop through live snapshot inventory objects
             for (const [stockModelKey, data] of Object.entries(inventory)) {
-                if (stockModelKey.toLowerCase() === inputtedModelName.toLowerCase()) {
-                    if (data && data.price) { document.getElementById('costPrice').value = data.price; if (data.brand) { document.getElementById('modelBrand').value = data.brand; } return; }
+                let currentQty = data ? (data.qty || 0) : 0;
+                
+                // Strict Matching: If stock model name contains the typed letters
+                if (stockModelKey.toLowerCase().includes(query)) {
+                    foundMatchesCount++;
+                    
+                    let div = document.createElement('div');
+                    div.className = "suggestion-item text-gray-200 hover:text-blue-400";
+                    // Display details directly inside the suggestion row selection
+                    div.innerHTML = `
+                        <div class="flex justify-between font-bold">
+                            <span>${stockModelKey}</span>
+                            <span class="text-emerald-500 text-[10px] font-mono">${currentQty} Left</span>
+                        </div>
+                        <div class="text-[9px] text-gray-400">Brand: ${data.brand || 'Generic'} | Cost: ₹${data.price || 0}</div>
+                    `;
+                    
+                    // Click handler to auto fill everything instantly
+                    div.onclick = function() {
+                        inputField.value = stockModelKey;
+                        document.getElementById('costPrice').value = data.price || 0;
+                        document.getElementById('modelBrand').value = data.brand || "";
+                        if (data.imei) { document.getElementById('modelImei').value = data.imei; }
+                        suggestionBox.classList.add('hidden'); // Dropdown band karein
+                    };
+                    
+                    suggestionBox.appendChild(div);
                 }
             }
+
+            // Toggle dynamic view layers visibility
+            if (foundMatchesCount > 0) {
+                suggestionBox.classList.remove('hidden');
+            } else {
+                suggestionBox.classList.add('hidden');
+            }
         };
+
+        // Click outside handler box closing convenience
+        document.addEventListener('click', function(e) {
+            if (e.target.id !== 'modelName') {
+                let box = document.getElementById('stockSuggestionBox');
+                if (box) box.classList.add('hidden');
+            }
+        });
 
         async function syncToCloud() {
             if (window.setDoc && window.db) { await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); }
@@ -556,9 +613,7 @@
             if(!model || qty < 0) return; if(editKey && editKey !== model) { delete inventory[editKey]; }
             inventory[model] = { qty, price, brand, imei };
             document.getElementById('stockBrand').value = ""; document.getElementById('stockModelName').value = ""; document.getElementById('stockImei').value = ""; document.getElementById('stockCount').value = ""; document.getElementById('stockPriceInp').value = ""; document.getElementById('editStockKey').value = "";
-            
-            playSuccessSound(); 
-            closeModal('stockModal'); syncToCloud();
+            playSuccessSound(); closeModal('stockModal'); syncToCloud();
         }
 
         function openEditStock(key) {
@@ -573,12 +628,9 @@
             let btn = document.getElementById('saleSubmitBtn'); btn.innerText = "SAVING..."; btn.disabled = true;
             if(editId) { salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item); } 
             else { if(inventory[model]) { inventory[model].qty = Math.max(0, inventory[model].qty - qty); } salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty }); }
-            
             await syncToCloud();
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
-            
-            playSuccessSound(); 
-            btn.innerText = "SAVE TRANSACTION"; btn.disabled = false; closeModal('saleModal'); 
+            playSuccessSound(); btn.innerText = "SAVE TRANSACTION"; btn.disabled = false; closeModal('saleModal'); 
         }
 
         function openEditSale(id) {
@@ -592,12 +644,9 @@
             let btn = document.getElementById('udhaarSubmitBtn'); btn.innerText = "SAVING IN 1 SEC..."; btn.disabled = true;
             if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
             else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
-            
             await syncToCloud();
             document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0"; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoBase64').value = "";
-            
-            playSuccessSound(); 
-            btn.innerText = "SAVE UDHAAR ENTRY"; btn.disabled = false; closeModal('udhaarModal'); 
+            playSuccessSound(); btn.innerText = "SAVE UDHAAR ENTRY"; btn.disabled = false; closeModal('udhaarModal'); 
         }
 
         function openEditUdhaar(id) {
@@ -608,9 +657,7 @@
         function addExpense() {
             let name = document.getElementById('expenseName').value.trim(); let amount = parseFloat(document.getElementById('expenseAmount').value) || 0; if(!name || amount <= 0) return;
             expenseData.push({ id: Date.now(), name, amount, date: getSystemTodayDateString() }); 
-            
-            playSuccessSound(); 
-            closeModal('expenseModal'); syncToCloud();
+            playSuccessSound(); closeModal('expenseModal'); syncToCloud();
         }
         function deleteExpense(id) { if(confirm("Remove?")) { expenseData = expenseData.filter(x => x.id !== id); syncToCloud(); } }
 
@@ -672,7 +719,6 @@
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
         }
 
-        // EXPENSE HISTORY LOG WITH DYNAMIC DATE LOCK FILTER
         function renderExpenseLog() {
             let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = ''; const targetExpenseDate = document.getElementById('expenseLogDateFilter').value;
             let sortedExp = [...expenseData].sort((a, b) => new Date(b.date) - new Date(a.date));
