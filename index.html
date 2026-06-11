@@ -107,7 +107,8 @@
                 <button onclick="handleLogout()" class="text-[10px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-0.5 rounded border border-rose-900 mb-2 transition cursor-pointer">
                     <i class="fa-solid fa-power-off"></i> Logout
                 </button>
-                <span class="bg-slate-800 text-gray-300 text-[10px] px-2 py-0.5 rounded font-mono">10 Jun 2026</span>
+                <!-- DYNAMIC LIVE CLOCK HEADER DATE -->
+                <span id="liveHeaderDate" class="bg-slate-800 text-gray-300 text-[10px] px-2 py-0.5 rounded font-mono">Loading Date...</span>
             </div>
         </div>
 
@@ -137,7 +138,7 @@
             <div class="card-bg p-3 rounded-xl">
                 <p class="text-xs text-gray-400 uppercase">Month Sale</p>
                 <p id="monthSale" class="text-xl font-bold text-blue-500">₹0</p>
-                <p class="text-xs text-gray-500">June 2026</p>
+                <p id="monthSaleLabel" class="text-xs text-gray-500">This Month</p>
             </div>
             <div class="card-bg p-3 rounded-xl">
                 <p class="text-xs text-gray-400 uppercase">Month Profit</p>
@@ -146,7 +147,7 @@
             </div>
         </div>
 
-        <!-- TOP CARDS KE NICHE NEW 4 BUTTONS -->
+        <!-- TOP CARDS KE NICHE 4 BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-4">
             <button onclick="openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">➕ Add Sale</p>
@@ -222,7 +223,7 @@
         <div id="reportSection" class="card-bg p-4 rounded-xl mb-4">
             <label class="block text-xs text-gray-400 uppercase mb-2">Select Filter Month</label>
             <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4">
-                <option value="June 2026">June 2026</option>
+                <!-- Populated via Javascript dynamically -->
             </select>
 
             <div class="grid grid-cols-2 gap-2 text-sm border-t border-slate-800 pt-3">
@@ -330,7 +331,7 @@
         </div>
     </div>
 
-    <!-- 🟢 ADD/EDIT SALE MODAL (WITH AUTOMATIC COST FILL ON MODEL MATCH) -->
+    <!-- 🟢 ADD/EDIT SALE MODAL -->
     <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -340,9 +341,8 @@
             <input type="hidden" id="editSaleId">
             <div class="space-y-2 text-xs">
                 <input type="date" id="saleDate" class="w-full input-field rounded-lg p-2 font-mono">
-                <input type="text" id="modelBrand" placeholder="Brand Name (e.g. Vivo)" class="w-full input-field rounded-lg p-2">
-                <!-- Added oninput listener to check stock inventory on text type -->
-                <input type="text" id="modelName" oninput="checkAndAutoFillCost()" placeholder="Model Name (e.g. Y200)" class="w-full input-field rounded-lg p-2">
+                <input type="text" id="modelBrand" placeholder="Brand Name" class="w-full input-field rounded-lg p-2">
+                <input type="text" id="modelName" oninput="checkAndAutoFillCost()" placeholder="Model Name" class="w-full input-field rounded-lg p-2">
                 <input type="text" id="modelImei" placeholder="IMEI / Serial Number" class="w-full input-field rounded-lg p-2 font-mono">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" id="quantity" value="1" class="w-full input-field rounded-lg p-2 font-mono">
@@ -409,6 +409,24 @@
     <script>
         let salesData = []; let expenseData = []; let inventory = {}; let udhaarData = []; let myChart = null; let generatedOTP = null;
 
+        // DYNAMIC CLOCK: Returns real clock device string in YYYY-MM-DD
+        function getSystemTodayDateString() {
+            let d = new Date();
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            let year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        // DYNAMIC LABELS Generator (e.g., "June 2026")
+        function getSystemMonthYearLabel(dateStr) {
+            let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let d = dateStr ? new Date(dateStr) : new Date();
+            return months[d.getMonth()] + " " + d.getFullYear();
+        }
+
         document.getElementById('udhaarPhotoFile').addEventListener('change', function(e) {
             let file = e.target.files[0];
             if (file) {
@@ -420,16 +438,16 @@
 
         function openModal(id) { 
             document.getElementById(id).classList.remove('hidden'); 
-            if(id === 'saleModal') { document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = "2026-06-10"; }
+            let todayStr = getSystemTodayDateString();
+            
+            if(id === 'saleModal') { document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; }
             else if(id === 'stockModal') { document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; document.getElementById('editStockKey').value = ""; }
-            else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = "2026-06-10"; document.getElementById('udhaarPhotoBase64').value = ""; }
+            else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
         }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function sendOTPToken() {
-            if (document.getElementById('mobileNumber').value.trim() !== '8401463902') {
-                alert("Error: Number not registered!"); return;
-            }
+            if (document.getElementById('mobileNumber').value.trim() !== '8401463902') { alert("Error!"); return; }
             generatedOTP = Math.floor(1000 + Math.random() * 9000);
             alert(`[SHAKTI MOBILE SYSTEM] Verification OTP: ${generatedOTP}`);
             document.getElementById('mobileInputDiv').classList.add('hidden');
@@ -442,39 +460,45 @@
             else { alert("Incorrect Code!"); }
         }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
-        function showDashboard() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardContent').classList.remove('hidden'); setTimeout(() => { setupRealtimeSync(); }, 500); }
+        
+        function showDashboard() { 
+            document.getElementById('loginScreen').classList.add('hidden'); 
+            document.getElementById('dashboardContent').classList.remove('hidden'); 
+            
+            // Set live real-time header text date
+            let options = { day: 'numeric', month: 'short', year: 'numeric' };
+            document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN', options);
+            document.getElementById('monthSaleLabel').innerText = getSystemMonthYearLabel();
+            
+            // Populate Month Filter Dropdown Dynamically with current real time clock month
+            let filterSelect = document.getElementById('monthFilter');
+            filterSelect.innerHTML = "";
+            let currentLabel = getSystemMonthYearLabel();
+            let opt = document.createElement('option'); opt.value = currentLabel; opt.innerText = currentLabel;
+            filterSelect.appendChild(opt);
+
+            setTimeout(() => { setupRealtimeSync(); }, 500); 
+        }
 
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
             
             let cachedSales = JSON.parse(localStorage.getItem('salesData')) || [];
-            let cachedStock = JSON.parse(localStorage.getItem('inventory')) || {};
-            if((cachedSales.length > 0 || Object.keys(cachedStock).length > 0) && salesData.length === 0) {
-                document.getElementById('recoveryBanner').classList.remove('hidden');
-            }
+            if(cachedSales.length > 0 && salesData.length === 0) { document.getElementById('recoveryBanner').classList.remove('hidden'); }
 
             window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
                 if (docSnap.exists()) {
                     let c = docSnap.data();
-                    
-                    if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
-                    if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
+                    if (c.salesData) salesData = c.salesData;
+                    if (c.expenseData) expenseData = c.expenseData;
                     if (c.udhaarData) udhaarData = c.udhaarData;
 
                     let rawInventory = c.inventory || {};
                     if (Object.keys(rawInventory).length > 0) {
                         inventory = {};
                         for (const [key, val] of Object.entries(rawInventory)) {
-                            if (typeof val === 'number') {
-                                inventory[key] = { qty: val, price: 0, brand: "", imei: "" };
-                            } else if (val && typeof val === 'object') {
-                                inventory[key] = {
-                                    qty: val.qty !== undefined ? val.qty : (val.count || 0),
-                                    price: val.price || 0,
-                                    brand: val.brand || "",
-                                    imei: val.imei || ""
-                                };
-                            }
+                            if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
+                            else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
                         }
                     }
                 }
@@ -482,21 +506,14 @@
             });
         }
 
-        // NEW FEATURE: AUTO FILL COST PRICE IF MODEL EXISTS IN INVENTORY
         window.checkAndAutoFillCost = function() {
             let inputtedModelName = document.getElementById('modelName').value.trim();
-            
-            // Loop and search inside live sync stock inventory mapping
             for (const [stockModelKey, data] of Object.entries(inventory)) {
-                // If model name matches exactly (capital letters matter nahi karenge)
                 if (stockModelKey.toLowerCase() === inputtedModelName.toLowerCase()) {
                     if (data && data.price) {
-                        // Automatically inject the purchase price to Cost input field box
                         document.getElementById('costPrice').value = data.price;
-                        
-                        // Dynamic background brand injector convenience block
                         if (data.brand) { document.getElementById('modelBrand').value = data.brand; }
-                        return; // Match milte hi loop band
+                        return;
                     }
                 }
             }
@@ -509,14 +526,8 @@
             let recoveredUdhaar = JSON.parse(localStorage.getItem('udhaarData')) || [];
 
             if(recoveredSales.length > 0 || Object.keys(recoveredInventory).length > 0) {
-                salesData = recoveredSales; expenseData = recoveredExpense; udhaarData = recoveredUdhaar;
-                for (const [k, v] of Object.entries(recoveredInventory)) {
-                    if (typeof v === 'number') { recoveredInventory[k] = { qty: v, price: 0, brand: "", imei: "" }; }
-                }
-                inventory = recoveredInventory;
-                syncToCloud();
-                document.getElementById('recoveryBanner').classList.add('hidden');
-                alert("⚡ SUCCESS: History data recovered!");
+                salesData = recoveredSales; expenseData = recoveredExpense; udhaarData = recoveredUdhaar; inventory = recoveredInventory;
+                syncToCloud(); document.getElementById('recoveryBanner').classList.add('hidden'); alert("⚡ SUCCESS!");
             }
         }
 
@@ -525,155 +536,71 @@
             localStorage.setItem('expenseData', JSON.stringify(expenseData));
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('udhaarData', JSON.stringify(udhaarData));
-
-            if (window.setDoc && window.db) {
-                await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { 
-                    salesData, expenseData, inventory, udhaarData 
-                });
-            }
+            if (window.setDoc && window.db) { await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); }
         }
 
         function submitStockForm() {
-            let brand = document.getElementById('stockBrand').value.trim();
-            let model = document.getElementById('stockModelName').value.trim();
-            let imei = document.getElementById('stockImei').value.trim();
-            let qty = parseInt(document.getElementById('stockCount').value) || 0;
-            let price = parseFloat(document.getElementById('stockPriceInp').value) || 0;
-            let editKey = document.getElementById('editStockKey').value;
-
-            if(!model || qty < 0) return;
-            if(editKey && editKey !== model) { delete inventory[editKey]; }
-
-            inventory[model] = { qty, price, brand, imei };
-            closeModal('stockModal');
-            syncToCloud();
+            let brand = document.getElementById('stockBrand').value.trim(); let model = document.getElementById('stockModelName').value.trim(); let imei = document.getElementById('stockImei').value.trim(); let qty = parseInt(document.getElementById('stockCount').value) || 0; let price = parseFloat(document.getElementById('stockPriceInp').value) || 0; let editKey = document.getElementById('editStockKey').value;
+            if(!model || qty < 0) return; if(editKey && editKey !== model) { delete inventory[editKey]; }
+            inventory[model] = { qty, price, brand, imei }; closeModal('stockModal'); syncToCloud();
         }
 
         function openEditStock(key) {
-            let item = inventory[key];
-            document.getElementById('stockModalTitle').innerText = "✏️ Edit Stock Item";
-            document.getElementById('editStockKey').value = key;
-            document.getElementById('stockBrand').value = item.brand || "";
-            document.getElementById('stockModelName').value = key;
-            document.getElementById('stockImei').value = item.imei || "";
-            document.getElementById('stockCount').value = item.qty;
-            document.getElementById('stockPriceInp').value = item.price;
-            document.getElementById('stockModal').classList.remove('hidden');
+            let item = inventory[key]; document.getElementById('stockModalTitle').innerText = "✏️ Edit Stock Item"; document.getElementById('editStockKey').value = key; document.getElementById('stockBrand').value = item.brand || ""; document.getElementById('stockModelName').value = key; document.getElementById('stockImei').value = item.imei || ""; document.getElementById('stockCount').value = item.qty; document.getElementById('stockPriceInp').value = item.price; document.getElementById('stockModal').classList.remove('hidden');
         }
-
-        function deleteStockItem(key) { if(confirm(`Remove "${key}" completely?`)) { delete inventory[key]; syncToCloud(); } }
+        function deleteStockItem(key) { if(confirm(`Remove?`)) { delete inventory[key]; syncToCloud(); } }
 
         function submitSaleForm() {
-            let date = document.getElementById('saleDate').value;
-            let brand = document.getElementById('modelBrand').value.trim();
-            let model = document.getElementById('modelName').value.trim();
-            let imei = document.getElementById('modelImei').value.trim();
-            let qty = parseInt(document.getElementById('quantity').value) || 0;
-            let mode = document.getElementById('paymentMode').value;
-            let cost = parseFloat(document.getElementById('costPrice').value) || 0;
-            let sale = parseFloat(document.getElementById('salePrice').value) || 0;
-            let editId = document.getElementById('editSaleId').value;
-
+            let date = document.getElementById('saleDate').value || getSystemTodayDateString();
+            let brand = document.getElementById('modelBrand').value.trim(); let model = document.getElementById('modelName').value.trim(); let imei = document.getElementById('modelImei').value.trim(); let qty = parseInt(document.getElementById('quantity').value) || 0; let mode = document.getElementById('paymentMode').value; let cost = parseFloat(document.getElementById('costPrice').value) || 0; let sale = parseFloat(document.getElementById('salePrice').value) || 0; let editId = document.getElementById('editSaleId').value;
             if(!model || qty <= 0) return;
 
-            if(editId) {
-                salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item);
-            } else {
-                if(inventory[model] && typeof inventory[model] === 'object') { inventory[model].qty = Math.max(0, inventory[model].qty - qty); }
-                salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty });
-            }
+            if(editId) { salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item); } 
+            else { if(inventory[model]) { inventory[model].qty = Math.max(0, inventory[model].qty - qty); } salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty }); }
 
-            document.getElementById('modelBrand').value = "";
-            document.getElementById('modelName').value = "";
-            document.getElementById('modelImei').value = "";
-            document.getElementById('quantity').value = "1";
-            document.getElementById('costPrice').value = "";
-            document.getElementById('salePrice').value = "";
-
-            closeModal('saleModal');
-            syncToCloud();
+            document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
+            closeModal('saleModal'); syncToCloud();
         }
 
         function openEditSale(id) {
-            let item = salesData.find(x => x.id == id);
-            document.getElementById('saleModalTitle').innerText = "✏️ Edit Sales Entry";
-            document.getElementById('editSaleId').value = id;
-            document.getElementById('saleDate').value = item.date;
-            document.getElementById('modelBrand').value = item.brand || "";
-            document.getElementById('modelName').value = item.model;
-            document.getElementById('modelImei').value = item.imei || "";
-            document.getElementById('quantity').value = item.qty;
-            document.getElementById('paymentMode').value = item.mode;
-            document.getElementById('costPrice').value = item.cost / item.qty;
-            document.getElementById('salePrice').value = item.sale / item.qty;
-            document.getElementById('saleModal').classList.remove('hidden');
+            let item = salesData.find(x => x.id == id); document.getElementById('saleModalTitle').innerText = "✏️ Edit Sales Entry"; document.getElementById('editSaleId').value = id; document.getElementById('saleDate').value = item.date; document.getElementById('modelBrand').value = item.brand || ""; document.getElementById('modelName').value = item.model; document.getElementById('modelImei').value = item.imei || ""; document.getElementById('quantity').value = item.qty; document.getElementById('paymentMode').value = item.mode; document.getElementById('costPrice').value = item.cost / item.qty; document.getElementById('salePrice').value = item.sale / item.qty; document.getElementById('saleModal').classList.remove('hidden');
         }
-
         function deleteSale(id) { if(confirm("Delete?")) { salesData = salesData.filter(x => x.id !== id); syncToCloud(); } }
 
         function submitUdhaarForm() {
-            let id = document.getElementById('editUdhaarId').value;
-            let date = document.getElementById('udhaarDate').value;
-            let name = document.getElementById('udhaarCustomerName').value.trim();
-            let phone = document.getElementById('udhaarCustomerPhone').value.trim();
-            let company = document.getElementById('udhaarCompanyName').value.trim();
-            let product = document.getElementById('udhaarProductName').value.trim();
-            let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0;
-            let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0;
-            let photo = document.getElementById('udhaarPhotoBase64').value;
+            let id = document.getElementById('editUdhaarId').value; let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); let name = document.getElementById('udhaarCustomerName').value.trim(); let phone = document.getElementById('udhaarCustomerPhone').value.trim(); let company = document.getElementById('udhaarCompanyName').value.trim(); let product = document.getElementById('udhaarProductName').value.trim(); let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0; let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0; let photo = document.getElementById('udhaarPhotoBase64').value;
+            if(!name || total <= 0) return;
 
-            if(!name || total <= 0) { alert("Please complete required entries."); return; }
+            if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
+            else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
 
-            if(id) {
-                udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x);
-            } else {
-                udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo });
-            }
-
-            document.getElementById('udhaarCustomerName').value = "";
-            document.getElementById('udhaarCustomerPhone').value = "";
-            document.getElementById('udhaarCompanyName').value = "";
-            document.getElementById('udhaarProductName').value = "";
-            document.getElementById('udhaarTotalPrice').value = "";
-            document.getElementById('udhaarJamaPrice').value = "0";
-            document.getElementById('udhaarPhotoFile').value = "";
-            document.getElementById('udhaarPhotoBase64').value = "";
-
-            closeModal('udhaarModal');
-            syncToCloud();
+            document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0"; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoBase64').value = "";
+            closeModal('udhaarModal'); syncToCloud();
         }
 
         function openEditUdhaar(id) {
-            let item = udhaarData.find(x => x.id == id);
-            document.getElementById('udhaarModalTitle').innerText = "✏️ Edit Udhaar / Jama";
-            document.getElementById('editUdhaarId').value = id;
-            document.getElementById('udhaarDate').value = item.date;
-            document.getElementById('udhaarCustomerName').value = item.name;
-            document.getElementById('udhaarCustomerPhone').value = item.phone;
-            document.getElementById('udhaarCompanyName').value = item.company;
-            document.getElementById('udhaarProductName').value = item.product;
-            document.getElementById('udhaarTotalPrice').value = item.total;
-            document.getElementById('udhaarJamaPrice').value = item.jama;
-            document.getElementById('udhaarPhotoBase64').value = item.photo || "";
-            document.getElementById('udhaarModal').classList.remove('hidden');
+            let item = udhaarData.find(x => x.id == id); document.getElementById('udhaarModalTitle').innerText = "✏️ Edit Udhaar / Jama"; document.getElementById('editUdhaarId').value = id; document.getElementById('udhaarDate').value = item.date; document.getElementById('udhaarCustomerName').value = item.name; document.getElementById('udhaarCustomerPhone').value = item.phone; document.getElementById('udhaarCompanyName').value = item.company; document.getElementById('udhaarProductName').value = item.product; document.getElementById('udhaarTotalPrice').value = item.total; document.getElementById('udhaarJamaPrice').value = item.jama; document.getElementById('udhaarPhotoBase64').value = item.photo || ""; document.getElementById('udhaarModal').classList.remove('hidden');
         }
-
         function deleteUdhaarItem(id) { if(confirm("Remove?")) { udhaarData = udhaarData.filter(x => x.id !== id); syncToCloud(); } }
 
+        // Dynamic System Date string injector for Expense Tracker
         function addExpense() {
-            let name = document.getElementById('expenseName').value.trim();
-            let amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
-            if(!name || amount <= 0) return;
-            expenseData.push({ id: Date.now(), name, amount, date: "2026-06-10" });
-            closeModal('expenseModal');
-            syncToCloud();
+            let name = document.getElementById('expenseName').value.trim(); let amount = parseFloat(document.getElementById('expenseAmount').value) || 0; if(!name || amount <= 0) return;
+            expenseData.push({ id: Date.now(), name, amount, date: getSystemTodayDateString() }); closeModal('expenseModal'); syncToCloud();
         }
         function deleteExpense(id) { if(confirm("Remove?")) { expenseData = expenseData.filter(x => x.id !== id); syncToCloud(); } }
 
         function updateDashboardUI() {
             let tSale = 0; let tProfit = 0; let tOrders = 0; let mSale = 0; let mProfit = 0; let uSold = 0; let cCost = 0; let expT = 0;
-            salesData.forEach(x => { let p = x.sale - x.cost; if(x.date === "2026-06-10") { tSale += x.sale; tProfit += p; tOrders++; } mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; });
-            expenseData.forEach(e => expT += e.amount);
+            let todayStr = getSystemTodayDateString();
+            let currentMonthLabel = getSystemMonthYearLabel();
+
+            salesData.forEach(x => {
+                let p = x.sale - x.cost;
+                if(x.date === todayStr) { tSale += x.sale; tProfit += p; tOrders++; }
+                if(getSystemMonthYearLabel(x.date) === currentMonthLabel) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; }
+            });
+            expenseData.forEach(e => { if(getSystemMonthYearLabel(e.date) === currentMonthLabel) expT += e.amount; });
 
             document.getElementById('todaySale').innerText = `₹${tSale}`;
             document.getElementById('todayProfit').innerText = `₹${tProfit}`;
@@ -692,12 +619,7 @@
         }
 
         function renderStockTable() {
-            const container = document.getElementById('stockContainer');
-            const searchKeyword = document.getElementById('searchStockInp').value.toLowerCase();
-            const searchType = document.getElementById('stockSearchType').value;
-            container.innerHTML = '';
-            let val = 0;
-
+            const container = document.getElementById('stockContainer'); const searchKeyword = document.getElementById('searchStockInp').value.toLowerCase(); const searchType = document.getElementById('stockSearchType').value; container.innerHTML = ''; let val = 0;
             for (const [model, data] of Object.entries(inventory)) {
                 let count = 0; let price = 0; let brand = ""; let imei = "";
                 if (data && typeof data === 'object') { count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || ""; }
@@ -706,41 +628,36 @@
                 if(searchType === 'model' && model.toLowerCase().includes(searchKeyword)) match = true;
                 if(searchType === 'brand' && brand.toLowerCase().includes(searchKeyword)) match = true;
                 if(searchType === 'imei' && imei.toLowerCase().includes(searchKeyword)) match = true;
-
                 if (match) {
-                    const div = document.createElement('div');
-                    div.className = "card-bg p-2.5 rounded-lg border border-slate-800 flex flex-col gap-1";
-                    div.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <div><span class="text-[10px] text-blue-400 font-bold uppercase">${brand || 'Generic'}</span> <p class="font-bold text-gray-200">${model}</p></div>
-                            <div class="flex items-center gap-1">
-                                <span class="bg-slate-900 px-2 py-0.5 rounded font-mono">${count} Left</span>
-                                <button onclick="openEditStock('${model.replace(/'/g, "\\'")}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Total Value: ₹${count * price}</p>
-                    `;
+                    const div = document.createElement('div'); div.className = "card-bg p-2.5 rounded-lg border border-slate-800 flex flex-col gap-1";
+                    div.innerHTML = `<div class="flex justify-between items-center"><div><span class="text-[10px] text-blue-400 font-bold uppercase">${brand || 'Generic'}</span> <p class="font-bold text-gray-200">${model}</p></div><div class="flex items-center gap-1"><span class="bg-slate-900 px-2 py-0.5 rounded font-mono">${count} Left</span><button onclick="openEditStock('${model.replace(/'/g, "\\'")}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button></div></div><p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Total Value: ₹${count * price}</p>`;
                     container.appendChild(div);
                 }
             }
             document.getElementById('totalStockValuation').innerText = `₹${val}`;
         }
 
+        // DYNAMIC SORTED SALES LOG: NEWEST FIRST (DATE WISE ARRANGED)
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
             const searchType = document.getElementById('salesSearchType').value;
             tbody.innerHTML = '';
 
-            salesData.filter(x => {
+            // Clone salesData and sort strictly by date (Newest dates on top)
+            let sortedSales = [...salesData].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedSales.filter(x => {
                 let m = x.model.toLowerCase(); let b = (x.brand || "").toLowerCase(); let i = (x.imei || "").toLowerCase();
                 if(searchType === 'model') return m.includes(searchKeyword);
                 if(searchType === 'brand') return b.includes(searchKeyword);
                 if(searchType === 'imei') return i.includes(searchKeyword);
-            }).reverse().forEach(x => {
+            }).forEach(x => {
                 let tr = document.createElement('tr');
+                // Format YYYY-MM-DD display to dd/mm for compact row space
+                let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
                 tr.innerHTML = `
+                    <td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td>
                     <td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td>
                     <td class="py-2 text-center font-mono">${x.qty}</td>
                     <td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td>
@@ -754,74 +671,35 @@
         }
 
         function renderUdhaarTable() {
-            const container = document.getElementById('udhaarContainer');
-            if(!container) return;
-            const kw = document.getElementById('searchUdhaarInp').value.toLowerCase();
-            container.innerHTML = '';
-            let totalPendingMarket = 0;
-
-            if(udhaarData.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-500 italic py-2">No Udhaar records stored yet.</p>`;
-                document.getElementById('totalUdhaarValuation').innerText = "₹0 Pending";
-                return;
-            }
-
+            const container = document.getElementById('udhaarContainer'); if(!container) return;
+            const kw = document.getElementById('searchUdhaarInp').value.toLowerCase(); container.innerHTML = ''; let totalPendingMarket = 0;
+            if(udhaarData.length === 0) { container.innerHTML = `<p class="text-center text-gray-500 italic py-2">No Udhaar records stored yet.</p>`; document.getElementById('totalUdhaarValuation').innerText = "₹0 Pending"; return; }
             let filtered = udhaarData.filter(x => x.name.toLowerCase().includes(kw) || x.phone.includes(kw));
             filtered.reverse().forEach(x => {
-                let pendingAmount = x.total - x.jama;
-                totalPendingMarket += pendingAmount;
-                let udhaarDateObj = new Date(x.date);
-                let currentSystemDate = new Date("2026-06-10");
-                let differenceInTime = currentSystemDate.getTime() - udhaarDateObj.getTime();
-                let totalDaysPassed = Math.floor(differenceInTime / (1000 * 3600 * 24));
-                let isOverdue = totalDaysPassed >= 30 && pendingAmount > 0;
+                let pendingAmount = x.total - x.jama; totalPendingMarket += pendingAmount;
+                let isOverdue = ((new Date().getTime() - new Date(x.date).getTime()) / (1000 * 3600 * 24)) >= 30 && pendingAmount > 0;
                 let fallbackPhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23475569' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4y'/></svg>";
-
-                const div = document.createElement('div');
-                div.className = `card-bg p-3 rounded-xl flex gap-3 relative ${isOverdue ? 'alert-blink' : ''}`;
-                div.innerHTML = `
-                    <img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0">
-                    <div class="flex-1 text-xs">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-gray-200 text-sm">${x.name}</p>
-                                <p class="text-gray-400 font-mono">${x.phone}</p>
-                            </div>
-                            <div class="flex gap-1.5">
-                                <button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]">
-                            <div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div>
-                            <div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div>
-                            <div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div>
-                            <div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div>
-                        </div>
-                        ${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}
-                    </div>
-                `;
+                const div = document.createElement('div'); div.className = `card-bg p-3 rounded-xl flex gap-3 relative ${isOverdue ? 'alert-blink' : ''}`;
+                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
                 container.appendChild(div);
             });
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
         }
 
         function renderExpenseLog() {
-            const tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = '';
-            expenseData.reverse().forEach(x => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `<td class="py-2.5 font-semibold text-gray-200">${x.name}</td><td class="py-2.5 text-right font-mono text-rose-400">₹${x.amount}</td><td class="py-2.5 text-center"><button onclick="deleteExpense(${x.id})" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button></td>`;
+            let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = '';
+            // Sort expenses by date (Newest first)
+            let sortedExp = [...expenseData].sort((a, b) => new Date(b.date) - new Date(a.date));
+            sortedExp.forEach(x => {
+                let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
+                tr.innerHTML = `<td class="py-2.5 text-[10px] text-slate-400 font-mono">${displayDate}</td><td class="py-2.5 font-semibold text-gray-200">${x.name}</td><td class="py-2.5 text-right font-mono text-rose-400">₹${x.amount}</td><td class="py-2.5 text-center"><button onclick="deleteExpense(${x.id})" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button></td>`;
                 tbody.appendChild(tr);
             });
         }
-        function renderTopProducts() {
-            let container = document.getElementById('topProductsContainer'); container.innerHTML = '';
-            let cnts = {}; salesData.forEach(x => cnts[x.model] = (cnts[x.model] || 0) + x.qty);
-            Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([m, q], i) => {
-                let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between";
-                d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d);
-            });
-        }
+        function renderTopProducts() { let container = document.getElementById('topProductsContainer'); container.innerHTML = ''; let cnts = {}; salesData.forEach(x => cnts[x.model] = (cnts[x.model] || 0) + x.qty); Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([m, q], i) => { let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between"; d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d); }); }
+        function exportToCSV() { let csv = "Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n"; salesData.forEach(x => csv += `${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`); let link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv)); link.setAttribute("download", "Sales_Report.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+        
+        window.addEventListener('load', () => { if (sessionStorage.getItem('isLoggedIn') === 'true') showDashboard(); });
     </script>
 </body>
 </html>
