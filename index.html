@@ -137,16 +137,16 @@
 
         <!-- TOP CARDS KE NICHE 4 BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-4">
-            <button onclick="playClickSound(); openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">➕ Add Sale</p>
             </button>
-            <button onclick="playClickSound(); openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">📦 Add Stock</p>
             </button>
-            <button onclick="playClickSound(); openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">💸 Expense</p>
             </button>
-            <button onclick="playClickSound(); document.getElementById('reportSection').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="document.getElementById('reportSection').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">📊 View Report</p>
             </button>
         </div>
@@ -401,10 +401,10 @@
 
     <!-- ================= STICKY BOTTOM 4 BIG BUTTONS LAYOUT ================= -->
     <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto card-bg p-3 grid grid-cols-4 gap-2 border-t border-slate-800 z-40 text-xs font-bold">
-        <button onclick="playClickSound(); openModal('saleModal')" class="bg-emerald-600 py-3 rounded-xl flex flex-col items-center justify-center">🟢 Add Sale</button>
-        <button onclick="playClickSound(); openModal('stockModal')" class="bg-blue-600 py-3 rounded-xl flex flex-col items-center justify-center">🔵 Add Stock</button>
-        <button onclick="playClickSound(); openModal('expenseModal')" class="bg-amber-600 py-3 rounded-xl flex flex-col items-center justify-center">🟠 Expense</button>
-        <button onclick="playClickSound(); openModal('udhaarModal')" class="bg-rose-600 py-3 rounded-xl flex flex-col items-center justify-center">🔴 Udhaar Box</button>
+        <button onclick="openModal('saleModal')" class="bg-emerald-600 py-3 rounded-xl flex flex-col items-center justify-center">🟢 Add Sale</button>
+        <button onclick="openModal('stockModal')" class="bg-blue-600 py-3 rounded-xl flex flex-col items-center justify-center">🔵 Add Stock</button>
+        <button onclick="openModal('expenseModal')" class="bg-amber-600 py-3 rounded-xl flex flex-col items-center justify-center">🟠 Expense</button>
+        <button onclick="openModal('udhaarModal')" class="bg-rose-600 py-3 rounded-xl flex flex-col items-center justify-center">🔴 Udhaar Box</button>
     </div>
 
 
@@ -413,44 +413,37 @@
         let salesData = []; let expenseData = []; let inventory = {}; let udhaarData = []; let myChart = null; let generatedOTP = null;
 
         // ================= SYNTHESIZER AUDIO AUDIO ENGINE FUNCTIONS =================
-        // 1. Crisp "Tik" Sound for Buttons click track
         function playClickSound() {
             try {
                 let context = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = context.createOscillator();
-                let gain = context.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, context.currentTime); // Crisp High frequency pitch
-                gain.gain.setValueAtTime(0.05, context.currentTime); // Soft controlled volume volume
-                gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.05); // Rapid decay tone
+                let osc = context.createOscillator(); let gain = context.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, context.currentTime); 
+                gain.gain.setValueAtTime(0.05, context.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.05);
                 osc.connect(gain); gain.connect(context.destination);
                 osc.start(); osc.stop(context.currentTime + 0.05);
-            } catch(e) { console.log("Audio not allowed yet"); }
+            } catch(e) { console.log("Audio waiting for interaction"); }
         }
 
-        // 2. Sweet double Beep-Beep success tone for form save submission confirmations
         function playSuccessSound() {
             try {
                 let context = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // First success beep block
                 let osc1 = context.createOscillator(); let gain1 = context.createGain();
-                osc1.type = 'triangle'; osc1.frequency.setValueAtTime(523.25, context.currentTime); // C5 note tone
+                osc1.type = 'triangle'; osc1.frequency.setValueAtTime(523.25, context.currentTime); 
                 gain1.gain.setValueAtTime(0.08, context.currentTime);
                 gain1.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
                 osc1.connect(gain1); gain1.connect(context.destination);
                 osc1.start(); osc1.stop(context.currentTime + 0.12);
 
-                // Second delayed confirmation note chime track
                 setTimeout(() => {
                     let osc2 = context.createOscillator(); let gain2 = context.createGain();
-                    osc2.type = 'triangle'; osc2.frequency.setValueAtTime(659.25, context.currentTime); // E5 melodic chord note
+                    osc2.type = 'triangle'; osc2.frequency.setValueAtTime(659.25, context.currentTime); 
                     gain2.gain.setValueAtTime(0.08, context.currentTime);
                     gain2.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.15);
                     osc2.connect(gain2); gain2.connect(context.destination);
                     osc2.start(); osc2.stop(context.currentTime + 0.15);
                 }, 100);
-            } catch(e) { console.log("Audio blocked"); }
+            } catch(e) { console.log("Audio failure"); }
         }
 
         function getSystemTodayDateString() {
@@ -484,6 +477,22 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // FIXED MODAL TRIGGER METHOD GATEWAY WITH RE-ORDERED CLICK SOUND AUDIO LOGIC
+        function openModal(id) { 
+            // 1. Open the popup gateway directly on screen instant
+            document.getElementById(id).classList.remove('hidden'); 
+            
+            // 2. Safely trigger click chime tone without halting loop logic
+            playClickSound();
+
+            let todayStr = getSystemTodayDateString();
+            if(id === 'saleModal') { document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; }
+            else if(id === 'stockModal') { document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; document.getElementById('editStockKey').value = ""; }
+            else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function sendOTPToken() {
             if (document.getElementById('mobileNumber').value.trim() !== '8401463902') { alert("Error!"); return; }
@@ -548,7 +557,7 @@
             inventory[model] = { qty, price, brand, imei };
             document.getElementById('stockBrand').value = ""; document.getElementById('stockModelName').value = ""; document.getElementById('stockImei').value = ""; document.getElementById('stockCount').value = ""; document.getElementById('stockPriceInp').value = ""; document.getElementById('editStockKey').value = "";
             
-            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
+            playSuccessSound(); 
             closeModal('stockModal'); syncToCloud();
         }
 
@@ -568,7 +577,7 @@
             await syncToCloud();
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
             
-            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
+            playSuccessSound(); 
             btn.innerText = "SAVE TRANSACTION"; btn.disabled = false; closeModal('saleModal'); 
         }
 
@@ -587,7 +596,7 @@
             await syncToCloud();
             document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0"; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoBase64').value = "";
             
-            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
+            playSuccessSound(); 
             btn.innerText = "SAVE UDHAAR ENTRY"; btn.disabled = false; closeModal('udhaarModal'); 
         }
 
@@ -600,7 +609,7 @@
             let name = document.getElementById('expenseName').value.trim(); let amount = parseFloat(document.getElementById('expenseAmount').value) || 0; if(!name || amount <= 0) return;
             expenseData.push({ id: Date.now(), name, amount, date: getSystemTodayDateString() }); 
             
-            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
+            playSuccessSound(); 
             closeModal('expenseModal'); syncToCloud();
         }
         function deleteExpense(id) { if(confirm("Remove?")) { expenseData = expenseData.filter(x => x.id !== id); syncToCloud(); } }
@@ -663,6 +672,7 @@
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
         }
 
+        // EXPENSE HISTORY LOG WITH DYNAMIC DATE LOCK FILTER
         function renderExpenseLog() {
             let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = ''; const targetExpenseDate = document.getElementById('expenseLogDateFilter').value;
             let sortedExp = [...expenseData].sort((a, b) => new Date(b.date) - new Date(a.date));
