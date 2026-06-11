@@ -471,7 +471,7 @@
             }
         }
 
-        // ================= FIX REALTIME SNAPSHOT RECOVERY LAYER =================
+        // PREVENT BLANK STATE OVERWRITE ON REALTIME DATA FETCH
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
 
@@ -479,23 +479,18 @@
                 if (docSnap.exists()) {
                     let c = docSnap.data();
                     
-                    // Directly restore main backup fields without local-storage collision
-                    salesData = c.salesData || c.sales || [];
-                    expenseData = c.expenseData || c.expenses || [];
-                    udhaarData = c.udhaarData || [];
+                    if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
+                    if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
+                    if (c.udhaarData && c.udhaarData.length > 0) udhaarData = c.udhaarData;
 
                     let rawInventory = c.inventory || {};
-                    inventory = {};
-                    for (const [key, val] of Object.entries(rawInventory)) {
-                        if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
-                        else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
+                    if (Object.keys(rawInventory).length > 0) {
+                        inventory = {};
+                        for (const [key, val] of Object.entries(rawInventory)) {
+                            if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
+                            else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
+                        }
                     }
-                    
-                    // Backup data mirror to local cache tracking
-                    localStorage.setItem('salesData', JSON.stringify(salesData));
-                    localStorage.setItem('expenseData', JSON.stringify(expenseData));
-                    localStorage.setItem('inventory', JSON.stringify(inventory));
-                    localStorage.setItem('udhaarData', JSON.stringify(udhaarData));
                 }
                 updateDashboardUI();
             });
@@ -515,7 +510,9 @@
         };
 
         async function syncToCloud() {
-            if (window.setDoc && window.db) { await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); }
+            if (window.setDoc && window.db) { 
+                await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); 
+            }
         }
 
         function submitStockForm() {
@@ -546,15 +543,41 @@
         }
         function deleteSale(id) { if(confirm("Delete?")) { salesData = salesData.filter(x => x.id !== id); syncToCloud(); } }
 
-        function submitUdhaarForm() {
-            let id = document.getElementById('editUdhaarId').value; let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); let name = document.getElementById('udhaarCustomerName').value.trim(); let phone = document.getElementById('udhaarCustomerPhone').value.trim(); let company = document.getElementById('udhaarCompanyName').value.trim(); let product = document.getElementById('udhaarProductName').value.trim(); let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0; let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0; let photo = document.getElementById('udhaarPhotoBase64').value;
-            if(!name || total <= 0) return;
+        // ================= FIXED STRICT UDHAAR SAVE AND SYNC LOGIC =================
+        async function submitUdhaarForm() {
+            let id = document.getElementById('editUdhaarId').value; 
+            let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); 
+            let name = document.getElementById('udhaarCustomerName').value.trim(); 
+            let phone = document.getElementById('udhaarCustomerPhone').value.trim(); 
+            let company = document.getElementById('udhaarCompanyName').value.trim(); 
+            let product = document.getElementById('udhaarProductName').value.trim(); 
+            let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0; 
+            let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0; 
+            let photo = document.getElementById('udhaarPhotoBase64').value;
+            
+            if(!name || total <= 0) { alert("Complete details first!"); return; }
 
-            if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
-            else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
+            // Update local array first
+            if(id) { 
+                udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); 
+            } else { 
+                udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); 
+            }
 
-            document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0"; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoBase64').value = "";
-            closeModal('udhaarModal'); syncToCloud();
+            // FORCE CLOUD SYNC FIRST BEFORE CLEARING SCREEN VARIABLES
+            await syncToCloud();
+
+            // Clear inputs safely after sync is complete
+            document.getElementById('udhaarCustomerName').value = ""; 
+            document.getElementById('udhaarCustomerPhone').value = ""; 
+            document.getElementById('udhaarCompanyName').value = ""; 
+            document.getElementById('udhaarProductName').value = ""; 
+            document.getElementById('udhaarTotalPrice').value = ""; 
+            document.getElementById('udhaarJamaPrice').value = "0"; 
+            document.getElementById('udhaarPhotoFile').value = ""; 
+            document.getElementById('udhaarPhotoBase64').value = "";
+            
+            closeModal('udhaarModal'); 
         }
 
         function openEditUdhaar(id) {
@@ -617,31 +640,14 @@
         }
 
         function renderLog() {
-            const tbody = document.getElementById('logTableBody');
-            const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
-            const searchType = document.getElementById('salesSearchType').value;
-            tbody.innerHTML = '';
-
+            const tbody = document.getElementById('logTableBody'); const searchKeyword = document.getElementById('searchLog').value.toLowerCase(); const searchType = document.getElementById('salesSearchType').value; tbody.innerHTML = '';
             let sortedSales = [...salesData].sort((a, b) => new Date(b.date) - new Date(a.date));
-
             sortedSales.filter(x => {
                 let m = x.model.toLowerCase(); let b = (x.brand || "").toLowerCase(); let i = (x.imei || "").toLowerCase();
-                if(searchType === 'model') return m.includes(searchKeyword);
-                if(searchType === 'brand') return b.includes(searchKeyword);
-                if(searchType === 'imei') return i.includes(searchKeyword);
+                if(searchType === 'model') return m.includes(searchKeyword); if(searchType === 'brand') return b.includes(searchKeyword); if(searchType === 'imei') return i.includes(searchKeyword);
             }).forEach(x => {
-                let tr = document.createElement('tr');
-                let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
-                tr.innerHTML = `
-                    <td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td>
-                    <td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td>
-                    <td class="py-2 text-center font-mono">${x.qty}</td>
-                    <td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td>
-                    <td class="py-2 text-center">
-                        <button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                `;
+                let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
+                tr.innerHTML = `<td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td><td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td><td class="py-2 text-center font-mono">${x.qty}</td><td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td><td class="py-2 text-center"><button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button></td>`;
                 tbody.appendChild(tr);
             });
         }
