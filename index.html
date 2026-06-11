@@ -237,7 +237,11 @@
 
         <!-- Expense History Log -->
         <div class="card-bg p-4 rounded-xl mb-4">
-            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Expense History Log</h3>
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Expense History Log</h3>
+                <!-- DATE FILTER FOR EXPENSES -->
+                <input type="date" id="expenseLogDateFilter" onchange="renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5 text-gray-300 font-mono">
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
                     <thead>
@@ -261,14 +265,29 @@
                     <i class="fa-solid fa-file-excel"></i> Export Excel
                 </button>
             </div>
-            <div class="mb-3 grid grid-cols-3 gap-1.5">
-                <select id="salesSearchType" class="input-field rounded-lg p-2 text-xs col-span-1">
-                    <option value="model">Model Name</option>
-                    <option value="brand">Brand</option>
-                    <option value="imei">IMEI</option>
-                </select>
-                <input type="text" id="searchLog" oninput="renderLog()" placeholder="Search sales..." class="w-full input-field rounded-lg p-2 text-xs col-span-2">
+            
+            <!-- NEW DATE WISE SEARCH FILTER CONTROL CONTAINER -->
+            <div class="mb-3 grid grid-cols-3 gap-1.5 items-center">
+                <div class="col-span-1">
+                    <label class="block text-[9px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">Filter By Date</label>
+                    <input type="date" id="salesLogDateFilter" onchange="renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[11px] rounded p-1.5 text-gray-200 font-mono">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-[9px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">Search Sales Keyword</label>
+                    <div class="relative flex items-center">
+                        <input type="text" id="searchLog" oninput="renderLog()" placeholder="Type text..." class="w-full input-field rounded-lg p-1.5 text-xs">
+                    </div>
+                </div>
             </div>
+
+            <div class="mb-3 grid grid-cols-1">
+                <select id="salesSearchType" class="w-full input-field rounded-lg p-2 text-xs">
+                    <option value="model">Search Type: Model Name</option>
+                    <option value="brand">Search Type: Brand</option>
+                    <option value="imei">Search Type: IMEI</option>
+                </select>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs min-w-[400px]">
                     <thead>
@@ -276,8 +295,6 @@
                             <th class="pb-2 font-medium">DATE</th>
                             <th class="pb-2 font-medium">PRODUCT NAME</th>
                             <th class="pb-2 font-medium text-center">QTY</th>
-                            <th class="pb-2 font-medium text-center">MODE</th>
-                            <th class="pb-2 font-medium text-right">COST</th>
                             <th class="pb-2 font-medium text-right">SALE</th>
                             <th class="pb-2 font-medium text-center">ACTION</th>
                         </tr>
@@ -413,7 +430,6 @@
             return months[d.getMonth()] + " " + d.getFullYear();
         }
 
-        // ================= DYNAMIC IMAGE COMPRESSOR ENGINGE FOR LIGHTWEIGHT SYNC =================
         document.getElementById('udhaarPhotoFile').addEventListener('change', function(e) {
             let file = e.target.files[0];
             if (file) {
@@ -421,21 +437,14 @@
                 reader.onload = function(event) { 
                     let img = new Image();
                     img.onload = function() {
-                        // Create virtual canvas for high speed compression reduction
                         let canvas = document.createElement('canvas');
-                        let max_size = 300; // Resize target width down for KB storage
+                        let max_size = 300;
                         let width = img.width;
                         let height = img.height;
-
                         if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
                         else { if (height > max_size) { width *= max_size / height; height = max_size; } }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        let ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Output deeply optimized light base64 string
+                        canvas.width = width; canvas.height = height;
+                        let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                         let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
                         document.getElementById('udhaarPhotoBase64').value = compressedBase64;
                     };
@@ -448,7 +457,6 @@
         function openModal(id) { 
             document.getElementById(id).classList.remove('hidden'); 
             let todayStr = getSystemTodayDateString();
-            
             if(id === 'saleModal') { document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; }
             else if(id === 'stockModal') { document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; document.getElementById('editStockKey').value = ""; }
             else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
@@ -475,9 +483,14 @@
             document.getElementById('dashboardContent').classList.remove('hidden'); 
             
             let options = { day: 'numeric', month: 'short', year: 'numeric' };
+            let todayStr = getSystemTodayDateString();
             document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN', options);
             document.getElementById('monthSaleLabel').innerText = getSystemMonthYearLabel();
             
+            // Set dynamic filters to today's date initially
+            document.getElementById('salesLogDateFilter').value = todayStr;
+            document.getElementById('expenseLogDateFilter').value = todayStr;
+
             updateMonthFilterOptions();
             setTimeout(() => { setupRealtimeSync(); }, 500); 
         }
@@ -496,15 +509,12 @@
 
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
-
             window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
                 if (docSnap.exists()) {
                     let c = docSnap.data();
-                    
                     if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
                     if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
                     if (c.udhaarData && c.udhaarData.length > 0) udhaarData = c.udhaarData;
-
                     let rawInventory = c.inventory || {};
                     inventory = {};
                     for (const [key, val] of Object.entries(rawInventory)) {
@@ -550,19 +560,12 @@
             let date = document.getElementById('saleDate').value || getSystemTodayDateString();
             let brand = document.getElementById('modelBrand').value.trim(); let model = document.getElementById('modelName').value.trim(); let imei = document.getElementById('modelImei').value.trim(); let qty = parseInt(document.getElementById('quantity').value) || 0; let mode = document.getElementById('paymentMode').value; let cost = parseFloat(document.getElementById('costPrice').value) || 0; let sale = parseFloat(document.getElementById('salePrice').value) || 0; let editId = document.getElementById('editSaleId').value;
             if(!model || qty <= 0) return;
-
-            let btn = document.getElementById('saleSubmitBtn');
-            btn.innerText = "SAVING..."; btn.disabled = true;
-
+            let btn = document.getElementById('saleSubmitBtn'); btn.innerText = "SAVING..."; btn.disabled = true;
             if(editId) { salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item); } 
             else { if(inventory[model]) { inventory[model].qty = Math.max(0, inventory[model].qty - qty); } salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty }); }
-
             await syncToCloud();
-
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
-            
-            btn.innerText = "SAVE TRANSACTION"; btn.disabled = false;
-            closeModal('saleModal'); 
+            btn.innerText = "SAVE TRANSACTION"; btn.disabled = false; closeModal('saleModal'); 
         }
 
         function openEditSale(id) {
@@ -570,43 +573,15 @@
         }
         function deleteSale(id) { if(confirm("Delete?")) { salesData = salesData.filter(x => x.id !== id); syncToCloud(); } }
 
-        // FAST SYNC: HIGH SPEED LIGHTWEIGHT DATA SUBMIT ENGINE
         async function submitUdhaarForm() {
-            let id = document.getElementById('editUdhaarId').value; 
-            let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); 
-            let name = document.getElementById('udhaarCustomerName').value.trim(); 
-            let phone = document.getElementById('udhaarCustomerPhone').value.trim(); 
-            let company = document.getElementById('udhaarCompanyName').value.trim(); 
-            let product = document.getElementById('udhaarProductName').value.trim(); 
-            let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0; 
-            let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0; 
-            let photo = document.getElementById('udhaarPhotoBase64').value;
-            
+            let id = document.getElementById('editUdhaarId').value; let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); let name = document.getElementById('udhaarCustomerName').value.trim(); let phone = document.getElementById('udhaarCustomerPhone').value.trim(); let company = document.getElementById('udhaarCompanyName').value.trim(); let product = document.getElementById('udhaarProductName').value.trim(); let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0; let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0; let photo = document.getElementById('udhaarPhotoBase64').value;
             if(!name || total <= 0) { alert("Please complete details."); return; }
-
-            let btn = document.getElementById('udhaarSubmitBtn');
-            btn.innerText = "SAVING IN 1 SEC..."; btn.className = "w-full bg-slate-600 text-gray-400 font-bold p-2.5 rounded-lg text-xs mt-2 cursor-wait";
-            btn.disabled = true;
-
+            let btn = document.getElementById('udhaarSubmitBtn'); btn.innerText = "SAVING IN 1 SEC..."; btn.disabled = true;
             if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
             else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
-
-            // High speed lightweight payload write process
             await syncToCloud();
-
-            document.getElementById('udhaarCustomerName').value = ""; 
-            document.getElementById('udhaarCustomerPhone').value = ""; 
-            document.getElementById('udhaarCompanyName').value = ""; 
-            document.getElementById('udhaarProductName').value = ""; 
-            document.getElementById('udhaarTotalPrice').value = ""; 
-            document.getElementById('udhaarJamaPrice').value = "0"; 
-            document.getElementById('udhaarPhotoFile').value = ""; 
-            document.getElementById('udhaarPhotoBase64').value = "";
-            
-            btn.innerText = "SAVE UDHAAR ENTRY"; btn.className = "w-full bg-rose-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2 transition";
-            btn.disabled = false;
-
-            closeModal('udhaarModal'); 
+            document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0"; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoBase64').value = "";
+            btn.innerText = "SAVE UDHAAR ENTRY"; btn.disabled = false; closeModal('udhaarModal'); 
         }
 
         function openEditUdhaar(id) {
@@ -630,7 +605,6 @@
                 if(x.date === todayStr) { tSale += x.sale; tProfit += p; tOrders++; }
                 if(getSystemMonthYearLabel(x.date) === selectedFilterMonth) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; }
             });
-
             expenseData.forEach(e => { if(getSystemMonthYearLabel(e.date) === selectedFilterMonth) expT += e.amount; });
 
             document.getElementById('todaySale').innerText = `₹${tSale}`;
@@ -668,15 +642,40 @@
             document.getElementById('totalStockValuation').innerText = `₹${val}`;
         }
 
+        // DYNAMIC LOG RENDERING WITH RE-ENGINEERED DATE WISE FILTER LOCK
         function renderLog() {
-            const tbody = document.getElementById('logTableBody'); const searchKeyword = document.getElementById('searchLog').value.toLowerCase(); const searchType = document.getElementById('salesSearchType').value; tbody.innerHTML = '';
+            const tbody = document.getElementById('logTableBody');
+            const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
+            const searchType = document.getElementById('salesSearchType').value;
+            
+            // Get selected filter date (Default locked to device date string)
+            const targetFilterDate = document.getElementById('salesLogDateFilter').value;
+            tbody.innerHTML = '';
+
             let sortedSales = [...salesData].sort((a, b) => new Date(b.date) - new Date(a.date));
+
             sortedSales.filter(x => {
+                // Strict check: if date filter is filled, show only matching date entries
+                if (targetFilterDate && x.date !== targetFilterDate) return false;
+
                 let m = x.model.toLowerCase(); let b = (x.brand || "").toLowerCase(); let i = (x.imei || "").toLowerCase();
-                if(searchType === 'model') return m.includes(searchKeyword); if(searchType === 'brand') return b.includes(searchKeyword); if(searchType === 'imei') return i.includes(searchKeyword);
+                if(searchType === 'model') return m.includes(searchKeyword);
+                if(searchType === 'brand') return b.includes(searchKeyword);
+                if(searchType === 'imei') return i.includes(searchKeyword);
+                return true;
             }).forEach(x => {
-                let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
-                tr.innerHTML = `<td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td><td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td><td class="py-2 text-center font-mono">${x.qty}</td><td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td><td class="py-2 text-center"><button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button></td>`;
+                let tr = document.createElement('tr');
+                let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
+                tr.innerHTML = `
+                    <td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td>
+                    <td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td>
+                    <td class="py-2 text-center font-mono">${x.qty}</td>
+                    <td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td>
+                    <td class="py-2 text-center">
+                        <button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
         }
@@ -691,16 +690,22 @@
                 let isOverdue = ((new Date().getTime() - new Date(x.date).getTime()) / (1000 * 3600 * 24)) >= 30 && pendingAmount > 0;
                 let fallbackPhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23475569' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4y'/></svg>";
                 const div = document.createElement('div'); div.className = `card-bg p-3 rounded-xl flex gap-3 relative ${isOverdue ? 'alert-blink' : ''}`;
-                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jan: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
+                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
                 container.appendChild(div);
             });
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
         }
 
+        // EXPENSE HISTORY LOG WITH DYNAMIC DATE LOCK FILTER
         function renderExpenseLog() {
             let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = '';
+            const targetExpenseDate = document.getElementById('expenseLogDateFilter').value;
+            
             let sortedExp = [...expenseData].sort((a, b) => new Date(b.date) - new Date(a.date));
-            sortedExp.forEach(x => {
+            sortedExp.filter(x => {
+                if (targetExpenseDate && x.date !== targetExpenseDate) return false;
+                return true;
+            }).forEach(x => {
                 let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
                 tr.innerHTML = `<td class="py-2.5 text-[10px] text-slate-400 font-mono">${displayDate}</td><td class="py-2.5 font-semibold text-gray-200">${x.name}</td><td class="py-2.5 text-right font-mono text-rose-400">₹${x.amount}</td><td class="py-2.5 text-center"><button onclick="deleteExpense(${x.id})" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button></td>`;
                 tbody.appendChild(tr);
