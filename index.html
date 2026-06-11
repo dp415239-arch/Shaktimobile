@@ -107,20 +107,8 @@
                 <button onclick="handleLogout()" class="text-[10px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-0.5 rounded border border-rose-900 mb-2 transition cursor-pointer">
                     <i class="fa-solid fa-power-off"></i> Logout
                 </button>
-                <!-- DYNAMIC LIVE CLOCK HEADER DATE -->
                 <span id="liveHeaderDate" class="bg-slate-800 text-gray-300 text-[10px] px-2 py-0.5 rounded font-mono">Loading Date...</span>
             </div>
-        </div>
-
-        <!-- RECOVERY ACTION CONTROL BAR -->
-        <div id="recoveryBanner" class="hidden bg-amber-950/50 border border-amber-800 text-amber-300 text-xs rounded-xl p-3 mb-4 flex justify-between items-center">
-            <div>
-                <p class="font-bold">⚠️ Backup Data Found in Browser!</p>
-                <p class="text-[10px] text-gray-400">Click Sync to recover your old dashboard history.</p>
-            </div>
-            <button onclick="forceLocalRecovery()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] transition">
-                ⚡ SYNC NOW
-            </button>
         </div>
 
         <!-- Top Stats Grid -->
@@ -222,7 +210,7 @@
         <!-- Filter & Analytics Section -->
         <div id="reportSection" class="card-bg p-4 rounded-xl mb-4">
             <label class="block text-xs text-gray-400 uppercase mb-2">Select Filter Month</label>
-            <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4">
+            <select id="monthFilter" class="w-full input-field rounded-lg p-2.5 text-sm mb-4" onchange="updateDashboardUI()">
                 <!-- Populated via Javascript dynamically -->
             </select>
 
@@ -323,7 +311,7 @@
                 </div>
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1">Customer Photo</label>
-                    <input type="file" id="udhaarPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 file:bg-slate-800 file:text-gray-300">
+                    <input type="file" id="udhaar PhotoFile" accept="image/*" class="w-full text-xs text-gray-400 file:bg-slate-800 file:text-gray-300">
                     <input type="hidden" id="udhaarPhotoBase64">
                 </div>
             </div>
@@ -409,7 +397,6 @@
     <script>
         let salesData = []; let expenseData = []; let inventory = {}; let udhaarData = []; let myChart = null; let generatedOTP = null;
 
-        // DYNAMIC CLOCK: Returns real clock device string in YYYY-MM-DD
         function getSystemTodayDateString() {
             let d = new Date();
             let month = '' + (d.getMonth() + 1);
@@ -420,7 +407,6 @@
             return [year, month, day].join('-');
         }
 
-        // DYNAMIC LABELS Generator (e.g., "June 2026")
         function getSystemMonthYearLabel(dateStr) {
             let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             let d = dateStr ? new Date(dateStr) : new Date();
@@ -465,41 +451,42 @@
             document.getElementById('loginScreen').classList.add('hidden'); 
             document.getElementById('dashboardContent').classList.remove('hidden'); 
             
-            // Set live real-time header text date
             let options = { day: 'numeric', month: 'short', year: 'numeric' };
             document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN', options);
             document.getElementById('monthSaleLabel').innerText = getSystemMonthYearLabel();
             
-            // Populate Month Filter Dropdown Dynamically with current real time clock month
+            updateMonthFilterOptions();
+            setTimeout(() => { setupRealtimeSync(); }, 500); 
+        }
+
+        function updateMonthFilterOptions() {
             let filterSelect = document.getElementById('monthFilter');
             filterSelect.innerHTML = "";
-            let currentLabel = getSystemMonthYearLabel();
-            let opt = document.createElement('option'); opt.value = currentLabel; opt.innerText = currentLabel;
-            filterSelect.appendChild(opt);
-
-            setTimeout(() => { setupRealtimeSync(); }, 500); 
+            let d = new Date();
+            for(let i=0; i<3; i++) {
+                let label = getSystemMonthYearLabel(d.toISOString());
+                let opt = document.createElement('option'); opt.value = label; opt.innerText = label;
+                filterSelect.appendChild(opt);
+                d.setMonth(d.getMonth() - 1);
+            }
         }
 
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
-            
-            let cachedSales = JSON.parse(localStorage.getItem('salesData')) || [];
-            if(cachedSales.length > 0 && salesData.length === 0) { document.getElementById('recoveryBanner').classList.remove('hidden'); }
 
             window.onSnapshot(window.doc(window.db, "shaktiMobile", "dashboardData"), (docSnap) => {
                 if (docSnap.exists()) {
                     let c = docSnap.data();
-                    if (c.salesData) salesData = c.salesData;
-                    if (c.expenseData) expenseData = c.expenseData;
-                    if (c.udhaarData) udhaarData = c.udhaarData;
+                    
+                    salesData = c.salesData || c.sales || [];
+                    expenseData = c.expenseData || c.expenses || [];
+                    udhaarData = c.udhaarData || [];
 
                     let rawInventory = c.inventory || {};
-                    if (Object.keys(rawInventory).length > 0) {
-                        inventory = {};
-                        for (const [key, val] of Object.entries(rawInventory)) {
-                            if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
-                            else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
-                        }
+                    inventory = {};
+                    for (const [key, val] of Object.entries(rawInventory)) {
+                        if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
+                        else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
                     }
                 }
                 updateDashboardUI();
@@ -519,19 +506,8 @@
             }
         };
 
-        window.forceLocalRecovery = function() {
-            let recoveredSales = JSON.parse(localStorage.getItem('salesData')) || [];
-            let recoveredExpense = JSON.parse(localStorage.getItem('expenseData')) || [];
-            let recoveredInventory = JSON.parse(localStorage.getItem('inventory')) || {};
-            let recoveredUdhaar = JSON.parse(localStorage.getItem('udhaarData')) || [];
-
-            if(recoveredSales.length > 0 || Object.keys(recoveredInventory).length > 0) {
-                salesData = recoveredSales; expenseData = recoveredExpense; udhaarData = recoveredUdhaar; inventory = recoveredInventory;
-                syncToCloud(); document.getElementById('recoveryBanner').classList.add('hidden'); alert("⚡ SUCCESS!");
-            }
-        }
-
         async function syncToCloud() {
+            // Local storage tracking maps update securely
             localStorage.setItem('salesData', JSON.stringify(salesData));
             localStorage.setItem('expenseData', JSON.stringify(expenseData));
             localStorage.setItem('inventory', JSON.stringify(inventory));
@@ -583,7 +559,6 @@
         }
         function deleteUdhaarItem(id) { if(confirm("Remove?")) { udhaarData = udhaarData.filter(x => x.id !== id); syncToCloud(); } }
 
-        // Dynamic System Date string injector for Expense Tracker
         function addExpense() {
             let name = document.getElementById('expenseName').value.trim(); let amount = parseFloat(document.getElementById('expenseAmount').value) || 0; if(!name || amount <= 0) return;
             expenseData.push({ id: Date.now(), name, amount, date: getSystemTodayDateString() }); closeModal('expenseModal'); syncToCloud();
@@ -593,14 +568,15 @@
         function updateDashboardUI() {
             let tSale = 0; let tProfit = 0; let tOrders = 0; let mSale = 0; let mProfit = 0; let uSold = 0; let cCost = 0; let expT = 0;
             let todayStr = getSystemTodayDateString();
-            let currentMonthLabel = getSystemMonthYearLabel();
+            let selectedFilterMonth = document.getElementById('monthFilter').value || getSystemMonthYearLabel();
 
             salesData.forEach(x => {
                 let p = x.sale - x.cost;
                 if(x.date === todayStr) { tSale += x.sale; tProfit += p; tOrders++; }
-                if(getSystemMonthYearLabel(x.date) === currentMonthLabel) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; }
+                if(getSystemMonthYearLabel(x.date) === selectedFilterMonth) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; }
             });
-            expenseData.forEach(e => { if(getSystemMonthYearLabel(e.date) === currentMonthLabel) expT += e.amount; });
+
+            expenseData.forEach(e => { if(getSystemMonthYearLabel(e.date) === selectedFilterMonth) expT += e.amount; });
 
             document.getElementById('todaySale').innerText = `₹${tSale}`;
             document.getElementById('todayProfit').innerText = `₹${tProfit}`;
@@ -637,14 +613,12 @@
             document.getElementById('totalStockValuation').innerText = `₹${val}`;
         }
 
-        // DYNAMIC SORTED SALES LOG: NEWEST FIRST (DATE WISE ARRANGED)
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
             const searchType = document.getElementById('salesSearchType').value;
             tbody.innerHTML = '';
 
-            // Clone salesData and sort strictly by date (Newest dates on top)
             let sortedSales = [...salesData].sort((a, b) => new Date(b.date) - new Date(a.date));
 
             sortedSales.filter(x => {
@@ -654,7 +628,6 @@
                 if(searchType === 'imei') return i.includes(searchKeyword);
             }).forEach(x => {
                 let tr = document.createElement('tr');
-                // Format YYYY-MM-DD display to dd/mm for compact row space
                 let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
                 tr.innerHTML = `
                     <td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td>
@@ -680,7 +653,7 @@
                 let isOverdue = ((new Date().getTime() - new Date(x.date).getTime()) / (1000 * 3600 * 24)) >= 30 && pendingAmount > 0;
                 let fallbackPhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23475569' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4y'/></svg>";
                 const div = document.createElement('div'); div.className = `card-bg p-3 rounded-xl flex gap-3 relative ${isOverdue ? 'alert-blink' : ''}`;
-                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
+                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jan: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
                 container.appendChild(div);
             });
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
@@ -688,7 +661,6 @@
 
         function renderExpenseLog() {
             let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = '';
-            // Sort expenses by date (Newest first)
             let sortedExp = [...expenseData].sort((a, b) => new Date(b.date) - new Date(a.date));
             sortedExp.forEach(x => {
                 let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
