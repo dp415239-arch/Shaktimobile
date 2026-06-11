@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>KDR ORGANIC · SHAKTI MOBILE · Premium Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,9 +32,11 @@
     </script>
 
     <style>
-        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Inter', 'Segoe UI', sans-serif; padding-bottom: 85px; }
-        .card-bg { background-color: #121A2E; border: 1px solid #1E293B; backdrop-filter: blur(2px); }
-        .input-field { background-color: #0F172A; border: 1px solid #334155; color: white; transition: all 0.2s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Inter', 'Segoe UI', sans-serif; padding: 16px 16px 85px 16px; max-width: 28rem; margin: 0 auto; min-height: 100vh; }
+        
+        .card-bg { background-color: #121A2E; border: 1px solid #1E293B; backdrop-filter: blur(2px); border-radius: 16px; }
+        .input-field { background-color: #0F172A; border: 1px solid #334155; color: white; transition: all 0.2s; border-radius: 12px; }
         .input-field:focus { border-color: #3B82F6; outline: none; box-shadow: 0 0 0 1px #3B82F6; }
         .modal-bg { background-color: rgba(11, 17, 30, 0.95); backdrop-filter: blur(5px); }
         .low-stock-badge { background-color: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fbbf24; padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: bold; }
@@ -46,11 +48,18 @@
         .loading-spinner { border: 3px solid #1E293B; border-top: 3px solid #10B981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* FIXED BOTTOM NAVIGATION - Always visible */
-        .bottom-nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 28rem; margin: 0 auto; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border-top: 1px solid rgba(30, 41, 59, 0.8); padding: 10px 16px; display: flex; justify-content: space-around; z-index: 50; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; padding: 6px 12px; border-radius: 16px; color: #94A3B8; }
+        /* FIXED BOTTOM NAVIGATION - Always visible at bottom, never scrolls away */
+        .bottom-nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 28rem; margin: 0 auto; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(30, 41, 59, 0.8); padding: 10px 16px; display: flex; justify-content: space-around; z-index: 1000; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; padding: 6px 12px; border-radius: 16px; color: #94A3B8; background: transparent; }
         .nav-item:hover { background: #1E293B; color: #10b981; transform: translateY(-2px); }
         .nav-item.active { color: #10b981; background: #1E293B; }
+        
+        /* TOP ACTION BUTTONS - At the top of page content */
+        .action-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 20px 0; }
+        .action-btn { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid #334155; padding: 12px 8px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .action-btn:hover { transform: translateY(-2px); border-color: #10b981; }
+        .action-btn i { font-size: 20px; margin-bottom: 4px; display: block; }
+        .action-btn span { font-size: 11px; font-weight: 600; }
         
         .premium-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         .premium-table th { padding: 8px 6px; font-size: 10px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #1E293B; }
@@ -61,15 +70,11 @@
         .whatsapp-btn { background: #075E54; padding: 4px 8px; border-radius: 20px; font-size: 9px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; }
         .whatsapp-btn:hover { background: #128C7E; transform: scale(1.02); }
         
-        /* Top Action Buttons */
-        .action-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-        .action-btn { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid #334155; padding: 12px 8px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .action-btn:hover { transform: translateY(-2px); border-color: #10b981; }
-        .action-btn i { font-size: 20px; margin-bottom: 4px; display: block; }
-        .action-btn span { font-size: 11px; font-weight: 600; }
+        /* Main content wrapper - gives space for fixed bottom nav */
+        .main-content { padding-bottom: 10px; }
     </style>
 </head>
-<body class="p-4 max-w-md mx-auto">
+<body>
 
     <!-- LOGIN SCREEN -->
     <div id="loginScreen">
@@ -115,103 +120,105 @@
 
     <!-- MAIN DASHBOARD -->
     <div id="dashboardContent" style="display: none;">
-        <!-- Header -->
-        <div class="text-center mb-5">
-            <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
-            <p class="text-xs text-gray-400 uppercase tracking-widest">TRUST · QUALITY · SERVICE</p>
-            <div class="flex justify-between items-center mt-2">
-                <span class="text-[10px] text-gray-500" id="liveHeaderDate">11 Jun 2026</span>
-                <button onclick="doLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-0.5 rounded border border-rose-900 cursor-pointer"><i class="fa-solid fa-power-off"></i> Logout</button>
-            </div>
-        </div>
-
-        <!-- Stats Row 1 -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹22,450</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">128</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">56</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
-        </div>
-
-        <!-- Stats Row 2 -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹11,040</p><p id="todayOrders" class="text-xs text-gray-500">7 Orders</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹6,470</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH SALE</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹35,040</p><p id="monthSaleLabel" class="text-xs text-gray-500">June 2026</p></div>
-            <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹10,370</p><p class="text-xs text-gray-500">Margin Target</p></div>
-        </div>
-
-        <!-- Cash Flow Split -->
-        <div class="bg-[#0A1022] border border-slate-800/80 p-2.5 rounded-2xl mb-4 flex justify-between items-center text-xs font-semibold">
-            <span class="text-gray-300">Cash Flow Split:</span>
-            <div class="flex gap-3"><span class="bg-emerald-950/50 text-emerald-300 px-2 py-1 rounded-xl">Cash: <span id="splitCashVal">₹10,940</span></span><span class="bg-blue-950/50 text-blue-300 px-2 py-1 rounded-xl">UPI: <span id="splitUpiVal">₹100</span></span></div>
-        </div>
-
-        <!-- TOP ACTION BUTTONS - Now visible at top (not fixed) -->
-        <div class="action-buttons">
-            <div onclick="playSound(); openModal('saleModal')" class="action-btn bg-emerald-900/20 border-emerald-800/50"><i class="fa-solid fa-cart-plus text-emerald-400"></i><span class="text-emerald-400">Add Sale</span></div>
-            <div onclick="playSound(); openModal('stockModal')" class="action-btn bg-blue-900/20 border-blue-800/50"><i class="fa-solid fa-boxes text-blue-400"></i><span class="text-blue-400">Add Stock</span></div>
-            <div onclick="playSound(); openModal('expenseModal')" class="action-btn bg-amber-900/20 border-amber-800/50"><i class="fa-solid fa-receipt text-amber-400"></i><span class="text-amber-400">Expense</span></div>
-            <div onclick="playSound(); openModal('udhaarModal')" class="action-btn bg-rose-900/20 border-rose-800/50"><i class="fa-solid fa-book text-rose-400"></i><span class="text-rose-400">Udhaar</span></div>
-        </div>
-
-        <!-- Last 7 Days Sale Chart -->
-        <div class="card-bg p-4 rounded-2xl mb-5">
-            <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider">📊 LAST 7 DAYS SALE</h3>
-            <div class="h-56 w-full mt-3"><canvas id="weeklyChart"></canvas></div>
-        </div>
-
-        <!-- Stock Section -->
-        <div id="stockSection" class="card-bg p-4 rounded-2xl mb-5">
-            <div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-200">📟 CURRENT STOCK & INVENTORY</h3><span class="text-[9px] bg-emerald-950/40 text-emerald-300 px-2 py-0.5 rounded-full flex items-center gap-1"><span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Multi-Device Sync</span></div>
-            <div class="bg-indigo-950/30 border border-indigo-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400 uppercase">Total Shop Stock Value</p><p id="totalStockValuation" class="text-xl font-black text-indigo-300">₹49,615</p></div><i class="fa-solid fa-cubes text-indigo-800 text-2xl"></i></div>
-            
-            <div class="mb-3">
-                <select id="stockSearchType" class="input-field rounded-xl p-2 text-xs w-full mb-2"><option value="model">Model Name</option><option value="brand">Brand</option><option value="imei">IMEI</option></select>
-                <div class="relative"><i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-[10px]"></i><input type="text" id="searchStockInp" oninput="playSound(); renderStockTable()" placeholder="Search stock..." class="w-full input-field rounded-xl py-2 pl-8 pr-2 text-xs"></div>
-            </div>
-            
-            <div id="stockContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
-        </div>
-
-        <!-- Udhaar Section -->
-        <div id="udhaarSection" class="card-bg p-4 rounded-2xl mb-5 border-t-4 border-rose-500/80">
-            <div class="flex justify-between items-center pb-2 mb-3"><h3 class="text-sm font-bold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-black text-rose-400 bg-rose-950/40 px-2 py-0.5 rounded-full">₹5,000 Pending</span></div>
-            <input type="text" id="searchUdhaarInp" oninput="playSound(); renderUdhaarTable()" placeholder="Search Customer Name or Number..." class="w-full input-field rounded-xl p-2 text-xs mb-3">
-            <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
-        </div>
-
-        <!-- Report Section -->
-        <div id="reportSection" class="mb-5">
-            <div class="card-bg p-4 rounded-2xl mb-5">
-                <label class="block text-xs text-gray-400 font-bold mb-2 uppercase">📅 SELECT FILTER MONTH</label>
-                <select id="monthFilter" class="w-full input-field rounded-xl p-2.5 text-sm mb-4" onchange="playSound(); updateDashboardUI()"></select>
-                <div class="grid grid-cols-2 gap-3 text-sm border-t border-slate-800 pt-3">
-                    <div class="text-gray-300">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono font-bold text-white">19</div>
-                    <div class="text-gray-300">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono font-bold text-gray-300">₹24,670</div>
-                    <div class="text-gray-300">Other Expenses:</div><div id="totalOtherExpenses" class="text-right font-mono font-bold text-rose-400">₹0</div>
-                    <div class="text-emerald-400 font-bold">Actual Net Margin:</div><div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400">₹10,370</div>
+        <div class="main-content">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="text-xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
+                <p class="text-xs text-gray-400 uppercase tracking-widest">TRUST · QUALITY · SERVICE</p>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-[10px] text-gray-500" id="liveHeaderDate">11 Jun 2026</span>
+                    <button onclick="doLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-0.5 rounded border border-rose-900 cursor-pointer"><i class="fa-solid fa-power-off"></i> Logout</button>
                 </div>
             </div>
 
-            <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300">🏆 TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-sm mt-3"></div></div>
-            
-            <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300 flex justify-between mb-3">📋 EXPENSE HISTORY LOG <input type="date" id="expenseLogDateFilter" onchange="playSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-1"></h3><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>EXPENSE DETAILS</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
-            
-            <div class="card-bg p-4 rounded-2xl mb-6"><div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-300">🛒 SALES HISTORY LOG</h3><button onclick="playSound(); exportToCSV()" class="text-[10px] bg-blue-950/50 text-blue-300 px-2 py-1 rounded-full cursor-pointer"><i class="fa-regular fa-file-excel"></i> Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[10px] rounded-lg p-2"></div><div><label class="text-[9px] text-gray-400">Search Sales</label><input type="text" id="searchLog" oninput="playSound(); renderLog()" placeholder="Type text..." class="w-full input-field rounded-lg p-2 text-xs"></div></div><select id="salesSearchType" class="input-field rounded-lg p-2 text-xs w-full mb-3" onchange="playSound(); renderLog()"><option value="model">Search by Model Name</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>PRODUCT NAME</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
+            <!-- Stats Row 1 -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹22,450</p></div>
+                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">128</p></div>
+                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">56</p></div>
+                <div class="card-bg p-3 rounded-xl"><p class="text-[10px] text-gray-400 uppercase">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
+            </div>
+
+            <!-- Stats Row 2 -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹11,040</p><p id="todayOrders" class="text-xs text-gray-500">7 Orders</p></div>
+                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹6,470</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
+                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH SALE</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹35,040</p><p id="monthSaleLabel" class="text-xs text-gray-500">June 2026</p></div>
+                <div class="card-bg p-3 rounded-xl"><p class="text-xs text-gray-400 uppercase">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹10,370</p><p class="text-xs text-gray-500">Margin Target</p></div>
+            </div>
+
+            <!-- Cash Flow Split -->
+            <div class="bg-[#0A1022] border border-slate-800/80 p-2.5 rounded-2xl mb-4 flex justify-between items-center text-xs font-semibold">
+                <span class="text-gray-300">Cash Flow Split:</span>
+                <div class="flex gap-3"><span class="bg-emerald-950/50 text-emerald-300 px-2 py-1 rounded-xl">Cash: <span id="splitCashVal">₹10,940</span></span><span class="bg-blue-950/50 text-blue-300 px-2 py-1 rounded-xl">UPI: <span id="splitUpiVal">₹100</span></span></div>
+            </div>
+
+            <!-- TOP ACTION BUTTONS - At the top, not fixed -->
+            <div class="action-buttons">
+                <div onclick="playSound(); openModal('saleModal')" class="action-btn bg-emerald-900/20 border-emerald-800/50"><i class="fa-solid fa-cart-plus text-emerald-400"></i><span class="text-emerald-400">Add Sale</span></div>
+                <div onclick="playSound(); openModal('stockModal')" class="action-btn bg-blue-900/20 border-blue-800/50"><i class="fa-solid fa-boxes text-blue-400"></i><span class="text-blue-400">Add Stock</span></div>
+                <div onclick="playSound(); openModal('expenseModal')" class="action-btn bg-amber-900/20 border-amber-800/50"><i class="fa-solid fa-receipt text-amber-400"></i><span class="text-amber-400">Expense</span></div>
+                <div onclick="playSound(); openModal('udhaarModal')" class="action-btn bg-rose-900/20 border-rose-800/50"><i class="fa-solid fa-book text-rose-400"></i><span class="text-rose-400">Udhaar</span></div>
+            </div>
+
+            <!-- Last 7 Days Sale Chart -->
+            <div class="card-bg p-4 rounded-2xl mb-5">
+                <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider">📊 LAST 7 DAYS SALE</h3>
+                <div class="h-56 w-full mt-3"><canvas id="weeklyChart"></canvas></div>
+            </div>
+
+            <!-- Stock Section -->
+            <div id="stockSection" class="card-bg p-4 rounded-2xl mb-5">
+                <div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-200">📟 CURRENT STOCK & INVENTORY</h3><span class="text-[9px] bg-emerald-950/40 text-emerald-300 px-2 py-0.5 rounded-full flex items-center gap-1"><span class="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Multi-Device Sync</span></div>
+                <div class="bg-indigo-950/30 border border-indigo-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400 uppercase">Total Shop Stock Value</p><p id="totalStockValuation" class="text-xl font-black text-indigo-300">₹49,615</p></div><i class="fa-solid fa-cubes text-indigo-800 text-2xl"></i></div>
+                
+                <div class="mb-3">
+                    <select id="stockSearchType" class="input-field rounded-xl p-2 text-xs w-full mb-2"><option value="model">Model Name</option><option value="brand">Brand</option><option value="imei">IMEI</option></select>
+                    <div class="relative"><i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-[10px]"></i><input type="text" id="searchStockInp" oninput="playSound(); renderStockTable()" placeholder="Search stock..." class="w-full input-field rounded-xl py-2 pl-8 pr-2 text-xs"></div>
+                </div>
+                
+                <div id="stockContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- Udhaar Section -->
+            <div id="udhaarSection" class="card-bg p-4 rounded-2xl mb-5 border-t-4 border-rose-500/80">
+                <div class="flex justify-between items-center pb-2 mb-3"><h3 class="text-sm font-bold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-black text-rose-400 bg-rose-950/40 px-2 py-0.5 rounded-full">₹5,000 Pending</span></div>
+                <input type="text" id="searchUdhaarInp" oninput="playSound(); renderUdhaarTable()" placeholder="Search Customer Name or Number..." class="w-full input-field rounded-xl p-2 text-xs mb-3">
+                <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
+            </div>
+
+            <!-- Report Section -->
+            <div id="reportSection" class="mb-5">
+                <div class="card-bg p-4 rounded-2xl mb-5">
+                    <label class="block text-xs text-gray-400 font-bold mb-2 uppercase">📅 SELECT FILTER MONTH</label>
+                    <select id="monthFilter" class="w-full input-field rounded-xl p-2.5 text-sm mb-4" onchange="playSound(); updateDashboardUI()"></select>
+                    <div class="grid grid-cols-2 gap-3 text-sm border-t border-slate-800 pt-3">
+                        <div class="text-gray-300">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono font-bold text-white">19</div>
+                        <div class="text-gray-300">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono font-bold text-gray-300">₹24,670</div>
+                        <div class="text-gray-300">Other Expenses:</div><div id="totalOtherExpenses" class="text-right font-mono font-bold text-rose-400">₹0</div>
+                        <div class="text-emerald-400 font-bold">Actual Net Margin:</div><div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400">₹10,370</div>
+                    </div>
+                </div>
+
+                <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300">🏆 TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-sm mt-3"></div></div>
+                
+                <div class="card-bg p-4 rounded-2xl mb-5"><h3 class="text-sm font-bold text-gray-300 flex justify-between mb-3">📋 EXPENSE HISTORY LOG <input type="date" id="expenseLogDateFilter" onchange="playSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-1"></h3><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>EXPENSE DETAILS</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+                
+                <div class="card-bg p-4 rounded-2xl mb-6"><div class="flex justify-between items-center mb-3"><h3 class="text-sm font-bold text-gray-300">🛒 SALES HISTORY LOG</h3><button onclick="playSound(); exportToCSV()" class="text-[10px] bg-blue-950/50 text-blue-300 px-2 py-1 rounded-full cursor-pointer"><i class="fa-regular fa-file-excel"></i> Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[10px] rounded-lg p-2"></div><div><label class="text-[9px] text-gray-400">Search Sales</label><input type="text" id="searchLog" oninput="playSound(); renderLog()" placeholder="Type text..." class="w-full input-field rounded-lg p-2 text-xs"></div></div><select id="salesSearchType" class="input-field rounded-lg p-2 text-xs w-full mb-3" onchange="playSound(); renderLog()"><option value="model">Search by Model Name</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="premium-table"><thead><tr><th>DATE</th><th>PRODUCT NAME</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
+            </div>
         </div>
     </div>
 
     <!-- MODALS -->
-    <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5 max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-3"><h3 class="text-emerald-400 font-bold text-lg">🟢 Add Sale</h3><button onclick="playSound(); closeModal('saleModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="date" id="saleDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="modelBrand" placeholder="Brand Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="relative"><input type="text" id="modelName" oninput="showLiveStockSuggestions()" placeholder="Model Name" class="input-field rounded-xl p-2 w-full text-xs"><div id="stockSuggestionBox" class="hidden absolute left-0 right-0 suggestion-box z-50"></div></div><input type="text" id="modelImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-2 w-full text-xs mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="quantity" value="1" class="input-field rounded-xl p-2 text-xs"><select id="paymentMode" class="input-field rounded-xl p-2 text-xs"><option>UPI</option><option>Cash</option><option>Udhaar</option></select></div><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="costPrice" placeholder="Cost Price ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="salePrice" placeholder="Sale Price ₹" class="input-field rounded-xl p-2 text-xs"></div><button onclick="playSaveSound(); submitSaleForm()" class="w-full bg-emerald-600 p-3 rounded-xl text-white font-bold mt-4 cursor-pointer">SAVE SALE</button></div></div>
+    <div id="saleModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5 max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-3"><h3 class="text-emerald-400 font-bold text-lg">🟢 Add Sale</h3><button onclick="playSound(); closeModal('saleModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="date" id="saleDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="modelBrand" placeholder="Brand Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="relative"><input type="text" id="modelName" oninput="showLiveStockSuggestions()" placeholder="Model Name" class="input-field rounded-xl p-2 w-full text-xs"><div id="stockSuggestionBox" class="hidden absolute left-0 right-0 suggestion-box z-[201]"></div></div><input type="text" id="modelImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-2 w-full text-xs mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="quantity" value="1" class="input-field rounded-xl p-2 text-xs"><select id="paymentMode" class="input-field rounded-xl p-2 text-xs"><option>UPI</option><option>Cash</option><option>Udhaar</option></select></div><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="costPrice" placeholder="Cost Price ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="salePrice" placeholder="Sale Price ₹" class="input-field rounded-xl p-2 text-xs"></div><button onclick="playSaveSound(); submitSaleForm()" class="w-full bg-emerald-600 p-3 rounded-xl text-white font-bold mt-4 cursor-pointer">SAVE SALE</button></div></div>
 
-    <div id="stockModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4"><div class="card-bg rounded-2xl p-5 w-full max-w-sm"><div class="flex justify-between items-center mb-3"><h3 class="text-blue-400 font-bold text-lg">🔵 Add Stock</h3><button onclick="playSound(); closeModal('stockModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="stockImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="stockCount" placeholder="Quantity" class="input-field rounded-xl p-2 text-xs"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Product Photo</label><input type="file" id="stockPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="stockPhotoBase64"><button onclick="playSaveSound(); submitStockForm()" class="w-full bg-blue-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE STOCK</button></div></div>
+    <div id="stockModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg rounded-2xl p-5 w-full max-w-sm"><div class="flex justify-between items-center mb-3"><h3 class="text-blue-400 font-bold text-lg">🔵 Add Stock</h3><button onclick="playSound(); closeModal('stockModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="stockImei" placeholder="IMEI / Serial" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="stockCount" placeholder="Quantity" class="input-field rounded-xl p-2 text-xs"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Product Photo</label><input type="file" id="stockPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="stockPhotoBase64"><button onclick="playSaveSound(); submitStockForm()" class="w-full bg-blue-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE STOCK</button></div></div>
 
-    <div id="expenseModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4"><div class="card-bg rounded-2xl p-5 w-full max-w-sm"><div class="flex justify-between items-center mb-3"><h3 class="text-amber-500 font-bold text-lg">🟠 Add Expense</h3><button onclick="playSound(); closeModal('expenseModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="text" id="expenseName" placeholder="Expense Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="number" id="expenseAmount" placeholder="Amount ₹" class="input-field rounded-xl p-2 w-full text-xs"><button onclick="playSaveSound(); addExpense()" class="w-full bg-amber-600 p-3 rounded-xl text-white font-bold mt-4 cursor-pointer">ADD EXPENSE</button></div></div>
+    <div id="expenseModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg rounded-2xl p-5 w-full max-w-sm"><div class="flex justify-between items-center mb-3"><h3 class="text-amber-500 font-bold text-lg">🟠 Add Expense</h3><button onclick="playSound(); closeModal('expenseModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="text" id="expenseName" placeholder="Expense Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="number" id="expenseAmount" placeholder="Amount ₹" class="input-field rounded-xl p-2 w-full text-xs"><button onclick="playSaveSound(); addExpense()" class="w-full bg-amber-600 p-3 rounded-xl text-white font-bold mt-4 cursor-pointer">ADD EXPENSE</button></div></div>
 
-    <div id="udhaarModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5"><div class="flex justify-between items-center mb-3"><h3 class="text-rose-400 font-bold text-lg">🔴 Udhaar Entry</h3><button onclick="playSound(); closeModal('udhaarModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="hidden" id="editUdhaarId"><input type="date" id="udhaarDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="udhaarJamaPrice" placeholder="Jama Amount ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="udhaarPhotoBase64"><button onclick="playSaveSound(); submitUdhaarForm()" class="w-full bg-rose-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE UDHAAR</button></div></div>
+    <div id="udhaarModal" class="fixed inset-0 modal-bg z-[200] hidden flex items-center justify-center p-4"><div class="card-bg w-full max-w-sm rounded-2xl p-5"><div class="flex justify-between items-center mb-3"><h3 class="text-rose-400 font-bold text-lg">🔴 Udhaar Entry</h3><button onclick="playSound(); closeModal('udhaarModal')" class="text-gray-400 text-xl font-bold cursor-pointer">✖</button></div><input type="hidden" id="editUdhaarId"><input type="date" id="udhaarDate" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field rounded-xl p-2 w-full text-xs mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field rounded-xl p-2 w-full text-xs mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field rounded-xl p-2 text-xs"><input type="number" id="udhaarJamaPrice" placeholder="Jama Amount ₹" class="input-field rounded-xl p-2 text-xs"></div><label class="text-[10px] text-gray-400 mb-1 block">📸 Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="text-xs text-gray-400 mb-2"><input type="hidden" id="udhaarPhotoBase64"><button onclick="playSaveSound(); submitUdhaarForm()" class="w-full bg-rose-600 p-3 rounded-xl text-white font-bold mt-2 cursor-pointer">SAVE UDHAAR</button></div></div>
 
-    <!-- FIXED BOTTOM NAVIGATION - Always visible, doesn't scroll -->
+    <!-- FIXED BOTTOM NAVIGATION - Always visible, never scrolls -->
     <div class="bottom-nav-bar">
         <div onclick="playSound(); scrollToTop()" id="navHome" class="nav-item active"><i class="fa-solid fa-house text-sm"></i><span>Home</span></div>
         <div onclick="playSound(); scrollToSection('stockSection')" id="navStock" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Stock</span></div>
@@ -282,19 +289,20 @@
             window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${msg}`, '_blank');
         }
         
+        // ORIGINAL DATA from your screenshot
         function setDefaultData() {
             inventory = {
-                "Iphone Glass": { qty: 50, price: 2000, brand: "GENERIC", imei: "N/A", photo: "" },
-                "Hero Shakti": { qty: 4, price: 3200, brand: "GENERIC", imei: "N/A", photo: "" },
-                "A1 Vibe": { qty: 1, price: 2500, brand: "GENERIC", imei: "N/A", photo: "" },
-                "Glass": { qty: 30, price: 100, brand: "GENERIC", imei: "N/A", photo: "" },
                 "Money Transfer": { qty: 6, price: 100, brand: "SERVICE", imei: "N/A", photo: "" },
+                "Glass": { qty: 27, price: 100, brand: "GENERIC", imei: "N/A", photo: "" },
+                "Hero Shakti": { qty: 3, price: 3200, brand: "GENERIC", imei: "N/A", photo: "" },
+                "Iphone Glass": { qty: 50, price: 2000, brand: "GENERIC", imei: "N/A", photo: "" },
+                "A1 Vibe": { qty: 1, price: 2500, brand: "GENERIC", imei: "N/A", photo: "" },
                 "Watch": { qty: 30, price: 300, brand: "GENERIC", imei: "N/A", photo: "" }
             };
             salesData = [
-                { id: 1, date: getToday(), brand: "SERVICE", model: "Money Transfer", imei: "N/A", qty: 4, mode: "Cash", cost: 400, sale: 400, customerPhone: "" },
-                { id: 2, date: getToday(), brand: "GENERIC", model: "Glass", imei: "N/A", qty: 3, mode: "Cash", cost: 240, sale: 300, customerPhone: "" },
-                { id: 3, date: getToday(), brand: "GENERIC", model: "Hero Shakti", imei: "N/A", qty: 1, mode: "Cash", cost: 2800, sale: 3200, customerPhone: "" },
+                { id: 1, date: "2026-06-11", brand: "SERVICE", model: "Money Transfer", imei: "N/A", qty: 4, mode: "Cash", cost: 400, sale: 400, customerPhone: "" },
+                { id: 2, date: "2026-06-11", brand: "GENERIC", model: "Glass", imei: "N/A", qty: 3, mode: "Cash", cost: 240, sale: 300, customerPhone: "" },
+                { id: 3, date: "2026-06-11", brand: "GENERIC", model: "Hero Shakti", imei: "N/A", qty: 1, mode: "Cash", cost: 2800, sale: 3200, customerPhone: "" },
                 { id: 4, date: "2026-06-10", brand: "Vivo", model: "Vivo y16 display", imei: "12345", qty: 1, mode: "Cash", cost: 1200, sale: 1500, customerPhone: "" },
                 { id: 5, date: "2026-06-10", brand: "OPPO", model: "OPPO a18k combo", imei: "67890", qty: 1, mode: "UPI", cost: 1000, sale: 1300, customerPhone: "" },
                 { id: 6, date: "2026-06-10", brand: "", model: "Ramesh lava jama", imei: "N/A", qty: 1, mode: "Udhaar", cost: 2500, sale: 3000, customerPhone: "" },
@@ -449,7 +457,7 @@
             alert("✅ Udhaar record added!");
         }
         
-        function clearSaleForm() { document.getElementById('modelBrand').value = ''; document.getElementById('modelName').value = ''; document.getElementById('modelImei').value = ''; document.getElementById('costPrice').value = ''; document.getElementById('salePrice').value = ''; }
+        function clearSaleForm() { document.getElementById('modelBrand').value = ''; document.getElementById('modelName').value = ''; document.getElementById('modelImei').value = ''; document.getElementById('costPrice').value = ''; document.getElementById('salePrice').value = ''; document.getElementById('quantity').value = '1'; }
         function clearStockForm() { document.getElementById('stockBrand').value = ''; document.getElementById('stockModelName').value = ''; document.getElementById('stockImei').value = ''; document.getElementById('stockCount').value = ''; document.getElementById('stockPriceInp').value = ''; document.getElementById('stockPhotoBase64').value = ''; document.getElementById('stockPhotoFile').value = ''; }
         function clearUdhaarForm() { document.getElementById('udhaarCustomerName').value = ''; document.getElementById('udhaarCustomerPhone').value = ''; document.getElementById('udhaarCompanyName').value = ''; document.getElementById('udhaarProductName').value = ''; document.getElementById('udhaarTotalPrice').value = ''; document.getElementById('udhaarJamaPrice').value = ''; document.getElementById('udhaarPhotoBase64').value = ''; document.getElementById('udhaarPhotoFile').value = ''; }
         
