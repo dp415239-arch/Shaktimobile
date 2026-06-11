@@ -315,7 +315,8 @@
                     <input type="hidden" id="udhaarPhotoBase64">
                 </div>
             </div>
-            <button onclick="submitUdhaarForm()" class="w-full bg-rose-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2">SAVE UDHAAR ENTRY</button>
+            <!-- Dynamic button that changes color while working -->
+            <button id="udhaarSubmitBtn" onclick="submitUdhaarForm()" class="w-full bg-rose-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2 transition">SAVE UDHAAR ENTRY</button>
         </div>
     </div>
 
@@ -343,7 +344,7 @@
                     <input type="number" id="salePrice" placeholder="Sale Price (₹)" class="w-full input-field rounded-lg p-2 font-mono">
                 </div>
             </div>
-            <button onclick="submitSaleForm()" class="w-full bg-emerald-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2">SAVE TRANSACTION</button>
+            <button id="saleSubmitBtn" onclick="submitSaleForm()" class="w-full bg-emerald-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2 transition">SAVE TRANSACTION</button>
         </div>
     </div>
 
@@ -471,7 +472,6 @@
             }
         }
 
-        // PREVENT BLANK STATE OVERWRITE ON REALTIME DATA FETCH
         window.setupRealtimeSync = function() {
             if (!window.onSnapshot || !window.db) return;
 
@@ -479,18 +479,21 @@
                 if (docSnap.exists()) {
                     let c = docSnap.data();
                     
-                    if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
-                    if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
-                    if (c.udhaarData && c.udhaarData.length > 0) udhaarData = c.udhaarData;
+                    salesData = c.salesData || c.sales || [];
+                    expenseData = c.expenseData || c.expenses || [];
+                    udhaarData = c.udhaarData || [];
 
                     let rawInventory = c.inventory || {};
-                    if (Object.keys(rawInventory).length > 0) {
-                        inventory = {};
-                        for (const [key, val] of Object.entries(rawInventory)) {
-                            if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
-                            else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
-                        }
+                    inventory = {};
+                    for (const [key, val] of Object.entries(rawInventory)) {
+                        if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
+                        else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
                     }
+                    
+                    localStorage.setItem('salesData', JSON.stringify(salesData));
+                    localStorage.setItem('expenseData', JSON.stringify(expenseData));
+                    localStorage.setItem('inventory', JSON.stringify(inventory));
+                    localStorage.setItem('udhaarData', JSON.stringify(udhaarData));
                 }
                 updateDashboardUI();
             });
@@ -526,16 +529,25 @@
         }
         function deleteStockItem(key) { if(confirm(`Remove?`)) { delete inventory[key]; syncToCloud(); } }
 
-        function submitSaleForm() {
+        // ================= FIXED SALE SUBMIT WITH CLOSING INTERFACE GATES =================
+        async function submitSaleForm() {
             let date = document.getElementById('saleDate').value || getSystemTodayDateString();
             let brand = document.getElementById('modelBrand').value.trim(); let model = document.getElementById('modelName').value.trim(); let imei = document.getElementById('modelImei').value.trim(); let qty = parseInt(document.getElementById('quantity').value) || 0; let mode = document.getElementById('paymentMode').value; let cost = parseFloat(document.getElementById('costPrice').value) || 0; let sale = parseFloat(document.getElementById('salePrice').value) || 0; let editId = document.getElementById('editSaleId').value;
             if(!model || qty <= 0) return;
 
+            let btn = document.getElementById('saleSubmitBtn');
+            btn.innerText = "SAVING..."; btn.disabled = true;
+
             if(editId) { salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item); } 
             else { if(inventory[model]) { inventory[model].qty = Math.max(0, inventory[model].qty - qty); } salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty }); }
 
+            // CRITICAL: Await database completion tracker before interface resets
+            await syncToCloud();
+
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
-            closeModal('saleModal'); syncToCloud();
+            
+            btn.innerText = "SAVE TRANSACTION"; btn.disabled = false;
+            closeModal('saleModal'); 
         }
 
         function openEditSale(id) {
@@ -543,7 +555,7 @@
         }
         function deleteSale(id) { if(confirm("Delete?")) { salesData = salesData.filter(x => x.id !== id); syncToCloud(); } }
 
-        // ================= FIXED STRICT UDHAAR SAVE AND SYNC LOGIC =================
+        // ================= FIXED UDHAAR SUBMIT FOR AUTO POPUP CLOSE AND RESET =================
         async function submitUdhaarForm() {
             let id = document.getElementById('editUdhaarId').value; 
             let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); 
@@ -555,19 +567,19 @@
             let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0; 
             let photo = document.getElementById('udhaarPhotoBase64').value;
             
-            if(!name || total <= 0) { alert("Complete details first!"); return; }
+            if(!name || total <= 0) { alert("Please complete details."); return; }
 
-            // Update local array first
-            if(id) { 
-                udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); 
-            } else { 
-                udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); 
-            }
+            let btn = document.getElementById('udhaarSubmitBtn');
+            btn.innerText = "SAVING TO CLOUD..."; btn.className = "w-full bg-slate-600 text-gray-400 font-bold p-2.5 rounded-lg text-xs mt-2 cursor-wait";
+            btn.disabled = true;
 
-            // FORCE CLOUD SYNC FIRST BEFORE CLEARING SCREEN VARIABLES
+            if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
+            else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
+
+            // CRITICAL SYNC LOCK: Await full cloud write to eliminate reload bugs
             await syncToCloud();
 
-            // Clear inputs safely after sync is complete
+            // Clear inputs dynamically after confirmation logic returns true
             document.getElementById('udhaarCustomerName').value = ""; 
             document.getElementById('udhaarCustomerPhone').value = ""; 
             document.getElementById('udhaarCompanyName').value = ""; 
@@ -577,6 +589,9 @@
             document.getElementById('udhaarPhotoFile').value = ""; 
             document.getElementById('udhaarPhotoBase64').value = "";
             
+            btn.innerText = "SAVE UDHAAR ENTRY"; btn.className = "w-full bg-rose-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2 transition";
+            btn.disabled = false;
+
             closeModal('udhaarModal'); 
         }
 
@@ -679,6 +694,8 @@
         }
         function renderTopProducts() { let container = document.getElementById('topProductsContainer'); container.innerHTML = ''; let cnts = {}; salesData.forEach(x => cnts[x.model] = (cnts[x.model] || 0) + x.qty); Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([m, q], i) => { let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between"; d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d); }); }
         function exportToCSV() { let csv = "Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n"; salesData.forEach(x => csv += `${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`); let link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv)); link.setAttribute("download", "Sales_Report.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+        
+        window.addEventListener('load', () => { if (sessionStorage.getItem('isLoggedIn') === 'true') showDashboard(); });
     </script>
 </body>
 </html>
