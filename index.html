@@ -7,9 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- TensorFlow.js and MobileNet for AI Image Recognition -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+    <!-- Tesseract.js for OCR - reads text from image -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -45,10 +44,11 @@
         .suggestion-box { background-color: #0F172A; border: 1px solid #334155; max-height: 250px; overflow-y: auto; z-index: 100; width: 100%; }
         .suggestion-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1E293B; font-size: 12px; }
         .suggestion-item:hover { background-color: #1E293B; color: #3B82F6; }
-        .stock-photo-img { width: 35px; height: 35px; border-radius: 8px; object-fit: cover; background: #0F172A; border: 1px solid #334155; }
+        .stock-photo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #0F172A; border: 1px solid #334155; }
         .ai-badge { background: linear-gradient(135deg, #8B5CF6, #6366F1); padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; }
         .loading-ai { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .preview-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 2px solid #10b981; }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto pb-32">
@@ -58,7 +58,7 @@
         <div class="card-bg p-6 rounded-2xl shadow-xl border border-slate-800">
             <div class="text-center mb-6">
                 <h1 class="text-2xl font-bold tracking-wide text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
-                <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">AI POWERED · LIVE SYNC</p>
+                <p class="text-xs text-gray-400 uppercase tracking-widest mt-1">AI OCR · LIVE SYNC</p>
             </div>
             
             <div id="loginError" class="hidden mb-4 p-2.5 bg-rose-950/50 border border-rose-800 text-rose-400 text-xs rounded-lg text-center font-medium">
@@ -222,7 +222,7 @@
             <div class="mb-3 grid grid-cols-1"><select id="salesSearchType" class="input-field rounded-lg p-2 text-xs w-full"><option value="model">Search Type: Model Name</option><option value="brand">Search Type: Brand</option><option value="imei">Search Type: IMEI</option></select></div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs min-w-[400px]">
-                    <thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2 font-medium">DATE</th><th class="pb-2 font-medium">PRODUCT NAME</th><th class="pb-2 font-medium text-center">QTY</th><th class="pb-2 font-medium text-right">SALE</th><th class="pb-2 font-medium text-center">ACTION</th></tr></thead>
+                    <thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2 font-medium">DATE</th><th class="pb-2 font-medium">PRODUCT NAME</th><th class="pb-2 font-medium text-center">QTY</th><th class="pb-2 font-medium text-right">SALE</th><th class="pb-2 font-medium text-center">ACTION</th><tr></thead>
                     <tbody id="logTableBody" class="divide-y divide-slate-900"></tbody>
                 </table>
             </div>
@@ -247,24 +247,25 @@
         </div>
     </div>
 
-    <!-- SALE MODAL WITH AI CAMERA -->
+    <!-- SALE MODAL WITH AI OCR -->
     <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2"><h3 id="saleModalTitle" class="text-sm font-bold text-emerald-400 uppercase">🟢 Add New Sale</h3><button onclick="closeModal('saleModal')" class="text-gray-400 text-lg font-bold">×</button></div>
             <input type="hidden" id="editSaleId">
             
-            <!-- AI Camera Section -->
+            <!-- AI OCR Section -->
             <div class="bg-gradient-to-r from-purple-900/30 to-blue-900/30 p-3 rounded-xl border border-purple-500/30">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-purple-400"><i class="fa-solid fa-robot mr-1"></i> AI Product Detection</span>
-                    <span class="ai-badge"><i class="fa-solid fa-microchip"></i> AI Ready</span>
+                    <span class="text-xs font-bold text-purple-400"><i class="fa-solid fa-robot mr-1"></i> AI OCR Detection</span>
+                    <span class="ai-badge"><i class="fa-solid fa-microchip"></i> Read Text</span>
                 </div>
                 <div class="flex gap-2">
                     <input type="file" id="saleAIPhoto" accept="image/*" capture="environment" class="hidden">
                     <button onclick="document.getElementById('saleAIPhoto').click()" class="flex-1 bg-purple-600/50 hover:bg-purple-600 text-white py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition"><i class="fa-solid fa-camera"></i> Take Photo</button>
-                    <button onclick="detectProductFromPhoto('sale')" class="flex-1 bg-blue-600/50 hover:bg-blue-600 text-white py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition"><i class="fa-solid fa-wand-magic"></i> AI Detect</button>
+                    <button onclick="detectTextFromPhoto('sale')" class="flex-1 bg-blue-600/50 hover:bg-blue-600 text-white py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition"><i class="fa-solid fa-wand-magic"></i> Read Text</button>
                 </div>
                 <div id="saleAIStatus" class="text-[9px] text-gray-400 mt-2 text-center hidden">Processing...</div>
+                <div id="salePreview" class="mt-2 hidden"></div>
             </div>
             
             <div class="text-center text-[10px] text-gray-500">— OR —</div>
@@ -284,24 +285,25 @@
         </div>
     </div>
 
-    <!-- STOCK MODAL WITH AI CAMERA -->
+    <!-- STOCK MODAL WITH AI OCR + PHOTO DP -->
     <div id="stockModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2"><h3 id="stockModalTitle" class="text-sm font-bold text-blue-400 uppercase">🔵 Add/Update Stock</h3><button onclick="closeModal('stockModal')" class="text-gray-400 text-lg font-bold">×</button></div>
             <input type="hidden" id="editStockKey">
             
-            <!-- AI Camera Section -->
+            <!-- AI OCR Section with Photo Preview -->
             <div class="bg-gradient-to-r from-purple-900/30 to-blue-900/30 p-3 rounded-xl border border-purple-500/30">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-purple-400"><i class="fa-solid fa-robot mr-1"></i> AI Product Detection</span>
-                    <span class="ai-badge"><i class="fa-solid fa-microchip"></i> AI Ready</span>
+                    <span class="text-xs font-bold text-purple-400"><i class="fa-solid fa-robot mr-1"></i> AI OCR Detection</span>
+                    <span class="ai-badge"><i class="fa-solid fa-microchip"></i> Read Text</span>
                 </div>
                 <div class="flex gap-2">
                     <input type="file" id="stockAIPhoto" accept="image/*" capture="environment" class="hidden">
                     <button onclick="document.getElementById('stockAIPhoto').click()" class="flex-1 bg-purple-600/50 hover:bg-purple-600 text-white py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition"><i class="fa-solid fa-camera"></i> Take Photo</button>
-                    <button onclick="detectProductFromPhoto('stock')" class="flex-1 bg-blue-600/50 hover:bg-blue-600 text-white py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition"><i class="fa-solid fa-wand-magic"></i> AI Detect</button>
+                    <button onclick="detectTextFromPhoto('stock')" class="flex-1 bg-blue-600/50 hover:bg-blue-600 text-white py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition"><i class="fa-solid fa-wand-magic"></i> Read Text</button>
                 </div>
                 <div id="stockAIStatus" class="text-[9px] text-gray-400 mt-2 text-center hidden">Processing...</div>
+                <div id="stockPreview" class="mt-2 hidden"></div>
             </div>
             
             <div class="text-center text-[10px] text-gray-500">— OR —</div>
@@ -311,7 +313,11 @@
                 <input type="text" id="stockModelName" placeholder="Model Name" class="w-full input-field rounded-lg p-2">
                 <input type="text" id="stockImei" placeholder="IMEI / Serial Code" class="w-full input-field rounded-lg p-2 font-mono">
                 <div class="grid grid-cols-2 gap-2"><input type="number" id="stockCount" placeholder="Quantity" class="w-full input-field rounded-lg p-2 font-mono"><input type="number" id="stockPriceInp" placeholder="Cost Price (₹)" class="w-full input-field rounded-lg p-2 font-mono"></div>
-                <div><label class="block text-[10px] text-gray-400 mb-1">📸 Product Photo</label><input type="file" id="stockPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 file:bg-slate-800 file:text-gray-300"><input type="hidden" id="stockPhotoBase64"></div>
+                <div><label class="block text-[10px] text-gray-400 mb-1">📸 Product Photo (DP)</label>
+                    <input type="file" id="stockPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 file:bg-slate-800 file:text-gray-300">
+                    <input type="hidden" id="stockPhotoBase64">
+                    <div id="stockPhotoPreview" class="mt-2 hidden"></div>
+                </div>
             </div>
             <button onclick="submitStockForm()" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2">SAVE INVENTORY</button>
         </div>
@@ -335,25 +341,12 @@
 
     <script>
         let salesData = []; let expenseData = []; let inventory = {}; let udhaarData = []; let myChart = null; let generatedOTP = null;
-        let mobilenetModel = null;
         
-        // Load MobileNet AI Model
-        async function loadAIModel() {
-            try {
-                mobilenetModel = await mobilenet.load();
-                console.log("AI Model Loaded Successfully");
-                return true;
-            } catch(e) {
-                console.log("AI Model Load Failed:", e);
-                return false;
-            }
-        }
-        loadAIModel();
-        
-        // AI Product Detection Function
-        async function detectProductFromPhoto(type) {
+        // ========== AI OCR FUNCTION - Reads exact text from image ==========
+        async function detectTextFromPhoto(type) {
             let fileInput = type === 'stock' ? document.getElementById('stockAIPhoto') : document.getElementById('saleAIPhoto');
             let statusDiv = type === 'stock' ? document.getElementById('stockAIStatus') : document.getElementById('saleAIStatus');
+            let previewDiv = type === 'stock' ? document.getElementById('stockPreview') : document.getElementById('salePreview');
             let file = fileInput.files[0];
             
             if(!file) {
@@ -362,74 +355,143 @@
             }
             
             statusDiv.classList.remove('hidden');
-            statusDiv.innerHTML = '<div class="loading-ai mr-1"></div> Analyzing product...';
+            statusDiv.innerHTML = '<div class="loading-ai mr-1"></div> Reading text from image...';
+            previewDiv.classList.remove('hidden');
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewDiv.innerHTML = `<img src="${e.target.result}" class="preview-img mx-auto">`;
+                previewDiv.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
             
             try {
-                // Create image element
-                const img = new Image();
-                const imageUrl = URL.createObjectURL(file);
+                // Use Tesseract.js to read text from image
+                const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+                    logger: m => console.log(m)
+                });
                 
-                img.onload = async function() {
-                    // Run AI detection
-                    const predictions = await mobilenetModel.classify(img);
-                    URL.revokeObjectURL(imageUrl);
+                console.log("Detected Text:", text);
+                
+                // Clean and extract product name (first line or most relevant text)
+                let lines = text.split('\n').filter(line => line.trim().length > 0);
+                let detectedName = "";
+                
+                // Find the most relevant product name (not empty, not too short)
+                for(let line of lines) {
+                    let cleanLine = line.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                    if(cleanLine.length > 2 && cleanLine.length < 50 && !cleanLine.includes('http') && !cleanLine.includes('www')) {
+                        detectedName = cleanLine;
+                        break;
+                    }
+                }
+                
+                if(!detectedName && lines.length > 0) {
+                    detectedName = lines[0].trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                }
+                
+                if(detectedName && detectedName.length > 0) {
+                    statusDiv.innerHTML = `<i class="fa-solid fa-check-circle text-green-400"></i> Detected: ${detectedName.substring(0, 30)}`;
                     
-                    if(predictions && predictions.length > 0) {
-                        let detectedName = predictions[0].className;
-                        // Clean up the name - take first meaningful word
-                        let cleanName = detectedName.split(',')[0].trim();
-                        let words = cleanName.split(' ');
-                        let shortName = words.slice(0, 2).join(' ');
-                        
-                        statusDiv.innerHTML = `<i class="fa-solid fa-check-circle text-green-400"></i> Detected: ${shortName}`;
-                        
-                        if(type === 'stock') {
-                            document.getElementById('stockModelName').value = shortName;
-                            // Try to find matching brand from inventory
+                    if(type === 'stock') {
+                        document.getElementById('stockModelName').value = detectedName.substring(0, 30);
+                        // Search in existing inventory for matching brand/price
+                        for(let [model, data] of Object.entries(inventory)) {
+                            if(model.toLowerCase().includes(detectedName.toLowerCase()) || detectedName.toLowerCase().includes(model.toLowerCase())) {
+                                document.getElementById('stockBrand').value = data.brand || '';
+                                document.getElementById('stockPriceInp').value = data.price || '';
+                                break;
+                            }
+                        }
+                        // Auto-set the photo as product DP
+                        const photoBase64 = await convertFileToBase64(file);
+                        document.getElementById('stockPhotoBase64').value = photoBase64;
+                        // Show photo preview
+                        let photoPreview = document.getElementById('stockPhotoPreview');
+                        photoPreview.innerHTML = `<img src="${photoBase64}" class="preview-img mx-auto"><p class="text-[9px] text-green-400 text-center mt-1">✓ Photo set as DP</p>`;
+                        photoPreview.classList.remove('hidden');
+                    } else {
+                        document.getElementById('modelName').value = detectedName.substring(0, 30);
+                        // Auto fill from existing stock
+                        if(inventory[detectedName]) {
+                            document.getElementById('modelBrand').value = inventory[detectedName].brand || '';
+                            document.getElementById('costPrice').value = inventory[detectedName].price || '';
+                            document.getElementById('salePrice').value = inventory[detectedName].price || '';
+                            if(inventory[detectedName].imei) document.getElementById('modelImei').value = inventory[detectedName].imei;
+                        } else {
+                            // Search in inventory for similar
                             for(let [model, data] of Object.entries(inventory)) {
-                                if(model.toLowerCase().includes(shortName.toLowerCase()) || shortName.toLowerCase().includes(model.toLowerCase())) {
-                                    document.getElementById('stockBrand').value = data.brand || '';
-                                    document.getElementById('stockPriceInp').value = data.price || '';
+                                if(model.toLowerCase().includes(detectedName.toLowerCase()) || detectedName.toLowerCase().includes(model.toLowerCase())) {
+                                    document.getElementById('modelBrand').value = data.brand || '';
+                                    document.getElementById('costPrice').value = data.price || '';
+                                    document.getElementById('salePrice').value = data.price || '';
+                                    document.getElementById('modelName').value = model;
                                     break;
                                 }
                             }
-                        } else {
-                            document.getElementById('modelName').value = shortName;
-                            // Auto fill from existing stock
-                            if(inventory[shortName]) {
-                                document.getElementById('modelBrand').value = inventory[shortName].brand || '';
-                                document.getElementById('costPrice').value = inventory[shortName].price || '';
-                                document.getElementById('salePrice').value = inventory[shortName].price || '';
-                                if(inventory[shortName].imei) document.getElementById('modelImei').value = inventory[shortName].imei;
-                            } else {
-                                // Search in inventory for similar
-                                for(let [model, data] of Object.entries(inventory)) {
-                                    if(model.toLowerCase().includes(shortName.toLowerCase()) || shortName.toLowerCase().includes(model.toLowerCase())) {
-                                        document.getElementById('modelBrand').value = data.brand || '';
-                                        document.getElementById('costPrice').value = data.price || '';
-                                        document.getElementById('salePrice').value = data.price || '';
-                                        document.getElementById('modelName').value = model;
-                                        break;
-                                    }
-                                }
-                            }
                         }
-                        
-                        setTimeout(() => { statusDiv.classList.add('hidden'); }, 2000);
-                    } else {
-                        statusDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-400"></i> Could not detect. Please enter manually.';
-                        setTimeout(() => { statusDiv.classList.add('hidden'); }, 2000);
                     }
-                };
-                
-                img.src = imageUrl;
+                    
+                    setTimeout(() => { statusDiv.classList.add('hidden'); }, 3000);
+                } else {
+                    statusDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-400"></i> No text detected. Please enter manually.';
+                    setTimeout(() => { statusDiv.classList.add('hidden'); }, 2000);
+                }
                 
             } catch(e) {
                 statusDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-400"></i> Detection failed. Please enter manually.';
                 setTimeout(() => { statusDiv.classList.add('hidden'); }, 2000);
-                console.error("AI Detection Error:", e);
+                console.error("OCR Error:", e);
             }
         }
+        
+        // Convert file to Base64 for photo storage
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Stock Photo manual upload preview
+        document.getElementById('stockPhotoFile').addEventListener('change', function(e) {
+            let file = e.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    let compressed = event.target.result;
+                    document.getElementById('stockPhotoBase64').value = compressed;
+                    let previewDiv = document.getElementById('stockPhotoPreview');
+                    previewDiv.innerHTML = `<img src="${compressed}" class="preview-img mx-auto"><p class="text-[9px] text-green-400 text-center mt-1">✓ Photo set as DP</p>`;
+                    previewDiv.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Udhaar Photo Handler
+        document.getElementById('udhaarPhotoFile').addEventListener('change', function(e) {
+            let file = e.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) { 
+                    let img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas'); let max_size = 300; let width = img.width; let height = img.height;
+                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
+                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                        canvas.width = width; canvas.height = height;
+                        let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); document.getElementById('udhaarPhotoBase64').value = compressedBase64;
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
         function playClickSound() {
             try {
@@ -482,48 +544,6 @@
             let d = dateStr ? new Date(dateStr) : new Date(); return months[d.getMonth()] + " " + d.getFullYear();
         }
 
-        // Udhaar Photo Handler
-        document.getElementById('udhaarPhotoFile').addEventListener('change', function(e) {
-            let file = e.target.files[0];
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function(event) { 
-                    let img = new Image();
-                    img.onload = function() {
-                        let canvas = document.createElement('canvas'); let max_size = 300; let width = img.width; let height = img.height;
-                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
-                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
-                        canvas.width = width; canvas.height = height;
-                        let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); document.getElementById('udhaarPhotoBase64').value = compressedBase64;
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Stock Photo Handler
-        document.getElementById('stockPhotoFile').addEventListener('change', function(e) {
-            let file = e.target.files[0];
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function(event) { 
-                    let img = new Image();
-                    img.onload = function() {
-                        let canvas = document.createElement('canvas'); let max_size = 200; let width = img.width; let height = img.height;
-                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
-                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
-                        canvas.width = width; canvas.height = height;
-                        let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); document.getElementById('stockPhotoBase64').value = compressedBase64;
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
         function openModal(id) { 
             document.getElementById(id).classList.remove('hidden'); 
             playClickSound();
@@ -532,6 +552,8 @@
                 document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; 
                 document.getElementById('stockSuggestionBox').classList.add('hidden');
                 document.getElementById('saleAIPhoto').value = "";
+                document.getElementById('salePreview').classList.add('hidden');
+                document.getElementById('salePreview').innerHTML = '';
             }
             else if(id === 'stockModal') { 
                 document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; 
@@ -539,6 +561,10 @@
                 document.getElementById('stockPhotoBase64').value = ""; 
                 document.getElementById('stockPhotoFile').value = "";
                 document.getElementById('stockAIPhoto').value = "";
+                document.getElementById('stockPreview').classList.add('hidden');
+                document.getElementById('stockPhotoPreview').classList.add('hidden');
+                document.getElementById('stockPreview').innerHTML = '';
+                document.getElementById('stockPhotoPreview').innerHTML = '';
             }
             else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
         }
@@ -673,6 +699,7 @@
             document.getElementById('stockPhotoBase64').value = "";
             document.getElementById('stockPhotoFile').value = "";
             document.getElementById('stockAIPhoto').value = "";
+            document.getElementById('stockPhotoPreview').classList.add('hidden');
             
             closeModal('stockModal'); 
             syncToCloud();
@@ -689,6 +716,11 @@
             document.getElementById('stockCount').value = item.qty; 
             document.getElementById('stockPriceInp').value = item.price;
             document.getElementById('stockPhotoBase64').value = item.photo || "";
+            if(item.photo) {
+                let previewDiv = document.getElementById('stockPhotoPreview');
+                previewDiv.innerHTML = `<img src="${item.photo}" class="preview-img mx-auto"><p class="text-[9px] text-green-400 text-center mt-1">✓ Current DP</p>`;
+                previewDiv.classList.remove('hidden');
+            }
             document.getElementById('stockModal').classList.remove('hidden');
         }
         function deleteStockItem(key) { if(confirm(`Remove ${key} from stock?`)) { delete inventory[key]; syncToCloud(); updateDashboardUI(); } }
