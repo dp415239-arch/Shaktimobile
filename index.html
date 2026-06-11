@@ -43,7 +43,6 @@
         .modal-bg { background-color: rgba(11, 17, 30, 0.85); backdrop-filter: blur(4px); }
         .alert-blink { border: 2px solid #EF4444; animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { border-color: transparent; } }
-        /* Style for Stock Suggestion Dropdown */
         .suggestion-box { background-color: #0F172A; border: 1px solid #334155; max-height: 150px; overflow-y: auto; z-index: 100; }
         .suggestion-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #1E293B; font-size: 12px; }
         .suggestion-item:hover { background-color: #1E293B; color: #3B82F6; }
@@ -136,6 +135,15 @@
                 <p class="text-xs text-gray-400 uppercase">Month Profit</p>
                 <p id="monthProfit" class="text-xl font-bold text-amber-500">₹0</p>
                 <p class="text-xs text-gray-500">Margin Target</p>
+            </div>
+        </div>
+
+        <!-- FEATURE: QUICK GALLA PAYMENT FILTERS BAR -->
+        <div class="bg-[#0F172A] border border-slate-800 p-2.5 rounded-xl mb-4 flex justify-between items-center text-xs font-semibold">
+            <span class="text-gray-400"><i class="fa-solid fa-wallet text-blue-400"></i> Cash Flow Split:</span>
+            <div class="flex gap-2">
+                <span class="bg-emerald-950/40 text-emerald-400 px-2 py-1 rounded border border-emerald-900 font-mono">Cash: <span id="splitCashVal">₹0</span></span>
+                <span class="bg-blue-950/40 text-blue-400 px-2 py-1 rounded border border-blue-900 font-mono">UPI: <span id="splitUpiVal">₹0</span></span>
             </div>
         </div>
 
@@ -338,7 +346,7 @@
         </div>
     </div>
 
-    <!-- 🟢 ADD/EDIT SALE MODAL (WITH LIVE AUTO-SUGGESTION DROPDOWN ENGINE) -->
+    <!-- 🟢 ADD/EDIT SALE MODAL -->
     <div id="saleModal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="card-bg w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -350,10 +358,8 @@
                 <input type="date" id="saleDate" class="w-full input-field rounded-lg p-2 font-mono">
                 <input type="text" id="modelBrand" placeholder="Brand Name" class="w-full input-field rounded-lg p-2">
                 
-                <!-- MODEL NAME INPUT WITH DROPDOWN INJECTOR -->
                 <div class="relative">
                     <input type="text" id="modelName" oninput="showLiveStockSuggestions()" placeholder="Model Name (Type text... e.g. H)" class="w-full input-field rounded-lg p-2">
-                    <!-- Live suggestion box populates here container -->
                     <div id="stockSuggestionBox" class="hidden absolute left-0 right-0 suggestion-box rounded-lg mt-1 shadow-2xl"></div>
                 </div>
 
@@ -451,6 +457,21 @@
             } catch(e) {}
         }
 
+        // FEATURE: SMART WHATSAPP INVOICE GENERATOR LINK HACK
+        function sendWhatsAppInvoice(phone, type, name, model, amount) {
+            if(!phone) { alert("Customer mobile number not found!"); return; }
+            let cleanedPhone = phone.replace(/\D/g,'');
+            if(cleanedPhone.length === 10) cleanedPhone = "91" + cleanedPhone; // Auto append Indian prefix
+            
+            let txt = "";
+            if(type === 'sale') {
+                txt = `*SHAKTI MOBILE*%0AThank you for buying *${model}* from our shop.%0A*Total Bill Amount:* ₹${amount}%0AWe provide trust and quality service!`;
+            } else if(type === 'udhaar') {
+                txt = `*SHAKTI MOBILE - REMINDER*%0AHello *${name}*, your balance entry for *${model}* is registered in our ledger.%0A*Pending Udhaar Amount:* ₹${amount}%0APlease clear it as soon as possible.`;
+            }
+            window.open(`https://api.whatsapp.com/send?phone=${cleanedPhone}&text=${txt}`, '_blank');
+        }
+
         function getSystemTodayDateString() {
             let d = new Date();
             let month = '' + (d.getMonth() + 1); let day = '' + d.getDate(); let year = d.getFullYear();
@@ -489,7 +510,7 @@
             let todayStr = getSystemTodayDateString();
             if(id === 'saleModal') { 
                 document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; 
-                document.getElementById('stockSuggestionBox').classList.add('hidden'); // Hide dropdown on open
+                document.getElementById('stockSuggestionBox').classList.add('hidden');
             }
             else if(id === 'stockModal') { document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; document.getElementById('editStockKey').value = ""; }
             else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
@@ -540,69 +561,28 @@
             });
         }
 
-        // ================= NEW ENGINE: LIVE DROPDOWN AUTO-SUGGESTION FOR MODEL TYPE =================
         window.showLiveStockSuggestions = function() {
-            let inputField = document.getElementById('modelName');
-            let query = inputField.value.trim().toLowerCase();
-            let suggestionBox = document.getElementById('stockSuggestionBox');
-            
-            suggestionBox.innerHTML = "";
-            
-            // Check if text input has at least 1 character typed
-            if (query.length === 0) {
-                suggestionBox.classList.add('hidden');
-                return;
-            }
-
+            let inputField = document.getElementById('modelName'); let query = inputField.value.trim().toLowerCase();
+            let suggestionBox = document.getElementById('stockSuggestionBox'); suggestionBox.innerHTML = "";
+            if (query.length === 0) { suggestionBox.classList.add('hidden'); return; }
             let foundMatchesCount = 0;
-
-            // Loop through live snapshot inventory objects
             for (const [stockModelKey, data] of Object.entries(inventory)) {
                 let currentQty = data ? (data.qty || 0) : 0;
-                
-                // Strict Matching: If stock model name contains the typed letters
                 if (stockModelKey.toLowerCase().includes(query)) {
-                    foundMatchesCount++;
-                    
-                    let div = document.createElement('div');
+                    foundMatchesCount++; let div = document.createElement('div');
                     div.className = "suggestion-item text-gray-200 hover:text-blue-400";
-                    // Display details directly inside the suggestion row selection
-                    div.innerHTML = `
-                        <div class="flex justify-between font-bold">
-                            <span>${stockModelKey}</span>
-                            <span class="text-emerald-500 text-[10px] font-mono">${currentQty} Left</span>
-                        </div>
-                        <div class="text-[9px] text-gray-400">Brand: ${data.brand || 'Generic'} | Cost: ₹${data.price || 0}</div>
-                    `;
-                    
-                    // Click handler to auto fill everything instantly
+                    div.innerHTML = `<div class="flex justify-between font-bold"><span>${stockModelKey}</span><span class="text-emerald-500 text-[10px] font-mono">${currentQty} Left</span></div><div class="text-[9px] text-gray-400">Brand: ${data.brand || 'Generic'} | Cost: ₹${data.price || 0}</div>`;
                     div.onclick = function() {
-                        inputField.value = stockModelKey;
-                        document.getElementById('costPrice').value = data.price || 0;
-                        document.getElementById('modelBrand').value = data.brand || "";
-                        if (data.imei) { document.getElementById('modelImei').value = data.imei; }
-                        suggestionBox.classList.add('hidden'); // Dropdown band karein
+                        inputField.value = stockModelKey; document.getElementById('costPrice').value = data.price || 0; document.getElementById('modelBrand').value = data.brand || "";
+                        if (data.imei) { document.getElementById('modelImei').value = data.imei; } suggestionBox.classList.add('hidden');
                     };
-                    
                     suggestionBox.appendChild(div);
                 }
             }
-
-            // Toggle dynamic view layers visibility
-            if (foundMatchesCount > 0) {
-                suggestionBox.classList.remove('hidden');
-            } else {
-                suggestionBox.classList.add('hidden');
-            }
+            if (foundMatchesCount > 0) { suggestionBox.classList.remove('hidden'); } else { suggestionBox.classList.add('hidden'); }
         };
 
-        // Click outside handler box closing convenience
-        document.addEventListener('click', function(e) {
-            if (e.target.id !== 'modelName') {
-                let box = document.getElementById('stockSuggestionBox');
-                if (box) box.classList.add('hidden');
-            }
-        });
+        document.addEventListener('click', function(e) { if (e.target.id !== 'modelName') { let box = document.getElementById('stockSuggestionBox'); if (box) box.classList.add('hidden'); } });
 
         async function syncToCloud() {
             if (window.setDoc && window.db) { await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); }
@@ -663,16 +643,42 @@
 
         function updateDashboardUI() {
             let tSale = 0; let tProfit = 0; let tOrders = 0; let mSale = 0; let mProfit = 0; let uSold = 0; let cCost = 0; let expT = 0;
+            let splitCash = 0; let splitUpi = 0; // Mode trackers
             let todayStr = getSystemTodayDateString(); let selectedFilterMonth = document.getElementById('monthFilter').value || getSystemMonthYearLabel();
-            salesData.forEach(x => { let p = x.sale - x.cost; if(x.date === todayStr) { tSale += x.sale; tProfit += p; tOrders++; } if(getSystemMonthYearLabel(x.date) === selectedFilterMonth) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; } });
+
+            salesData.forEach(x => { 
+                let p = x.sale - x.cost; 
+                if(x.date === todayStr) { 
+                    tSale += x.sale; tProfit += p; tOrders++; 
+                    // Calculate today's cash vs UPI
+                    if(x.mode === 'Cash') splitCash += x.sale;
+                    if(x.mode === 'UPI') splitUpi += x.sale;
+                } 
+                if(getSystemMonthYearLabel(x.date) === selectedFilterMonth) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; } 
+            });
             expenseData.forEach(e => { if(getSystemMonthYearLabel(e.date) === selectedFilterMonth) expT += e.amount; });
-            document.getElementById('todaySale').innerText = `₹${tSale}`; document.getElementById('todayProfit').innerText = `₹${tProfit}`; document.getElementById('todayOrders').innerText = `${tOrders} Orders`; document.getElementById('monthSale').innerText = `₹${mSale}`; document.getElementById('monthProfit').innerText = `₹${mProfit}`; document.getElementById('totalUnitsSold').innerText = uSold; document.getElementById('totalCapitalCost').innerText = `₹${cCost}`; document.getElementById('totalOtherExpenses').innerText = `₹${expT}`; document.getElementById('actualNetMargin').innerText = `₹${mProfit - expT}`;
+
+            document.getElementById('todaySale').innerText = `₹${tSale}`; 
+            document.getElementById('todayProfit').innerText = `₹${tProfit}`; 
+            document.getElementById('todayOrders').innerText = `${tOrders} Orders`; 
+            document.getElementById('monthSale').innerText = `₹${mSale}`; 
+            document.getElementById('monthProfit').innerText = `₹${mProfit}`; 
+            document.getElementById('totalUnitsSold').innerText = uSold; 
+            document.getElementById('totalCapitalCost').innerText = `₹${cCost}`; 
+            document.getElementById('totalOtherExpenses').innerText = `₹${expT}`; 
+            document.getElementById('actualNetMargin').innerText = `₹${mProfit - expT}`;
+
+            // Inject Cash vs UPI splits
+            document.getElementById('splitCashVal').innerText = `₹${splitCash}`;
+            document.getElementById('splitUpiVal').innerText = `₹${splitUpi}`;
+
             renderStockTable(); renderLog(); renderExpenseLog(); renderTopProducts(); renderUdhaarTable();
             if(myChart) myChart.destroy();
             const ctx = document.getElementById('analyticsChart').getContext('2d');
             myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Stock Cost', 'Expenses', 'Net Profit'], datasets: [{ data: [cCost||1, expT||1, mProfit-expT>0?mProfit-expT:0], backgroundColor: ['#3B82F6', '#F43F5E', '#10B981'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94A3B8', font: { size: 10 } } } } } });
         }
 
+        // RENDER STOCK TABLE WITH LOW STOCK ALERT INJECTOR
         function renderStockTable() {
             const container = document.getElementById('stockContainer'); const searchKeyword = document.getElementById('searchStockInp').value.toLowerCase(); const searchType = document.getElementById('stockSearchType').value; container.innerHTML = ''; let val = 0;
             for (const [model, data] of Object.entries(inventory)) {
@@ -680,15 +686,35 @@
                 if (data && typeof data === 'object') { count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || ""; }
                 val += (count * price); let match = false;
                 if(searchType === 'model' && model.toLowerCase().includes(searchKeyword)) match = true; if(searchType === 'brand' && brand.toLowerCase().includes(searchKeyword)) match = true; if(searchType === 'imei' && imei.toLowerCase().includes(searchKeyword)) match = true;
+                
                 if (match) {
-                    const div = document.createElement('div'); div.className = "card-bg p-2.5 rounded-lg border border-slate-800 flex flex-col gap-1";
-                    div.innerHTML = `<div class="flex justify-between items-center"><div><span class="text-[10px] text-blue-400 font-bold uppercase">${brand || 'Generic'}</span> <p class="font-bold text-gray-200">${model}</p></div><div class="flex items-center gap-1"><span class="bg-slate-900 px-2 py-0.5 rounded font-mono">${count} Left</span><button onclick="openEditStock('${model.replace(/'/g, "\\'")}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button></div></div><p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Total Value: ₹${count * price}</p>`;
+                    // FEATURE: LOW STOCK WARNING INJECTOR CARD
+                    let isLowStock = count <= 2 && count > 0;
+                    let isOut = count === 0;
+                    let alertClass = isOut ? 'border-red-600 bg-red-950/20' : (isLowStock ? 'border-amber-600 bg-amber-950/20' : 'border-slate-800');
+
+                    const div = document.createElement('div'); div.className = `card-bg p-2.5 rounded-lg border flex flex-col gap-1 ${alertClass}`;
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-[10px] text-blue-400 font-bold uppercase">${brand || 'Generic'}</span> 
+                                <p class="font-bold text-gray-200">${model} ${isLowStock ? '⚠️' : (isOut ? '❌' : '')}</p>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="bg-slate-900 px-2 py-0.5 rounded font-mono ${isLowStock ? 'text-amber-400' : (isOut ? 'text-red-500' : '')}">${count} Left</span>
+                                <button onclick="openEditStock('${model.replace(/'/g, "\\'")}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Total Value: ₹${count * price} ${isLowStock ? '| <span class="text-amber-400 font-bold">LOW STOCK!</span>' : ''}</p>
+                    `;
                     container.appendChild(div);
                 }
             }
             document.getElementById('totalStockValuation').innerText = `₹${val}`;
         }
 
+        // RENDER LOG WITH WHATSAPP LINK SHARE ACTION
         function renderLog() {
             const tbody = document.getElementById('logTableBody'); const searchKeyword = document.getElementById('searchLog').value.toLowerCase(); const searchType = document.getElementById('salesSearchType').value; tbody.innerHTML = '';
             let sortedSales = [...salesData].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -698,11 +724,23 @@
                 if(searchType === 'model') return m.includes(searchKeyword); if(searchType === 'brand') return b.includes(searchKeyword); if(searchType === 'imei') return i.includes(searchKeyword); return true;
             }).forEach(x => {
                 let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
-                tr.innerHTML = `<td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td><td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td><td class="py-2 text-center font-mono">${x.qty}</td><td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td><td class="py-2 text-center"><button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button></td>`;
+                tr.innerHTML = `
+                    <td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td>
+                    <td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td>
+                    <td class="py-2 text-center font-mono">${x.qty}</td>
+                    <td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td>
+                    <td class="py-2 text-center">
+                        <!-- WHATSAPP BILL SHARE ICON LINK -->
+                        <button onclick="sendWhatsAppInvoice('8401463902', 'sale', '', '${x.model.replace(/'/g, "\\'")}', ${x.sale})" class="text-emerald-400 mx-0.5"><i class="fa-brands fa-whatsapp text-sm"></i></button>
+                        <button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
         }
 
+        // RENDER UDHAAR WITH WHATSAPP LINK LEDGER ACTION
         function renderUdhaarTable() {
             const container = document.getElementById('udhaarContainer'); if(!container) return;
             const kw = document.getElementById('searchUdhaarInp').value.toLowerCase(); container.innerHTML = ''; let totalPendingMarket = 0;
@@ -713,7 +751,30 @@
                 let isOverdue = ((new Date().getTime() - new Date(x.date).getTime()) / (1000 * 3600 * 24)) >= 30 && pendingAmount > 0;
                 let fallbackPhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23475569' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4y'/></svg>";
                 const div = document.createElement('div'); div.className = `card-bg p-3 rounded-xl flex gap-3 relative ${isOverdue ? 'alert-blink' : ''}`;
-                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
+                div.innerHTML = `
+                    <img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0">
+                    <div class="flex-1 text-xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-gray-200 text-sm">${x.name}</p>
+                                <p class="text-gray-400 font-mono">${x.phone}</p>
+                            </div>
+                            <div class="flex gap-1.5 items-center">
+                                <!-- WHATSAPP UDHAAR LEDGER NOTIFIER LINK -->
+                                <button onclick="sendWhatsAppInvoice('${x.phone}', 'udhaar', '${x.name.replace(/'/g, "\\'")}', '${x.product.replace(/'/g, "\\'")}', ${pendingAmount})" class="text-emerald-400 px-1"><i class="fa-brands fa-whatsapp text-sm"></i></button>
+                                <button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]">
+                            <div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div>
+                            <div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div>
+                            <div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div>
+                            <div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div>
+                        </div>
+                        ${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}
+                    </div>
+                `;
                 container.appendChild(div);
             });
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
