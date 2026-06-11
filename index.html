@@ -315,7 +315,6 @@
                     <input type="hidden" id="udhaarPhotoBase64">
                 </div>
             </div>
-            <!-- Dynamic button that changes color while working -->
             <button id="udhaarSubmitBtn" onclick="submitUdhaarForm()" class="w-full bg-rose-600 text-white font-bold p-2.5 rounded-lg text-xs mt-2 transition">SAVE UDHAAR ENTRY</button>
         </div>
     </div>
@@ -414,11 +413,34 @@
             return months[d.getMonth()] + " " + d.getFullYear();
         }
 
+        // ================= DYNAMIC IMAGE COMPRESSOR ENGINGE FOR LIGHTWEIGHT SYNC =================
         document.getElementById('udhaarPhotoFile').addEventListener('change', function(e) {
             let file = e.target.files[0];
             if (file) {
                 let reader = new FileReader();
-                reader.onload = function(event) { document.getElementById('udhaarPhotoBase64').value = event.target.result; };
+                reader.onload = function(event) { 
+                    let img = new Image();
+                    img.onload = function() {
+                        // Create virtual canvas for high speed compression reduction
+                        let canvas = document.createElement('canvas');
+                        let max_size = 300; // Resize target width down for KB storage
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
+                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        let ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Output deeply optimized light base64 string
+                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
+                        document.getElementById('udhaarPhotoBase64').value = compressedBase64;
+                    };
+                    img.src = event.target.result;
+                };
                 reader.readAsDataURL(file);
             }
         });
@@ -479,9 +501,9 @@
                 if (docSnap.exists()) {
                     let c = docSnap.data();
                     
-                    salesData = c.salesData || c.sales || [];
-                    expenseData = c.expenseData || c.expenses || [];
-                    udhaarData = c.udhaarData || [];
+                    if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
+                    if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
+                    if (c.udhaarData && c.udhaarData.length > 0) udhaarData = c.udhaarData;
 
                     let rawInventory = c.inventory || {};
                     inventory = {};
@@ -489,11 +511,6 @@
                         if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
                         else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
                     }
-                    
-                    localStorage.setItem('salesData', JSON.stringify(salesData));
-                    localStorage.setItem('expenseData', JSON.stringify(expenseData));
-                    localStorage.setItem('inventory', JSON.stringify(inventory));
-                    localStorage.setItem('udhaarData', JSON.stringify(udhaarData));
                 }
                 updateDashboardUI();
             });
@@ -529,7 +546,6 @@
         }
         function deleteStockItem(key) { if(confirm(`Remove?`)) { delete inventory[key]; syncToCloud(); } }
 
-        // ================= FIXED SALE SUBMIT WITH CLOSING INTERFACE GATES =================
         async function submitSaleForm() {
             let date = document.getElementById('saleDate').value || getSystemTodayDateString();
             let brand = document.getElementById('modelBrand').value.trim(); let model = document.getElementById('modelName').value.trim(); let imei = document.getElementById('modelImei').value.trim(); let qty = parseInt(document.getElementById('quantity').value) || 0; let mode = document.getElementById('paymentMode').value; let cost = parseFloat(document.getElementById('costPrice').value) || 0; let sale = parseFloat(document.getElementById('salePrice').value) || 0; let editId = document.getElementById('editSaleId').value;
@@ -541,7 +557,6 @@
             if(editId) { salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item); } 
             else { if(inventory[model]) { inventory[model].qty = Math.max(0, inventory[model].qty - qty); } salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty }); }
 
-            // CRITICAL: Await database completion tracker before interface resets
             await syncToCloud();
 
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
@@ -555,7 +570,7 @@
         }
         function deleteSale(id) { if(confirm("Delete?")) { salesData = salesData.filter(x => x.id !== id); syncToCloud(); } }
 
-        // ================= FIXED UDHAAR SUBMIT FOR AUTO POPUP CLOSE AND RESET =================
+        // FAST SYNC: HIGH SPEED LIGHTWEIGHT DATA SUBMIT ENGINE
         async function submitUdhaarForm() {
             let id = document.getElementById('editUdhaarId').value; 
             let date = document.getElementById('udhaarDate').value || getSystemTodayDateString(); 
@@ -570,16 +585,15 @@
             if(!name || total <= 0) { alert("Please complete details."); return; }
 
             let btn = document.getElementById('udhaarSubmitBtn');
-            btn.innerText = "SAVING TO CLOUD..."; btn.className = "w-full bg-slate-600 text-gray-400 font-bold p-2.5 rounded-lg text-xs mt-2 cursor-wait";
+            btn.innerText = "SAVING IN 1 SEC..."; btn.className = "w-full bg-slate-600 text-gray-400 font-bold p-2.5 rounded-lg text-xs mt-2 cursor-wait";
             btn.disabled = true;
 
             if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
             else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
 
-            // CRITICAL SYNC LOCK: Await full cloud write to eliminate reload bugs
+            // High speed lightweight payload write process
             await syncToCloud();
 
-            // Clear inputs dynamically after confirmation logic returns true
             document.getElementById('udhaarCustomerName').value = ""; 
             document.getElementById('udhaarCustomerPhone').value = ""; 
             document.getElementById('udhaarCompanyName').value = ""; 
@@ -677,7 +691,7 @@
                 let isOverdue = ((new Date().getTime() - new Date(x.date).getTime()) / (1000 * 3600 * 24)) >= 30 && pendingAmount > 0;
                 let fallbackPhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23475569' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4y'/></svg>";
                 const div = document.createElement('div'); div.className = `card-bg p-3 rounded-xl flex gap-3 relative ${isOverdue ? 'alert-blink' : ''}`;
-                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jama: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
+                div.innerHTML = `<img src="${x.photo || fallbackPhoto}" class="w-12 h-12 rounded-full object-cover bg-slate-900 border border-slate-700 shadow-sm flex-shrink-0"><div class="flex-1 text-xs"><div class="flex justify-between items-start"><div><p class="font-bold text-gray-200 text-sm">${x.name}</p><p class="text-gray-400 font-mono">${x.phone}</p></div><div class="flex gap-1.5"><button onclick="openEditUdhaar(${x.id})" class="text-blue-400 text-xs"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteUdhaarItem(${x.id})" class="text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button></div></div><div class="mt-1 bg-slate-900/50 p-1.5 rounded border border-slate-800 grid grid-cols-2 gap-1 text-[11px]"><div>Item: <span class="font-semibold text-gray-300">${x.company} ${x.product}</span></div><div class="text-right">Total: <span class="font-mono font-bold text-blue-400">₹${x.total}</span></div><div>Jan: <span class="font-mono font-bold text-emerald-400">₹${x.jama}</span></div><div class="text-right">Pending: <span class="font-mono font-bold text-rose-400">₹${pendingAmount}</span></div></div>${isOverdue ? `<p class="text-[10px] text-rose-400 font-bold mt-1 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE ALERT: More than 1 Month!</p>` : ''}</div>`;
                 container.appendChild(div);
             });
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
