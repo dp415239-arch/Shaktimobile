@@ -137,16 +137,16 @@
 
         <!-- TOP CARDS KE NICHE 4 BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-4">
-            <button onclick="openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="playClickSound(); openModal('saleModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">➕ Add Sale</p>
             </button>
-            <button onclick="openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="playClickSound(); openModal('stockModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">📦 Add Stock</p>
             </button>
-            <button onclick="openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="playClickSound(); openModal('expenseModal')" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">💸 Expense</p>
             </button>
-            <button onclick="document.getElementById('reportSection').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
+            <button onclick="playClickSound(); document.getElementById('reportSection').scrollIntoView({behavior: 'smooth'})" class="card-bg p-2 rounded-xl text-center hover:bg-slate-800/50 cursor-pointer">
                 <p class="text-sm">📊 View Report</p>
             </button>
         </div>
@@ -239,7 +239,6 @@
         <div class="card-bg p-4 rounded-xl mb-4">
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Expense History Log</h3>
-                <!-- DATE FILTER FOR EXPENSES -->
                 <input type="date" id="expenseLogDateFilter" onchange="renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5 text-gray-300 font-mono">
             </div>
             <div class="overflow-x-auto">
@@ -266,7 +265,6 @@
                 </button>
             </div>
             
-            <!-- NEW DATE WISE SEARCH FILTER CONTROL CONTAINER -->
             <div class="mb-3 grid grid-cols-3 gap-1.5 items-center">
                 <div class="col-span-1">
                     <label class="block text-[9px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">Filter By Date</label>
@@ -281,7 +279,7 @@
             </div>
 
             <div class="mb-3 grid grid-cols-1">
-                <select id="salesSearchType" class="w-full input-field rounded-lg p-2 text-xs">
+                <select id="salesSearchType" class="input-field rounded-lg p-2 text-xs w-full">
                     <option value="model">Search Type: Model Name</option>
                     <option value="brand">Search Type: Brand</option>
                     <option value="imei">Search Type: IMEI</option>
@@ -403,10 +401,10 @@
 
     <!-- ================= STICKY BOTTOM 4 BIG BUTTONS LAYOUT ================= -->
     <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto card-bg p-3 grid grid-cols-4 gap-2 border-t border-slate-800 z-40 text-xs font-bold">
-        <button onclick="openModal('saleModal')" class="bg-emerald-600 py-3 rounded-xl flex flex-col items-center justify-center">🟢 Add Sale</button>
-        <button onclick="openModal('stockModal')" class="bg-blue-600 py-3 rounded-xl flex flex-col items-center justify-center">🔵 Add Stock</button>
-        <button onclick="openModal('expenseModal')" class="bg-amber-600 py-3 rounded-xl flex flex-col items-center justify-center">🟠 Expense</button>
-        <button onclick="openModal('udhaarModal')" class="bg-rose-600 py-3 rounded-xl flex flex-col items-center justify-center">🔴 Udhaar Box</button>
+        <button onclick="playClickSound(); openModal('saleModal')" class="bg-emerald-600 py-3 rounded-xl flex flex-col items-center justify-center">🟢 Add Sale</button>
+        <button onclick="playClickSound(); openModal('stockModal')" class="bg-blue-600 py-3 rounded-xl flex flex-col items-center justify-center">🔵 Add Stock</button>
+        <button onclick="playClickSound(); openModal('expenseModal')" class="bg-amber-600 py-3 rounded-xl flex flex-col items-center justify-center">🟠 Expense</button>
+        <button onclick="playClickSound(); openModal('udhaarModal')" class="bg-rose-600 py-3 rounded-xl flex flex-col items-center justify-center">🔴 Udhaar Box</button>
     </div>
 
 
@@ -414,20 +412,57 @@
     <script>
         let salesData = []; let expenseData = []; let inventory = {}; let udhaarData = []; let myChart = null; let generatedOTP = null;
 
+        // ================= SYNTHESIZER AUDIO AUDIO ENGINE FUNCTIONS =================
+        // 1. Crisp "Tik" Sound for Buttons click track
+        function playClickSound() {
+            try {
+                let context = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = context.createOscillator();
+                let gain = context.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, context.currentTime); // Crisp High frequency pitch
+                gain.gain.setValueAtTime(0.05, context.currentTime); // Soft controlled volume volume
+                gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.05); // Rapid decay tone
+                osc.connect(gain); gain.connect(context.destination);
+                osc.start(); osc.stop(context.currentTime + 0.05);
+            } catch(e) { console.log("Audio not allowed yet"); }
+        }
+
+        // 2. Sweet double Beep-Beep success tone for form save submission confirmations
+        function playSuccessSound() {
+            try {
+                let context = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // First success beep block
+                let osc1 = context.createOscillator(); let gain1 = context.createGain();
+                osc1.type = 'triangle'; osc1.frequency.setValueAtTime(523.25, context.currentTime); // C5 note tone
+                gain1.gain.setValueAtTime(0.08, context.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
+                osc1.connect(gain1); gain1.connect(context.destination);
+                osc1.start(); osc1.stop(context.currentTime + 0.12);
+
+                // Second delayed confirmation note chime track
+                setTimeout(() => {
+                    let osc2 = context.createOscillator(); let gain2 = context.createGain();
+                    osc2.type = 'triangle'; osc2.frequency.setValueAtTime(659.25, context.currentTime); // E5 melodic chord note
+                    gain2.gain.setValueAtTime(0.08, context.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.15);
+                    osc2.connect(gain2); gain2.connect(context.destination);
+                    osc2.start(); osc2.stop(context.currentTime + 0.15);
+                }, 100);
+            } catch(e) { console.log("Audio blocked"); }
+        }
+
         function getSystemTodayDateString() {
             let d = new Date();
-            let month = '' + (d.getMonth() + 1);
-            let day = '' + d.getDate();
-            let year = d.getFullYear();
-            if (month.length < 2) month = '0' + month;
-            if (day.length < 2) day = '0' + day;
+            let month = '' + (d.getMonth() + 1); let day = '' + d.getDate(); let year = d.getFullYear();
+            if (month.length < 2) month = '0' + month; if (day.length < 2) day = '0' + day;
             return [year, month, day].join('-');
         }
 
         function getSystemMonthYearLabel(dateStr) {
             let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            let d = dateStr ? new Date(dateStr) : new Date();
-            return months[d.getMonth()] + " " + d.getFullYear();
+            let d = dateStr ? new Date(dateStr) : new Date(); return months[d.getMonth()] + " " + d.getFullYear();
         }
 
         document.getElementById('udhaarPhotoFile').addEventListener('change', function(e) {
@@ -437,16 +472,12 @@
                 reader.onload = function(event) { 
                     let img = new Image();
                     img.onload = function() {
-                        let canvas = document.createElement('canvas');
-                        let max_size = 300;
-                        let width = img.width;
-                        let height = img.height;
+                        let canvas = document.createElement('canvas'); let max_size = 300; let width = img.width; let height = img.height;
                         if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
                         else { if (height > max_size) { width *= max_size / height; height = max_size; } }
                         canvas.width = width; canvas.height = height;
                         let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
-                        document.getElementById('udhaarPhotoBase64').value = compressedBase64;
+                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); document.getElementById('udhaarPhotoBase64').value = compressedBase64;
                     };
                     img.src = event.target.result;
                 };
@@ -454,57 +485,30 @@
             }
         });
 
-        function openModal(id) { 
-            document.getElementById(id).classList.remove('hidden'); 
-            let todayStr = getSystemTodayDateString();
-            if(id === 'saleModal') { document.getElementById('saleModalTitle').innerText = "🟢 Add New Sale"; document.getElementById('editSaleId').value = ""; document.getElementById('saleDate').value = todayStr; }
-            else if(id === 'stockModal') { document.getElementById('stockModalTitle').innerText = "🔵 Add/Update Stock"; document.getElementById('editStockKey').value = ""; }
-            else if(id === 'udhaarModal') { document.getElementById('udhaarModalTitle').innerText = "🔴 Add New Udhaar Record"; document.getElementById('editUdhaarId').value = ""; document.getElementById('udhaarDate').value = todayStr; document.getElementById('udhaarPhotoBase64').value = ""; }
-        }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
         function sendOTPToken() {
             if (document.getElementById('mobileNumber').value.trim() !== '8401463902') { alert("Error!"); return; }
-            generatedOTP = Math.floor(1000 + Math.random() * 9000);
-            alert(`[SHAKTI MOBILE SYSTEM] Verification OTP: ${generatedOTP}`);
-            document.getElementById('mobileInputDiv').classList.add('hidden');
-            document.getElementById('otpInputDiv').classList.remove('hidden');
+            generatedOTP = Math.floor(1000 + Math.random() * 9000); alert(`[SHAKTI MOBILE SYSTEM] Verification OTP: ${generatedOTP}`);
+            document.getElementById('mobileInputDiv').classList.add('hidden'); document.getElementById('otpInputDiv').classList.remove('hidden');
         }
         function cancelOTP() { document.getElementById('otpInputDiv').classList.add('hidden'); document.getElementById('mobileInputDiv').classList.remove('hidden'); }
         function handleVerifyLogin() {
             let InpCode = document.getElementById('otpCode').value.trim();
-            if (InpCode === String(generatedOTP) || InpCode === '1234') { sessionStorage.setItem('isLoggedIn', 'true'); showDashboard(); }
-            else { alert("Incorrect Code!"); }
+            if (InpCode === String(generatedOTP) || InpCode === '1234') { sessionStorage.setItem('isLoggedIn', 'true'); showDashboard(); } else { alert("Incorrect Code!"); }
         }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         
         function showDashboard() { 
-            document.getElementById('loginScreen').classList.add('hidden'); 
-            document.getElementById('dashboardContent').classList.remove('hidden'); 
-            
-            let options = { day: 'numeric', month: 'short', year: 'numeric' };
-            let todayStr = getSystemTodayDateString();
+            document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashboardContent').classList.remove('hidden'); 
+            let options = { day: 'numeric', month: 'short', year: 'numeric' }; let todayStr = getSystemTodayDateString();
             document.getElementById('liveHeaderDate').innerText = new Date().toLocaleDateString('en-IN', options);
             document.getElementById('monthSaleLabel').innerText = getSystemMonthYearLabel();
-            
-            // Set dynamic filters to today's date initially
-            document.getElementById('salesLogDateFilter').value = todayStr;
-            document.getElementById('expenseLogDateFilter').value = todayStr;
-
-            updateMonthFilterOptions();
-            setTimeout(() => { setupRealtimeSync(); }, 500); 
+            document.getElementById('salesLogDateFilter').value = todayStr; document.getElementById('expenseLogDateFilter').value = todayStr;
+            updateMonthFilterOptions(); setTimeout(() => { setupRealtimeSync(); }, 500); 
         }
 
         function updateMonthFilterOptions() {
-            let filterSelect = document.getElementById('monthFilter');
-            filterSelect.innerHTML = "";
-            let d = new Date();
-            for(let i=0; i<3; i++) {
-                let label = getSystemMonthYearLabel(d.toISOString());
-                let opt = document.createElement('option'); opt.value = label; opt.innerText = label;
-                filterSelect.appendChild(opt);
-                d.setMonth(d.getMonth() - 1);
-            }
+            let filterSelect = document.getElementById('monthFilter'); filterSelect.innerHTML = ""; let d = new Date();
+            for(let i=0; i<3; i++) { let label = getSystemMonthYearLabel(d.toISOString()); let opt = document.createElement('option'); opt.value = label; opt.innerText = label; filterSelect.appendChild(opt); d.setMonth(d.getMonth() - 1); }
         }
 
         window.setupRealtimeSync = function() {
@@ -515,8 +519,7 @@
                     if (c.salesData && c.salesData.length > 0) salesData = c.salesData;
                     if (c.expenseData && c.expenseData.length > 0) expenseData = c.expenseData;
                     if (c.udhaarData && c.udhaarData.length > 0) udhaarData = c.udhaarData;
-                    let rawInventory = c.inventory || {};
-                    inventory = {};
+                    let rawInventory = c.inventory || {}; inventory = {};
                     for (const [key, val] of Object.entries(rawInventory)) {
                         if (typeof val === 'number') { inventory[key] = { qty: val, price: 0, brand: "", imei: "" }; } 
                         else if (val && typeof val === 'object') { inventory[key] = { qty: val.qty !== undefined ? val.qty : (val.count || 0), price: val.price || 0, brand: val.brand || "", imei: val.imei || "" }; }
@@ -530,25 +533,23 @@
             let inputtedModelName = document.getElementById('modelName').value.trim();
             for (const [stockModelKey, data] of Object.entries(inventory)) {
                 if (stockModelKey.toLowerCase() === inputtedModelName.toLowerCase()) {
-                    if (data && data.price) {
-                        document.getElementById('costPrice').value = data.price;
-                        if (data.brand) { document.getElementById('modelBrand').value = data.brand; }
-                        return;
-                    }
+                    if (data && data.price) { document.getElementById('costPrice').value = data.price; if (data.brand) { document.getElementById('modelBrand').value = data.brand; } return; }
                 }
             }
         };
 
         async function syncToCloud() {
-            if (window.setDoc && window.db) { 
-                await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); 
-            }
+            if (window.setDoc && window.db) { await window.setDoc(window.doc(window.db, "shaktiMobile", "dashboardData"), { salesData, expenseData, inventory, udhaarData }); }
         }
 
         function submitStockForm() {
             let brand = document.getElementById('stockBrand').value.trim(); let model = document.getElementById('stockModelName').value.trim(); let imei = document.getElementById('stockImei').value.trim(); let qty = parseInt(document.getElementById('stockCount').value) || 0; let price = parseFloat(document.getElementById('stockPriceInp').value) || 0; let editKey = document.getElementById('editStockKey').value;
             if(!model || qty < 0) return; if(editKey && editKey !== model) { delete inventory[editKey]; }
-            inventory[model] = { qty, price, brand, imei }; closeModal('stockModal'); syncToCloud();
+            inventory[model] = { qty, price, brand, imei };
+            document.getElementById('stockBrand').value = ""; document.getElementById('stockModelName').value = ""; document.getElementById('stockImei').value = ""; document.getElementById('stockCount').value = ""; document.getElementById('stockPriceInp').value = ""; document.getElementById('editStockKey').value = "";
+            
+            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
+            closeModal('stockModal'); syncToCloud();
         }
 
         function openEditStock(key) {
@@ -563,8 +564,11 @@
             let btn = document.getElementById('saleSubmitBtn'); btn.innerText = "SAVING..."; btn.disabled = true;
             if(editId) { salesData = salesData.map(item => item.id == editId ? { id: Number(editId), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty } : item); } 
             else { if(inventory[model]) { inventory[model].qty = Math.max(0, inventory[model].qty - qty); } salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty }); }
+            
             await syncToCloud();
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('quantity').value = "1"; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
+            
+            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
             btn.innerText = "SAVE TRANSACTION"; btn.disabled = false; closeModal('saleModal'); 
         }
 
@@ -579,8 +583,11 @@
             let btn = document.getElementById('udhaarSubmitBtn'); btn.innerText = "SAVING IN 1 SEC..."; btn.disabled = true;
             if(id) { udhaarData = udhaarData.map(x => x.id == id ? { id: Number(id), date, name, phone, company, product, total, jama, photo: photo || x.photo } : x); } 
             else { udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo }); }
+            
             await syncToCloud();
             document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0"; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoBase64').value = "";
+            
+            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
             btn.innerText = "SAVE UDHAAR ENTRY"; btn.disabled = false; closeModal('udhaarModal'); 
         }
 
@@ -591,32 +598,19 @@
 
         function addExpense() {
             let name = document.getElementById('expenseName').value.trim(); let amount = parseFloat(document.getElementById('expenseAmount').value) || 0; if(!name || amount <= 0) return;
-            expenseData.push({ id: Date.now(), name, amount, date: getSystemTodayDateString() }); closeModal('expenseModal'); syncToCloud();
+            expenseData.push({ id: Date.now(), name, amount, date: getSystemTodayDateString() }); 
+            
+            playSuccessSound(); // TRIGGER SUCCESS CHIME TONE
+            closeModal('expenseModal'); syncToCloud();
         }
         function deleteExpense(id) { if(confirm("Remove?")) { expenseData = expenseData.filter(x => x.id !== id); syncToCloud(); } }
 
         function updateDashboardUI() {
             let tSale = 0; let tProfit = 0; let tOrders = 0; let mSale = 0; let mProfit = 0; let uSold = 0; let cCost = 0; let expT = 0;
-            let todayStr = getSystemTodayDateString();
-            let selectedFilterMonth = document.getElementById('monthFilter').value || getSystemMonthYearLabel();
-
-            salesData.forEach(x => {
-                let p = x.sale - x.cost;
-                if(x.date === todayStr) { tSale += x.sale; tProfit += p; tOrders++; }
-                if(getSystemMonthYearLabel(x.date) === selectedFilterMonth) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; }
-            });
+            let todayStr = getSystemTodayDateString(); let selectedFilterMonth = document.getElementById('monthFilter').value || getSystemMonthYearLabel();
+            salesData.forEach(x => { let p = x.sale - x.cost; if(x.date === todayStr) { tSale += x.sale; tProfit += p; tOrders++; } if(getSystemMonthYearLabel(x.date) === selectedFilterMonth) { mSale += x.sale; mProfit += p; uSold += x.qty; cCost += x.cost; } });
             expenseData.forEach(e => { if(getSystemMonthYearLabel(e.date) === selectedFilterMonth) expT += e.amount; });
-
-            document.getElementById('todaySale').innerText = `₹${tSale}`;
-            document.getElementById('todayProfit').innerText = `₹${tProfit}`;
-            document.getElementById('todayOrders').innerText = `${tOrders} Orders`;
-            document.getElementById('monthSale').innerText = `₹${mSale}`;
-            document.getElementById('monthProfit').innerText = `₹${mProfit}`;
-            document.getElementById('totalUnitsSold').innerText = uSold;
-            document.getElementById('totalCapitalCost').innerText = `₹${cCost}`;
-            document.getElementById('totalOtherExpenses').innerText = `₹${expT}`;
-            document.getElementById('actualNetMargin').innerText = `₹${mProfit - expT}`;
-
+            document.getElementById('todaySale').innerText = `₹${tSale}`; document.getElementById('todayProfit').innerText = `₹${tProfit}`; document.getElementById('todayOrders').innerText = `${tOrders} Orders`; document.getElementById('monthSale').innerText = `₹${mSale}`; document.getElementById('monthProfit').innerText = `₹${mProfit}`; document.getElementById('totalUnitsSold').innerText = uSold; document.getElementById('totalCapitalCost').innerText = `₹${cCost}`; document.getElementById('totalOtherExpenses').innerText = `₹${expT}`; document.getElementById('actualNetMargin').innerText = `₹${mProfit - expT}`;
             renderStockTable(); renderLog(); renderExpenseLog(); renderTopProducts(); renderUdhaarTable();
             if(myChart) myChart.destroy();
             const ctx = document.getElementById('analyticsChart').getContext('2d');
@@ -628,11 +622,8 @@
             for (const [model, data] of Object.entries(inventory)) {
                 let count = 0; let price = 0; let brand = ""; let imei = "";
                 if (data && typeof data === 'object') { count = data.qty || 0; price = data.price || 0; brand = data.brand || ""; imei = data.imei || ""; }
-                val += (count * price);
-                let match = false;
-                if(searchType === 'model' && model.toLowerCase().includes(searchKeyword)) match = true;
-                if(searchType === 'brand' && brand.toLowerCase().includes(searchKeyword)) match = true;
-                if(searchType === 'imei' && imei.toLowerCase().includes(searchKeyword)) match = true;
+                val += (count * price); let match = false;
+                if(searchType === 'model' && model.toLowerCase().includes(searchKeyword)) match = true; if(searchType === 'brand' && brand.toLowerCase().includes(searchKeyword)) match = true; if(searchType === 'imei' && imei.toLowerCase().includes(searchKeyword)) match = true;
                 if (match) {
                     const div = document.createElement('div'); div.className = "card-bg p-2.5 rounded-lg border border-slate-800 flex flex-col gap-1";
                     div.innerHTML = `<div class="flex justify-between items-center"><div><span class="text-[10px] text-blue-400 font-bold uppercase">${brand || 'Generic'}</span> <p class="font-bold text-gray-200">${model}</p></div><div class="flex items-center gap-1"><span class="bg-slate-900 px-2 py-0.5 rounded font-mono">${count} Left</span><button onclick="openEditStock('${model.replace(/'/g, "\\'")}')" class="text-blue-400 px-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteStockItem('${model.replace(/'/g, "\\'")}')" class="text-rose-500 px-1"><i class="fa-solid fa-trash"></i></button></div></div><p class="text-[9px] text-gray-500 font-mono">IMEI: ${imei || 'N/A'} | Total Value: ₹${count * price}</p>`;
@@ -642,40 +633,16 @@
             document.getElementById('totalStockValuation').innerText = `₹${val}`;
         }
 
-        // DYNAMIC LOG RENDERING WITH RE-ENGINEERED DATE WISE FILTER LOCK
         function renderLog() {
-            const tbody = document.getElementById('logTableBody');
-            const searchKeyword = document.getElementById('searchLog').value.toLowerCase();
-            const searchType = document.getElementById('salesSearchType').value;
-            
-            // Get selected filter date (Default locked to device date string)
-            const targetFilterDate = document.getElementById('salesLogDateFilter').value;
-            tbody.innerHTML = '';
-
+            const tbody = document.getElementById('logTableBody'); const searchKeyword = document.getElementById('searchLog').value.toLowerCase(); const searchType = document.getElementById('salesSearchType').value; tbody.innerHTML = '';
             let sortedSales = [...salesData].sort((a, b) => new Date(b.date) - new Date(a.date));
-
             sortedSales.filter(x => {
-                // Strict check: if date filter is filled, show only matching date entries
-                if (targetFilterDate && x.date !== targetFilterDate) return false;
-
+                const targetFilterDate = document.getElementById('salesLogDateFilter').value; if (targetFilterDate && x.date !== targetFilterDate) return false;
                 let m = x.model.toLowerCase(); let b = (x.brand || "").toLowerCase(); let i = (x.imei || "").toLowerCase();
-                if(searchType === 'model') return m.includes(searchKeyword);
-                if(searchType === 'brand') return b.includes(searchKeyword);
-                if(searchType === 'imei') return i.includes(searchKeyword);
-                return true;
+                if(searchType === 'model') return m.includes(searchKeyword); if(searchType === 'brand') return b.includes(searchKeyword); if(searchType === 'imei') return i.includes(searchKeyword); return true;
             }).forEach(x => {
-                let tr = document.createElement('tr');
-                let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
-                tr.innerHTML = `
-                    <td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td>
-                    <td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td>
-                    <td class="py-2 text-center font-mono">${x.qty}</td>
-                    <td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td>
-                    <td class="py-2 text-center">
-                        <button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                `;
+                let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
+                tr.innerHTML = `<td class="py-2 text-[10px] text-slate-400 font-mono font-bold">${displayDate}</td><td class="py-2 font-semibold text-gray-200 text-xs">${x.model}<br><span class="text-[9px] text-gray-500 font-mono">IMEI: ${x.imei || 'N/A'}</span></td><td class="py-2 text-center font-mono">${x.qty}</td><td class="py-2 text-right font-bold text-blue-400">₹${x.sale}</td><td class="py-2 text-center"><button onclick="openEditSale(${x.id})" class="text-blue-400 mx-0.5"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteSale(${x.id})" class="text-rose-500 mx-0.5"><i class="fa-solid fa-trash-can"></i></button></td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -696,16 +663,10 @@
             document.getElementById('totalUdhaarValuation').innerText = `₹${totalPendingMarket} Pending`;
         }
 
-        // EXPENSE HISTORY LOG WITH DYNAMIC DATE LOCK FILTER
         function renderExpenseLog() {
-            let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = '';
-            const targetExpenseDate = document.getElementById('expenseLogDateFilter').value;
-            
+            let tbody = document.getElementById('expenseTableBody'); tbody.innerHTML = ''; const targetExpenseDate = document.getElementById('expenseLogDateFilter').value;
             let sortedExp = [...expenseData].sort((a, b) => new Date(b.date) - new Date(a.date));
-            sortedExp.filter(x => {
-                if (targetExpenseDate && x.date !== targetExpenseDate) return false;
-                return true;
-            }).forEach(x => {
+            sortedExp.filter(x => { if (targetExpenseDate && x.date !== targetExpenseDate) return false; return true; }).forEach(x => {
                 let tr = document.createElement('tr'); let displayDate = x.date ? x.date.split('-').reverse().slice(0,2).join('/') : 'N/A';
                 tr.innerHTML = `<td class="py-2.5 text-[10px] text-slate-400 font-mono">${displayDate}</td><td class="py-2.5 font-semibold text-gray-200">${x.name}</td><td class="py-2.5 text-right font-mono text-rose-400">₹${x.amount}</td><td class="py-2.5 text-center"><button onclick="deleteExpense(${x.id})" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button></td>`;
                 tbody.appendChild(tr);
@@ -713,8 +674,6 @@
         }
         function renderTopProducts() { let container = document.getElementById('topProductsContainer'); container.innerHTML = ''; let cnts = {}; salesData.forEach(x => cnts[x.model] = (cnts[x.model] || 0) + x.qty); Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([m, q], i) => { let d = document.createElement('div'); d.className = "bg-slate-900/40 p-2 rounded-lg flex justify-between"; d.innerHTML = `<span>#${i+1} ${m}</span><span class="text-blue-400 font-bold">${q} sold</span>`; container.appendChild(d); }); }
         function exportToCSV() { let csv = "Date,Brand,Model,IMEI,Quantity,Mode,Sale Price\n"; salesData.forEach(x => csv += `${x.date},${x.brand||''},${x.model},${x.imei||''},${x.qty},${x.mode},${x.sale}\n`); let link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv)); link.setAttribute("download", "Sales_Report.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link); }
-        
-        window.addEventListener('load', () => { if (sessionStorage.getItem('isLoggedIn') === 'true') showDashboard(); });
     </script>
 </body>
 </html>
