@@ -46,7 +46,7 @@
     <div id="dashboardContent" style="display: none;">
         <div class="flex justify-between items-center mb-4">
             <div><h1 class="text-xl font-bold text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1><p class="text-[10px] text-gray-400">TRUST • QUALITY • SERVICE</p></div>
-            <div class="text-right"><button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-1 rounded-full border border-rose-900 btn">Logout</button><div class="text-[9px] text-gray-500 mt-1" id="liveDate">11 Jun 2026</div></div>
+            <div class="text-right"><button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-1 rounded-full border border-rose-900 btn">Logout</button><div class="text-[9px] text-gray-500 mt-1" id="liveDateTime"></div></div>
         </div>
 
         <!-- 4 CARDS -->
@@ -113,7 +113,7 @@
         </div>
 
         <div class="card-bg p-4 mb-4"><h3 class="text-sm font-semibold text-gray-300 mb-2">TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-xs"></div></div>
-        <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="playClickSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+        <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="playClickSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th><tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
         <div class="card-bg p-4 mb-6"><div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">SALES HISTORY LOG</h3><button onclick="playClickSound(); exportToCSV()" class="text-xs text-blue-400 btn">Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playClickSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[11px] rounded p-1.5"></div><div><label class="text-[9px] text-gray-400">Search</label><input type="text" id="searchLog" oninput="playClickSound(); renderLog()" placeholder="Type..." class="input-field rounded-lg p-1.5 text-xs"></div></div><select id="salesSearchType" class="input-field p-2 text-xs w-full mb-3" onchange="playClickSound(); renderLog()"><option value="model">Search by Model</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>PRODUCT</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
     </div>
 
@@ -144,6 +144,18 @@
     </div>
 
     <script>
+        // ========== UPDATE DATE & TIME FUNCTION ==========
+        function updateDateTime() {
+            let now = new Date();
+            let options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            let dateTimeString = now.toLocaleDateString('en-IN', options);
+            let dateTimeElement = document.getElementById('liveDateTime');
+            if(dateTimeElement) dateTimeElement.innerText = dateTimeString;
+        }
+        
+        // Update every minute
+        setInterval(updateDateTime, 60000);
+        
         // ========== PREMIUM SOUND EFFECTS ==========
         function playClickSound() {
             try {
@@ -154,8 +166,8 @@
                 gainNode.connect(audioContext.destination);
                 oscillator.type = 'sine';
                 oscillator.frequency.value = 880;
-                gainNode.gain.value = 0.08;
-                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.15);
+                gainNode.gain.value = 0.1;
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.12);
                 oscillator.start();
                 oscillator.stop(audioContext.currentTime + 0.1);
             } catch(e) { console.log("Audio error:", e); }
@@ -168,21 +180,21 @@
                 let osc1 = audioContext.createOscillator();
                 let gain1 = audioContext.createGain();
                 osc1.type = 'triangle';
-                osc1.frequency.value = 523.25; // C5
-                gain1.gain.value = 0.12;
+                osc1.frequency.value = 523.25;
+                gain1.gain.value = 0.15;
                 gain1.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
                 osc1.connect(gain1);
                 gain1.connect(audioContext.destination);
                 osc1.start();
                 osc1.stop(audioContext.currentTime + 0.15);
                 
-                // Second beep (coin drop sound)
+                // Second beep
                 setTimeout(() => {
                     let osc2 = audioContext.createOscillator();
                     let gain2 = audioContext.createGain();
                     osc2.type = 'triangle';
-                    osc2.frequency.value = 659.25; // E5
-                    gain2.gain.value = 0.12;
+                    osc2.frequency.value = 659.25;
+                    gain2.gain.value = 0.15;
                     gain2.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.25);
                     osc2.connect(gain2);
                     gain2.connect(audioContext.destination);
@@ -190,13 +202,13 @@
                     osc2.stop(audioContext.currentTime + 0.2);
                 }, 100);
                 
-                // Third beep (premium coin drop finish)
+                // Third beep (premium finish)
                 setTimeout(() => {
                     let osc3 = audioContext.createOscillator();
                     let gain3 = audioContext.createGain();
                     osc3.type = 'sine';
-                    osc3.frequency.value = 784; // G5
-                    gain3.gain.value = 0.08;
+                    osc3.frequency.value = 784;
+                    gain3.gain.value = 0.12;
                     gain3.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.3);
                     osc3.connect(gain3);
                     gain3.connect(audioContext.destination);
@@ -285,6 +297,7 @@
                 sessionStorage.setItem('shaktiLoggedIn', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardContent').style.display = 'block';
+                updateDateTime();
                 loadAllData();
                 updateMonthFilterOptions();
                 updateDashboardUI();
@@ -301,6 +314,7 @@
         if(sessionStorage.getItem('shaktiLoggedIn') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardContent').style.display = 'block';
+            updateDateTime();
             loadAllData();
             updateMonthFilterOptions();
             updateDashboardUI();
