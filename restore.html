@@ -3,43 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Restore - SHAKTI MOBILE</title>
+    <title>SHAKTI MOBILE - Data Restore Tool</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body { background: #0B111E; color: white; font-family: monospace; padding: 20px; }
         .card { background: #121A2E; border: 1px solid #1E293B; border-radius: 16px; padding: 20px; margin: 20px 0; }
-        button { background: #10B981; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
-        button.danger { background: #EF4444; }
+        button { background: #10B981; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; border: none; color: white; font-weight: bold; }
+        button.blue { background: #3B82F6; }
+        button.gray { background: #4B5563; }
+        button.red { background: #EF4444; }
         pre { background: #0F172A; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 11px; }
         .success { color: #10B981; }
         .error { color: #EF4444; }
+        .warning { color: #F59E0B; }
     </style>
 </head>
 <body class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">🔄 SHAKTI MOBILE - Data Restore Tool</h1>
+    <h1 class="text-2xl font-bold mb-2">🔄 SHAKTI MOBILE</h1>
+    <p class="text-gray-400 mb-6">Data Restore Tool - Firebase se data wapas laane ke liye</p>
     
     <div class="card">
-        <h2 class="text-lg font-bold mb-2">📦 Firebase Data Restore</h2>
+        <h2 class="text-lg font-bold mb-3">📦 Firebase Se Data Restore</h2>
         <p class="text-gray-400 text-sm mb-3">Click below to restore your data from Firebase server</p>
-        <button onclick="restoreFromFirebase()" class="bg-blue-600 hover:bg-blue-700">🔄 Restore from Firebase</button>
-        <button onclick="viewFirebaseData()" class="bg-gray-600">👁️ View Firebase Data</button>
+        <button onclick="restoreFromFirebase()" class="blue">🔄 Restore from Firebase</button>
+        <button onclick="checkFirebase()" class="gray">👁️ Check Firebase Data</button>
         <div id="firebaseResult" class="mt-3 text-sm"></div>
     </div>
 
     <div class="card">
-        <h2 class="text-lg font-bold mb-2">💾 Local Backup</h2>
-        <p class="text-gray-400 text-sm mb-3">Download current data as backup</p>
-        <button onclick="downloadBackup()" class="bg-emerald-600">📥 Download Backup</button>
-        <button onclick="uploadBackup()" class="bg-amber-600">📤 Upload Backup File</button>
+        <h2 class="text-lg font-bold mb-3">💾 Manual Restore</h2>
+        <p class="text-gray-400 text-sm mb-3">Agar backup file hai to upload karo</p>
+        <button onclick="downloadCurrentData()" class="bg-emerald-600">📥 Download Current Data</button>
+        <button onclick="document.getElementById('backupFile').click()" class="bg-amber-600">📤 Upload Backup File</button>
         <input type="file" id="backupFile" accept=".json" class="hidden" onchange="restoreFromFile(event)">
+        <div id="manualResult" class="mt-3 text-sm"></div>
     </div>
 
     <div class="card">
-        <h2 class="text-lg font-bold mb-2">📋 Current Data Status</h2>
+        <h2 class="text-lg font-bold mb-3">📋 Current Local Storage Status</h2>
         <div id="status"></div>
+        <button onclick="clearLocalStorage()" class="red mt-3">🗑️ Clear Local Storage (Delete All Data)</button>
     </div>
 
-    <script type="module">
+    <div class="card">
+        <h2 class="text-lg font-bold mb-3">🔗 Go to Dashboard</h2>
+        <a href="index.html" class="text-blue-400 underline">Click here to go to Main Dashboard →</a>
+    </div>
+
+    <script>
         // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBFM1JgizFIwUtI2uX9tQ2ZWv2Mlb_RtHo",
@@ -52,13 +63,35 @@
 
         let firebaseData = null;
 
-        async function restoreFromFirebase() {
+        // Check Firebase without loading full SDK first
+        async function checkFirebase() {
             const resultDiv = document.getElementById('firebaseResult');
-            resultDiv.innerHTML = '<div class="text-yellow-400">⏳ Loading data from Firebase...</div>';
+            resultDiv.innerHTML = '<div class="warning">⏳ Checking Firebase...</div>';
             
             try {
+                const response = await fetch('https://firestore.googleapis.com/v1/projects/shakti-mobile-dashboard/databases/(default)/documents/shaktiMobile/dashboardData');
+                const data = await response.json();
+                
+                if(data.name) {
+                    resultDiv.innerHTML = `<div class="success">✅ Firebase data exists!</div>
+                        <pre class="mt-2">Document: ${data.name}</pre>
+                        <button onclick="restoreFromFirebase()" class="blue mt-2">🔄 Click here to Restore Data</button>`;
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ No data found in Firebase</div>';
+                }
+            } catch(e) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${e.message}</div>`;
+            }
+        }
+
+        async function restoreFromFirebase() {
+            const resultDiv = document.getElementById('firebaseResult');
+            resultDiv.innerHTML = '<div class="warning">⏳ Loading data from Firebase...</div>';
+            
+            try {
+                // Dynamic import Firebase modules
                 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-                const { getFirestore, doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                 
                 const app = initializeApp(firebaseConfig);
                 const db = getFirestore(app);
@@ -67,20 +100,27 @@
                 
                 if(docSnap.exists()) {
                     firebaseData = docSnap.data();
-                    resultDiv.innerHTML = `<div class="success">✅ Data found in Firebase!</div>
-                        <pre>${JSON.stringify(firebaseData, null, 2).substring(0, 500)}...</pre>
-                        <div class="mt-2"><strong>Summary:</strong><br>
-                        📦 Stock: ${Object.keys(firebaseData.inventory || {}).length} items<br>
-                        💰 Sales: ${(firebaseData.salesData || []).length} records<br>
-                        📕 Udhaar: ${(firebaseData.udhaarData || []).length} customers<br>
-                        💸 Expenses: ${(firebaseData.expenseData || []).length} records
+                    const inventory = firebaseData.inventory || {};
+                    const salesData = firebaseData.salesData || [];
+                    const udhaarData = firebaseData.udhaarData || [];
+                    const expenseData = firebaseData.expenseData || [];
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Data found in Firebase!</div>
+                        <div class="mt-2 p-2 bg-slate-800 rounded">
+                            <strong>Summary:</strong><br>
+                            📦 Stock Items: ${Object.keys(inventory).length}<br>
+                            💰 Sales Records: ${salesData.length}<br>
+                            📕 Udhaar Customers: ${udhaarData.length}<br>
+                            💸 Expenses: ${expenseData.length}
                         </div>
-                        <button onclick="saveToLocalStorage()" class="bg-green-600 mt-3">💾 Save to LocalStorage (Restore)</button>`;
+                        <button onclick="saveToLocalStorage()" class="bg-green-600 mt-3">💾 Save to LocalStorage (RESTORE NOW)</button>
+                    `;
                 } else {
-                    resultDiv.innerHTML = '<div class="error">❌ No data found in Firebase! Have you ever saved data?</div>';
+                    resultDiv.innerHTML = '<div class="error">❌ No data found in Firebase! Have you ever saved data before?</div>';
                 }
             } catch(e) {
-                resultDiv.innerHTML = `<div class="error">❌ Error: ${e.message}</div>`;
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${e.message}<br>Make sure you are online and Firebase is accessible.</div>`;
             }
         }
 
@@ -90,24 +130,14 @@
                 localStorage.setItem('shakti_expense', JSON.stringify(firebaseData.expenseData || []));
                 localStorage.setItem('shakti_inventory', JSON.stringify(firebaseData.inventory || {}));
                 localStorage.setItem('shakti_udhaar', JSON.stringify(firebaseData.udhaarData || []));
+                localStorage.setItem('shakti_last_backup', new Date().toISOString());
+                
                 document.getElementById('firebaseResult').innerHTML += '<div class="success mt-2">✅ Data saved to LocalStorage! You can now go to main dashboard.</div>';
                 showStatus();
             }
         };
 
-        window.viewFirebaseData = async function() {
-            const resultDiv = document.getElementById('firebaseResult');
-            resultDiv.innerHTML = '<div class="text-yellow-400">⏳ Fetching...</div>';
-            try {
-                const response = await fetch('https://firestore.googleapis.com/v1/projects/shakti-mobile-dashboard/databases/(default)/documents/shaktiMobile/dashboardData');
-                const data = await response.json();
-                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2).substring(0, 1000)}</pre>`;
-            } catch(e) {
-                resultDiv.innerHTML = `<div class="error">Error: ${e.message}</div>`;
-            }
-        };
-
-        window.downloadBackup = function() {
+        window.downloadCurrentData = function() {
             const backup = {
                 salesData: JSON.parse(localStorage.getItem('shakti_sales') || '[]'),
                 expenseData: JSON.parse(localStorage.getItem('shakti_expense') || '[]'),
@@ -119,13 +149,10 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `shakti_backup_${new Date().toISOString().slice(0,19)}.json`;
+            a.download = `shakti_backup_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
             a.click();
             URL.revokeObjectURL(url);
-        };
-
-        window.uploadBackup = function() {
-            document.getElementById('backupFile').click();
+            document.getElementById('manualResult').innerHTML = '<div class="success">✅ Backup downloaded!</div>';
         };
 
         window.restoreFromFile = function(event) {
@@ -139,11 +166,25 @@
                         if(backup.expenseData) localStorage.setItem('shakti_expense', JSON.stringify(backup.expenseData));
                         if(backup.inventory) localStorage.setItem('shakti_inventory', JSON.stringify(backup.inventory));
                         if(backup.udhaarData) localStorage.setItem('shakti_udhaar', JSON.stringify(backup.udhaarData));
-                        alert('✅ Backup restored successfully!');
+                        document.getElementById('manualResult').innerHTML = '<div class="success">✅ Backup restored successfully!</div>';
                         showStatus();
-                    } catch(e) { alert('Invalid backup file'); }
+                    } catch(e) { 
+                        document.getElementById('manualResult').innerHTML = '<div class="error">❌ Invalid backup file</div>';
+                    }
                 };
                 reader.readAsText(file);
+            }
+        };
+
+        window.clearLocalStorage = function() {
+            if(confirm('⚠️ Are you sure? This will delete ALL your local data!')) {
+                localStorage.removeItem('shakti_sales');
+                localStorage.removeItem('shakti_expense');
+                localStorage.removeItem('shakti_inventory');
+                localStorage.removeItem('shakti_udhaar');
+                localStorage.removeItem('shakti_last_backup');
+                showStatus();
+                document.getElementById('manualResult').innerHTML = '<div class="warning">⚠️ Local storage cleared!</div>';
             }
         };
 
@@ -151,16 +192,26 @@
             const sales = JSON.parse(localStorage.getItem('shakti_sales') || '[]');
             const inventory = JSON.parse(localStorage.getItem('shakti_inventory') || '{}');
             const udhaar = JSON.parse(localStorage.getItem('shakti_udhaar') || '[]');
+            const expense = JSON.parse(localStorage.getItem('shakti_expense') || '[]');
+            const lastBackup = localStorage.getItem('shakti_last_backup') || 'Never';
+            
             document.getElementById('status').innerHTML = `
                 <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div>📦 Stock Items:</div><div class="font-bold">${Object.keys(inventory).length}</div>
-                    <div>💰 Sales Records:</div><div class="font-bold">${sales.length}</div>
-                    <div>📕 Udhaar Customers:</div><div class="font-bold">${udhaar.length}</div>
-                    <div>💾 Last Backup:</div><div class="font-bold">${localStorage.getItem('shakti_last_backup') || 'Never'}</div>
+                    <div class="text-gray-400">📦 Stock Items:</div>
+                    <div class="font-bold text-blue-400">${Object.keys(inventory).length}</div>
+                    <div class="text-gray-400">💰 Sales Records:</div>
+                    <div class="font-bold text-emerald-400">${sales.length}</div>
+                    <div class="text-gray-400">📕 Udhaar Customers:</div>
+                    <div class="font-bold text-rose-400">${udhaar.length}</div>
+                    <div class="text-gray-400">💸 Expenses:</div>
+                    <div class="font-bold text-amber-400">${expense.length}</div>
+                    <div class="text-gray-400">💾 Last Backup:</div>
+                    <div class="font-bold">${lastBackup.substring(0, 19) || 'Never'}</div>
                 </div>
             `;
         }
 
+        // Auto run on page load
         showStatus();
     </script>
 </body>
