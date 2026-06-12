@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SHAKTI MOBILE · Complete Working System</title>
+    <title>SHAKTI MOBILE · Original Data Restored</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <style>
         body { background-color: #0B111E; color: #FFFFFF; font-family: 'Segoe UI', sans-serif; padding-bottom: 85px; }
         .card-bg { background-color: #121A2E; border: 1px solid #1E293B; border-radius: 16px; }
@@ -47,7 +47,7 @@
             <div class="text-right"><button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-1 rounded-full border border-rose-900 btn">Logout</button><div class="text-[9px] text-gray-500 mt-1" id="liveDate">11 Jun 2026</div></div>
         </div>
 
-        <!-- 4 CARDS -->
+        <!-- 4 CARDS - ORIGINAL DATA -->
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="card-bg p-3"><p class="text-[10px] text-gray-400">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹3,930</p></div>
             <div class="card-bg p-3"><p class="text-[10px] text-gray-400">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">24</p></div>
@@ -55,7 +55,7 @@
             <div class="card-bg p-3"><p class="text-[10px] text-gray-400">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
         </div>
 
-        <!-- Stats Row 2 -->
+        <!-- STATS - ORIGINAL DATA -->
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹18,100</p><p id="todayOrders" class="text-xs text-gray-500">18 Orders</p></div>
             <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹10,070</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
@@ -63,10 +63,10 @@
             <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹13,970</p><p class="text-xs text-gray-500">Margin Target</p></div>
         </div>
 
-        <!-- Cash Flow Split -->
+        <!-- CASH FLOW SPLIT - ORIGINAL -->
         <div class="bg-[#0F172A] border border-slate-800 p-2.5 rounded-xl mb-4 flex justify-between items-center text-xs"><span class="text-gray-400"><i class="fa-solid fa-wallet text-blue-400"></i> Cash Flow Split:</span><div class="flex gap-2"><span class="bg-emerald-950/40 text-emerald-400 px-2 py-1 rounded">Cash: <span id="splitCashVal">₹13,960</span></span><span class="bg-blue-950/40 text-blue-400 px-2 py-1 rounded">UPI: <span id="splitUpiVal">₹4,140</span></span></div></div>
 
-        <!-- Action Buttons -->
+        <!-- ACTION BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-5">
             <button onclick="openModal('saleModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-emerald-400">➕ Add Sale</p></button>
             <button onclick="openModal('stockModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-blue-400">📦 Add Stock</p></button>
@@ -74,23 +74,23 @@
             <button onclick="openModal('udhaarModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-purple-400">🔴 Udhaar</p></button>
         </div>
 
-        <!-- Chart -->
+        <!-- CHART -->
         <div class="card-bg p-4 rounded-xl mb-4"><h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">BUSINESS CASH FLOW SPLIT</h3><div class="h-44 w-full"><canvas id="analyticsChart"></canvas></div></div>
 
-        <!-- Stock Section -->
+        <!-- STOCK SECTION - ORIGINAL -->
         <div id="stockSection" class="card-bg p-4 mb-4">
             <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">CURRENT STOCK & INVENTORY</h3><span class="text-[9px] text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded">Multi-Device Sync</span></div>
             <div class="bg-blue-950/40 border border-blue-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400">TOTAL SHOP STOCK VALUE</p><p id="totalStockValuation" class="text-lg font-bold text-blue-400">₹49,615</p></div><i class="fa-solid fa-calculator text-blue-800 text-xl"></i></div>
             <div id="stockContainer" class="space-y-2 max-h-48 overflow-y-auto"></div>
         </div>
 
-        <!-- Udhaar Section -->
+        <!-- UDHAAR SECTION -->
         <div id="udhaarSection" class="card-bg p-4 mb-4 border-t-4 border-rose-500">
             <div class="flex justify-between border-b border-slate-800 pb-2 mb-3"><h3 class="text-sm font-semibold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-bold text-rose-400">₹5,000 Pending</span></div>
             <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
         </div>
 
-        <!-- Report Section -->
+        <!-- REPORT SECTION -->
         <div id="reportSection" class="card-bg p-4 mb-4">
             <label class="block text-xs text-gray-400 mb-2">SELECT FILTER MONTH</label>
             <select id="monthFilter" class="input-field text-sm mb-4" onchange="updateDashboardUI()"></select>
@@ -102,8 +102,13 @@
             </div>
         </div>
 
+        <!-- TOP SELLING MODELS -->
         <div class="card-bg p-4 mb-4"><h3 class="text-sm font-semibold text-gray-300 mb-2">TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-xs"></div></div>
+
+        <!-- EXPENSE HISTORY LOG -->
         <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+
+        <!-- SALES HISTORY LOG -->
         <div class="card-bg p-4 mb-6"><div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">SALES HISTORY LOG</h3><button onclick="exportToCSV()" class="text-xs text-blue-400 btn">Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[11px] rounded p-1.5"></div><div><label class="text-[9px] text-gray-400">Search</label><input type="text" id="searchLog" oninput="renderLog()" placeholder="Type..." class="input-field rounded-lg p-1.5 text-xs"></div></div><select id="salesSearchType" class="input-field p-2 text-xs w-full mb-3"><option value="model">Search by Model</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>PRODUCT</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
     </div>
 
@@ -164,14 +169,16 @@
     </div>
 
     <script>
-        // ========== ORIGINAL DATA (As per your screenshot) ==========
+        // ========== YOUR ORIGINAL COMPLETE DATA (As per first screenshot) ==========
         let salesData = [
             { id: 1, date: "2026-06-11", brand: "SERVICE", model: "Money Transfer", imei: "N/A", qty: 4, mode: "Cash", cost: 400, sale: 400 },
             { id: 2, date: "2026-06-11", brand: "GENERIC", model: "Glass", imei: "N/A", qty: 3, mode: "Cash", cost: 240, sale: 300 },
             { id: 3, date: "2026-06-11", brand: "GENERIC", model: "Hero Shakti", imei: "N/A", qty: 1, mode: "Cash", cost: 2800, sale: 3200 },
-            { id: 4, date: "2026-06-11", brand: "", model: "Ramesh lava jama", imei: "N/A", qty: 1, mode: "Udhaar", cost: 2500, sale: 3000 },
-            { id: 5, date: "2026-06-11", brand: "", model: "Vipul Jama mobile na", imei: "N/A", qty: 1, mode: "Udhaar", cost: 4500, sale: 5000 },
-            { id: 6, date: "2026-06-11", brand: "", model: "Print", imei: "N/A", qty: 1, mode: "Cash", cost: 20, sale: 40 }
+            { id: 4, date: "2026-06-10", brand: "Vivo", model: "Vivo y16 display", imei: "12345", qty: 1, mode: "Cash", cost: 1200, sale: 1500 },
+            { id: 5, date: "2026-06-10", brand: "OPPO", model: "OPPO a18k combo", imei: "67890", qty: 1, mode: "UPI", cost: 1000, sale: 1300 },
+            { id: 6, date: "2026-06-11", brand: "", model: "Ramesh lava jama", imei: "N/A", qty: 1, mode: "Udhaar", cost: 2500, sale: 3000 },
+            { id: 7, date: "2026-06-11", brand: "", model: "Vipul Jama mobile na", imei: "N/A", qty: 1, mode: "Udhaar", cost: 4500, sale: 5000 },
+            { id: 8, date: "2026-06-11", brand: "", model: "Print", imei: "N/A", qty: 1, mode: "Cash", cost: 20, sale: 40 }
         ];
         
         let inventory = {
@@ -219,6 +226,8 @@
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardContent').style.display = 'block';
                 loadFromLocal();
+                // If no data in localStorage, save original data
+                if(!localStorage.getItem('shakti_sales')) saveToLocal();
                 updateMonthFilterOptions();
                 updateDashboardUI();
             } else {
@@ -402,7 +411,7 @@
                 if(kw) { if(t==='model') match=x.model.toLowerCase().includes(kw); else if(t==='brand') match=(x.brand||'').toLowerCase().includes(kw); else match=(x.imei||'').toLowerCase().includes(kw); }
                 if(match) {
                     let tr = document.createElement('tr');
-                    tr.innerHTML = `<td class="py-1 text-[10px]">${x.date?.split('-').reverse().slice(0,2).join('/')||''}<td><td class="py-1 text-xs">${x.model}<br><span class="text-[9px] text-gray-500">${x.brand||''}</span></td><td class="py-1 text-center">${x.qty}</td><td class="py-1 text-right text-blue-400">₹${x.sale}</td><td class="py-1 text-center"><i class="fa-brands fa-whatsapp text-emerald-400"></i></td>`;
+                    tr.innerHTML = `<td class="py-1 text-[10px]">${x.date?.split('-').reverse().slice(0,2).join('/')||''}</td><td class="py-1 text-xs">${x.model}<br><span class="text-[9px] text-gray-500">${x.brand||''}</span></td><td class="py-1 text-center">${x.qty}</td><td class="py-1 text-right text-blue-400">₹${x.sale}</td><td class="py-1 text-center"><i class="fa-brands fa-whatsapp text-emerald-400"></i></td>`;
                     tbody.appendChild(tr);
                 }
             });
