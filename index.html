@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SHAKTI MOBILE · Fresh Start</title>
+    <title>SHAKTI MOBILE · Premium Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,7 +49,7 @@
             <div class="text-right"><button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-1 rounded-full border border-rose-900 btn">Logout</button><div class="text-[9px] text-gray-500 mt-1" id="liveDate">11 Jun 2026</div></div>
         </div>
 
-        <!-- 4 CARDS - ALL ZERO (FRESH START) -->
+        <!-- 4 CARDS -->
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="card-bg p-3"><p class="text-[10px] text-gray-400">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹0</p></div>
             <div class="card-bg p-3"><p class="text-[10px] text-gray-400">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">0</p></div>
@@ -57,7 +57,7 @@
             <div class="card-bg p-3"><p class="text-[10px] text-gray-400">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹0</p></div>
         </div>
 
-        <!-- STATS ROW 2 - ALL ZERO -->
+        <!-- STATS ROW 2 -->
         <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹0</p><p id="todayOrders" class="text-xs text-gray-500">0 Orders</p></div>
             <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹0</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
@@ -65,15 +65,15 @@
             <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹0</p><p class="text-xs text-gray-500">Margin Target</p></div>
         </div>
 
-        <!-- CASH FLOW SPLIT - ZERO -->
+        <!-- CASH FLOW SPLIT -->
         <div class="bg-[#0F172A] border border-slate-800 p-2.5 rounded-xl mb-4 flex justify-between items-center text-xs"><span class="text-gray-400"><i class="fa-solid fa-wallet text-blue-400"></i> Cash Flow Split:</span><div class="flex gap-2"><span class="bg-emerald-950/40 text-emerald-400 px-2 py-1 rounded">Cash: <span id="splitCashVal">₹0</span></span><span class="bg-blue-950/40 text-blue-400 px-2 py-1 rounded">UPI: <span id="splitUpiVal">₹0</span></span></div></div>
 
         <!-- ACTION BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-5">
-            <button onclick="openModal('saleModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-emerald-400">➕ Add Sale</p></button>
-            <button onclick="openModal('stockModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-blue-400">📦 Add Stock</p></button>
-            <button onclick="openModal('expenseModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-amber-400">💸 Expense</p></button>
-            <button onclick="openModal('udhaarModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-purple-400">🔴 Udhaar</p></button>
+            <button onclick="playClickSound(); openModal('saleModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-emerald-400">➕ Add Sale</p></button>
+            <button onclick="playClickSound(); openModal('stockModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-blue-400">📦 Add Stock</p></button>
+            <button onclick="playClickSound(); openModal('expenseModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-amber-400">💸 Expense</p></button>
+            <button onclick="playClickSound(); openModal('udhaarModal')" class="card-bg p-2 text-center hover:bg-slate-800/50 btn"><p class="text-sm text-purple-400">🔴 Udhaar</p></button>
         </div>
 
         <!-- CHART -->
@@ -88,7 +88,7 @@
             <div class="bg-blue-950/40 border border-blue-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400">TOTAL SHOP STOCK VALUE</p><p id="totalStockValuation" class="text-lg font-bold text-blue-400">₹0</p></div><i class="fa-solid fa-calculator text-blue-800 text-xl"></i></div>
             <div class="mb-3 grid grid-cols-3 gap-1.5">
                 <select id="stockSearchType" class="input-field text-xs"><option value="model">Model Name</option><option value="brand">Brand</option><option value="imei">IMEI</option></select>
-                <div class="relative col-span-2"><i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i><input type="text" id="searchStockInp" oninput="renderStockTable()" placeholder="Search stock..." class="input-field py-2 pl-8 pr-2 text-xs"></div>
+                <div class="relative col-span-2"><i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i><input type="text" id="searchStockInp" oninput="playClickSound(); renderStockTable()" placeholder="Search stock..." class="input-field py-2 pl-8 pr-2 text-xs"></div>
             </div>
             <div id="stockContainer" class="space-y-2 max-h-48 overflow-y-auto"></div>
         </div>
@@ -96,14 +96,14 @@
         <!-- UDHAAR SECTION -->
         <div id="udhaarSection" class="card-bg p-4 mb-4 border-t-4 border-rose-500">
             <div class="flex justify-between border-b border-slate-800 pb-2 mb-3"><h3 class="text-sm font-semibold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-bold text-rose-400">₹0 Pending</span></div>
-            <input type="text" id="searchUdhaarInp" oninput="renderUdhaarTable()" placeholder="Search Customer..." class="input-field p-2 text-xs mb-3">
+            <input type="text" id="searchUdhaarInp" oninput="playClickSound(); renderUdhaarTable()" placeholder="Search Customer..." class="input-field p-2 text-xs mb-3">
             <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
         </div>
 
         <!-- REPORT SECTION -->
         <div id="reportSection" class="card-bg p-4 mb-4">
             <label class="block text-xs text-gray-400 mb-2">SELECT FILTER MONTH</label>
-            <select id="monthFilter" class="input-field text-sm mb-4" onchange="updateDashboardUI()"></select>
+            <select id="monthFilter" class="input-field text-sm mb-4" onchange="playClickSound(); updateDashboardUI()"></select>
             <div class="grid grid-cols-2 gap-2 text-sm border-t border-slate-800 pt-3">
                 <div class="text-gray-400">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono">0</div>
                 <div class="text-gray-400">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono">₹0</div>
@@ -113,38 +113,100 @@
         </div>
 
         <div class="card-bg p-4 mb-4"><h3 class="text-sm font-semibold text-gray-300 mb-2">TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-xs"></div></div>
-        <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
-        <div class="card-bg p-4 mb-6"><div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">SALES HISTORY LOG</h3><button onclick="exportToCSV()" class="text-xs text-blue-400 btn">Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[11px] rounded p-1.5"></div><div><label class="text-[9px] text-gray-400">Search</label><input type="text" id="searchLog" oninput="renderLog()" placeholder="Type..." class="input-field rounded-lg p-1.5 text-xs"></div></div><select id="salesSearchType" class="input-field p-2 text-xs w-full mb-3"><option value="model">Search by Model</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>PRODUCT</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
+        <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="playClickSound(); renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+        <div class="card-bg p-4 mb-6"><div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">SALES HISTORY LOG</h3><button onclick="playClickSound(); exportToCSV()" class="text-xs text-blue-400 btn">Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="playClickSound(); renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[11px] rounded p-1.5"></div><div><label class="text-[9px] text-gray-400">Search</label><input type="text" id="searchLog" oninput="playClickSound(); renderLog()" placeholder="Type..." class="input-field rounded-lg p-1.5 text-xs"></div></div><select id="salesSearchType" class="input-field p-2 text-xs w-full mb-3" onchange="playClickSound(); renderLog()"><option value="model">Search by Model</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>PRODUCT</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
     </div>
 
     <!-- MODALS -->
     <div id="saleModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-emerald-400 font-bold mb-3">🟢 Add Sale</h3><input type="date" id="saleDate" class="input-field mb-2"><input type="text" id="modelBrand" placeholder="Brand Name" class="input-field mb-2"><input type="text" id="modelName" placeholder="Model Name" class="input-field mb-2"><input type="text" id="modelImei" placeholder="IMEI" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="quantity" value="1" class="input-field"><select id="paymentMode" class="input-field"><option>Cash</option><option>UPI</option><option>Udhaar</option></select></div><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="costPrice" placeholder="Cost Price ₹" class="input-field"><input type="number" id="salePrice" placeholder="Sale Price ₹" class="input-field"></div><button onclick="submitSaleForm()" class="w-full bg-emerald-600 py-2 rounded-lg btn">SAVE SALE</button><button onclick="closeModal('saleModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-emerald-400 font-bold mb-3">🟢 Add Sale</h3><input type="date" id="saleDate" class="input-field mb-2"><input type="text" id="modelBrand" placeholder="Brand Name" class="input-field mb-2"><input type="text" id="modelName" placeholder="Model Name" class="input-field mb-2"><input type="text" id="modelImei" placeholder="IMEI" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-2"><input type="number" id="quantity" value="1" class="input-field"><select id="paymentMode" class="input-field"><option>Cash</option><option>UPI</option><option>Udhaar</option></select></div><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="costPrice" placeholder="Cost Price ₹" class="input-field"><input type="number" id="salePrice" placeholder="Sale Price ₹" class="input-field"></div><button onclick="playSaveSound(); submitSaleForm()" class="w-full bg-emerald-600 py-2 rounded-lg btn">SAVE SALE</button><button onclick="playClickSound(); closeModal('saleModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <div id="stockModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Stock</h3><div class="bg-purple-900/30 p-2 rounded-lg mb-2"><span class="text-xs text-purple-400"><i class="fa-solid fa-image mr-1"></i> Product Photo</span><input type="file" id="stockPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="stockPhotoBase64"><div id="stockPhotoPreview" class="mt-1 hidden"></div></div><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field mb-2"><input type="text" id="stockImei" placeholder="IMEI" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="stockCount" placeholder="Quantity" class="input-field"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field"></div><button onclick="submitStockForm()" class="w-full bg-blue-600 py-2 rounded-lg btn">SAVE STOCK</button><button onclick="closeModal('stockModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Stock</h3><div class="bg-purple-900/30 p-2 rounded-lg mb-2"><span class="text-xs text-purple-400"><i class="fa-solid fa-image mr-1"></i> Product Photo</span><input type="file" id="stockPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="stockPhotoBase64"><div id="stockPhotoPreview" class="mt-1 hidden"></div></div><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field mb-2"><input type="text" id="stockImei" placeholder="IMEI" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="stockCount" placeholder="Quantity" class="input-field"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field"></div><button onclick="playSaveSound(); submitStockForm()" class="w-full bg-blue-600 py-2 rounded-lg btn">SAVE STOCK</button><button onclick="playClickSound(); closeModal('stockModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <div id="expenseModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-amber-500 font-bold mb-3">🟠 Add Expense</h3><input type="text" id="expenseName" placeholder="Expense Name" class="input-field mb-2"><input type="number" id="expenseAmount" placeholder="Amount ₹" class="input-field mb-3"><button onclick="addExpense()" class="w-full bg-amber-600 py-2 rounded-lg btn">ADD EXPENSE</button><button onclick="closeModal('expenseModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-amber-500 font-bold mb-3">🟠 Add Expense</h3><input type="text" id="expenseName" placeholder="Expense Name" class="input-field mb-2"><input type="number" id="expenseAmount" placeholder="Amount ₹" class="input-field mb-3"><button onclick="playSaveSound(); addExpense()" class="w-full bg-amber-600 py-2 rounded-lg btn">ADD EXPENSE</button><button onclick="playClickSound(); closeModal('expenseModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <div id="udhaarModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-rose-400 font-bold mb-3">🔴 Udhaar Entry</h3><input type="date" id="udhaarDate" class="input-field mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field"><input type="number" id="udhaarJamaPrice" value="0" placeholder="Jama Amount ₹" class="input-field"></div><div><label class="text-[10px] text-gray-400">Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="udhaarPhotoBase64"></div><button onclick="submitUdhaarForm()" class="w-full bg-rose-600 py-2 rounded-lg mt-2 btn">SAVE UDHAAR</button><button onclick="closeModal('udhaarModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-rose-400 font-bold mb-3">🔴 Udhaar Entry</h3><input type="date" id="udhaarDate" class="input-field mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field"><input type="number" id="udhaarJamaPrice" value="0" placeholder="Jama Amount ₹" class="input-field"></div><div><label class="text-[10px] text-gray-400">Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="udhaarPhotoBase64"></div><button onclick="playSaveSound(); submitUdhaarForm()" class="w-full bg-rose-600 py-2 rounded-lg mt-2 btn">SAVE UDHAAR</button><button onclick="playClickSound(); closeModal('udhaarModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav-bar">
-        <div onclick="scrollToTop()" id="navHome" class="nav-item active"><i class="fa-solid fa-house text-sm"></i><span>Home</span></div>
-        <div onclick="scrollToSection('stockSection')" id="navStock" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Stock</span></div>
-        <div onclick="openModal('saleModal')" id="navSale" class="nav-item"><i class="fa-solid fa-cart-plus text-sm"></i><span>Sale</span></div>
-        <div onclick="scrollToSection('udhaarSection')" id="navUdhaar" class="nav-item"><i class="fa-solid fa-book text-sm"></i><span>Udhaar</span></div>
-        <div onclick="scrollToSection('reportSection')" id="navReports" class="nav-item"><i class="fa-solid fa-chart-line text-sm"></i><span>Reports</span></div>
+        <div onclick="playClickSound(); scrollToTop()" id="navHome" class="nav-item active"><i class="fa-solid fa-house text-sm"></i><span>Home</span></div>
+        <div onclick="playClickSound(); scrollToSection('stockSection')" id="navStock" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Stock</span></div>
+        <div onclick="playClickSound(); openModal('saleModal')" id="navSale" class="nav-item"><i class="fa-solid fa-cart-plus text-sm"></i><span>Sale</span></div>
+        <div onclick="playClickSound(); scrollToSection('udhaarSection')" id="navUdhaar" class="nav-item"><i class="fa-solid fa-book text-sm"></i><span>Udhaar</span></div>
+        <div onclick="playClickSound(); scrollToSection('reportSection')" id="navReports" class="nav-item"><i class="fa-solid fa-chart-line text-sm"></i><span>Reports</span></div>
     </div>
 
     <script>
-        // ========== DATA STORAGE (LocalStorage) - ALL EMPTY ==========
+        // ========== PREMIUM SOUND EFFECTS ==========
+        function playClickSound() {
+            try {
+                let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillator = audioContext.createOscillator();
+                let gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 880;
+                gainNode.gain.value = 0.08;
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.15);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch(e) { console.log("Audio error:", e); }
+        }
+        
+        function playSaveSound() {
+            try {
+                let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // First beep
+                let osc1 = audioContext.createOscillator();
+                let gain1 = audioContext.createGain();
+                osc1.type = 'triangle';
+                osc1.frequency.value = 523.25; // C5
+                gain1.gain.value = 0.12;
+                gain1.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
+                osc1.connect(gain1);
+                gain1.connect(audioContext.destination);
+                osc1.start();
+                osc1.stop(audioContext.currentTime + 0.15);
+                
+                // Second beep (coin drop sound)
+                setTimeout(() => {
+                    let osc2 = audioContext.createOscillator();
+                    let gain2 = audioContext.createGain();
+                    osc2.type = 'triangle';
+                    osc2.frequency.value = 659.25; // E5
+                    gain2.gain.value = 0.12;
+                    gain2.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.25);
+                    osc2.connect(gain2);
+                    gain2.connect(audioContext.destination);
+                    osc2.start();
+                    osc2.stop(audioContext.currentTime + 0.2);
+                }, 100);
+                
+                // Third beep (premium coin drop finish)
+                setTimeout(() => {
+                    let osc3 = audioContext.createOscillator();
+                    let gain3 = audioContext.createGain();
+                    osc3.type = 'sine';
+                    osc3.frequency.value = 784; // G5
+                    gain3.gain.value = 0.08;
+                    gain3.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.3);
+                    osc3.connect(gain3);
+                    gain3.connect(audioContext.destination);
+                    osc3.start();
+                    osc3.stop(audioContext.currentTime + 0.25);
+                }, 200);
+            } catch(e) { console.log("Audio error:", e); }
+        }
+        
+        // ========== DATA STORAGE (LocalStorage) ==========
         let salesData = [], expenseData = [], inventory = {}, udhaarData = [], myChart = null, weeklyChart = null;
         
         function getToday() { let d=new Date(); return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`; }
@@ -155,7 +217,6 @@
             localStorage.setItem('shakti_expense', JSON.stringify(expenseData));
             localStorage.setItem('shakti_inventory', JSON.stringify(inventory));
             localStorage.setItem('shakti_udhaar', JSON.stringify(udhaarData));
-            console.log("✅ Data saved");
         }
         
         function loadAllData() {
@@ -168,8 +229,6 @@
             if(savedExpense) expenseData = JSON.parse(savedExpense);
             if(savedInventory) inventory = JSON.parse(savedInventory);
             if(savedUdhaar) udhaarData = JSON.parse(savedUdhaar);
-            
-            console.log("✅ Data loaded");
         }
         
         // Clear any existing old data on first load
@@ -222,6 +281,7 @@
         function handleLogin() {
             let pin = document.getElementById('loginPin').value;
             if(pin === '1234') {
+                playSaveSound();
                 sessionStorage.setItem('shaktiLoggedIn', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardContent').style.display = 'block';
@@ -273,7 +333,7 @@
             if(!model) { alert("Model name required"); return; }
             salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty });
             if(inventory[model]) inventory[model].qty = Math.max(0, (inventory[model].qty || 0) - qty);
-            closeModal('saleModal'); saveAllData(); updateDashboardUI(); alert("Sale added!");
+            closeModal('saleModal'); saveAllData(); updateDashboardUI();
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
         }
         
@@ -308,7 +368,7 @@
             let amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
             if(!name || amount<=0) { alert("Enter valid expense details"); return; }
             expenseData.push({ id: Date.now(), name, amount, date: getToday() });
-            closeModal('expenseModal'); saveAllData(); updateDashboardUI(); alert("Expense added!");
+            closeModal('expenseModal'); saveAllData(); updateDashboardUI();
             document.getElementById('expenseName').value = ''; document.getElementById('expenseAmount').value = '';
         }
         
@@ -323,7 +383,7 @@
             let photo = document.getElementById('udhaarPhotoBase64')?.value || '';
             if(!name || total<=0) { alert("Customer name and total amount required"); return; }
             udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo });
-            closeModal('udhaarModal'); saveAllData(); updateDashboardUI(); alert("Udhaar record added!");
+            closeModal('udhaarModal'); saveAllData(); updateDashboardUI();
             document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0";
             document.getElementById('udhaarPhotoBase64').value = ""; document.getElementById('udhaarPhotoFile').value = "";
         }
