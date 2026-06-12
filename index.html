@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SHAKTI MOBILE · Premium Dashboard</title>
+    <title>SHAKTI MOBILE · Complete System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,6 +19,8 @@
         .nav-item.active { color: #10b981; background: #1E293B; }
         .btn { cursor: pointer; transition: all 0.2s; }
         .btn:hover { opacity: 0.8; transform: scale(0.98); }
+        .stock-photo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #0F172A; border: 1px solid #334155; }
+        .preview-img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid #10b981; }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto">
@@ -44,27 +46,27 @@
     <div id="dashboardContent" style="display: none;">
         <div class="flex justify-between items-center mb-4">
             <div><h1 class="text-xl font-bold text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1><p class="text-[10px] text-gray-400">TRUST • QUALITY • SERVICE</p></div>
-            <div class="text-right"><button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-1 rounded-full border border-rose-900 btn">Logout</button><div class="text-[9px] text-gray-500 mt-1">11 Jun 2026</div></div>
+            <div class="text-right"><button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-2 py-1 rounded-full border border-rose-900 btn">Logout</button><div class="text-[9px] text-gray-500 mt-1" id="liveDate">11 Jun 2026</div></div>
         </div>
 
         <!-- 4 CARDS -->
         <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹11,940</p></div>
-            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">7</p></div>
-            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">1</p></div>
-            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹5,000</p></div>
+            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">CASH IN HAND</p><p id="cashInHandValue" class="text-xl font-bold text-emerald-400">₹0</p></div>
+            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">TOTAL PRODUCTS</p><p id="totalProductsCount" class="text-xl font-bold text-blue-400">0</p></div>
+            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">TOTAL CUSTOMERS</p><p id="totalCustomersCount" class="text-xl font-bold text-amber-400">0</p></div>
+            <div class="card-bg p-3"><p class="text-[10px] text-gray-400">PENDING UDHAAR</p><p id="globalPendingUdhaar" class="text-xl font-bold text-rose-400">₹0</p></div>
         </div>
 
-        <!-- STATS -->
+        <!-- STATS ROW 2 -->
         <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹18,100</p><p id="todayOrders" class="text-xs text-gray-500">18 Orders</p></div>
-            <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹10,070</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
-            <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH SALE</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹42,100</p><p class="text-xs text-gray-500">June 2026</p></div>
-            <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹13,970</p><p class="text-xs text-gray-500">Margin Target</p></div>
+            <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹0</p><p id="todayOrders" class="text-xs text-gray-500">0 Orders</p></div>
+            <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹0</p><p class="text-xs text-gray-500">Live Sync Active</p></div>
+            <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH SALE</p><p id="monthSale" class="text-xl font-bold text-blue-500">₹0</p><p id="monthSaleLabel" class="text-xs text-gray-500">June 2026</p></div>
+            <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹0</p><p class="text-xs text-gray-500">Margin Target</p></div>
         </div>
 
         <!-- CASH FLOW SPLIT -->
-        <div class="bg-[#0F172A] border border-slate-800 p-2.5 rounded-xl mb-4 flex justify-between items-center text-xs"><span class="text-gray-400"><i class="fa-solid fa-wallet text-blue-400"></i> Cash Flow Split:</span><div class="flex gap-2"><span class="bg-emerald-950/40 text-emerald-400 px-2 py-1 rounded">Cash: ₹13,960</span><span class="bg-blue-950/40 text-blue-400 px-2 py-1 rounded">UPI: ₹4,140</span></div></div>
+        <div class="bg-[#0F172A] border border-slate-800 p-2.5 rounded-xl mb-4 flex justify-between items-center text-xs"><span class="text-gray-400"><i class="fa-solid fa-wallet text-blue-400"></i> Cash Flow Split:</span><div class="flex gap-2"><span class="bg-emerald-950/40 text-emerald-400 px-2 py-1 rounded">Cash: <span id="splitCashVal">₹0</span></span><span class="bg-blue-950/40 text-blue-400 px-2 py-1 rounded">UPI: <span id="splitUpiVal">₹0</span></span></div></div>
 
         <!-- ACTION BUTTONS -->
         <div class="grid grid-cols-4 gap-2 mb-5">
@@ -77,16 +79,24 @@
         <!-- CHART -->
         <div class="card-bg p-4 rounded-xl mb-4"><h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">BUSINESS CASH FLOW SPLIT</h3><div class="h-44 w-full"><canvas id="analyticsChart"></canvas></div></div>
 
+        <!-- LAST 7 DAYS SALE CHART -->
+        <div class="card-bg p-4 rounded-xl mb-4"><h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">LAST 7 DAYS SALE</h3><div class="h-48 w-full"><canvas id="weeklyChart"></canvas></div></div>
+
         <!-- STOCK SECTION -->
         <div id="stockSection" class="card-bg p-4 mb-4">
             <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">CURRENT STOCK & INVENTORY</h3><span class="text-[9px] text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded">Multi-Device Sync</span></div>
-            <div class="bg-blue-950/40 border border-blue-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400">TOTAL SHOP STOCK VALUE</p><p id="totalStockValuation" class="text-lg font-bold text-blue-400">₹49,615</p></div><i class="fa-solid fa-calculator text-blue-800 text-xl"></i></div>
+            <div class="bg-blue-950/40 border border-blue-900/60 rounded-xl p-3 mb-3 flex justify-between"><div><p class="text-[9px] text-gray-400">TOTAL SHOP STOCK VALUE</p><p id="totalStockValuation" class="text-lg font-bold text-blue-400">₹0</p></div><i class="fa-solid fa-calculator text-blue-800 text-xl"></i></div>
+            <div class="mb-3 grid grid-cols-3 gap-1.5">
+                <select id="stockSearchType" class="input-field text-xs"><option value="model">Model Name</option><option value="brand">Brand</option><option value="imei">IMEI</option></select>
+                <div class="relative col-span-2"><i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i><input type="text" id="searchStockInp" oninput="renderStockTable()" placeholder="Search stock..." class="input-field py-2 pl-8 pr-2 text-xs"></div>
+            </div>
             <div id="stockContainer" class="space-y-2 max-h-48 overflow-y-auto"></div>
         </div>
 
         <!-- UDHAAR SECTION -->
         <div id="udhaarSection" class="card-bg p-4 mb-4 border-t-4 border-rose-500">
-            <div class="flex justify-between border-b border-slate-800 pb-2 mb-3"><h3 class="text-sm font-semibold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-bold text-rose-400">₹5,000 Pending</span></div>
+            <div class="flex justify-between border-b border-slate-800 pb-2 mb-3"><h3 class="text-sm font-semibold text-rose-400">📕 UDHAAR BOX REGISTER</h3><span id="totalUdhaarValuation" class="text-sm font-bold text-rose-400">₹0 Pending</span></div>
+            <input type="text" id="searchUdhaarInp" oninput="renderUdhaarTable()" placeholder="Search Customer..." class="input-field p-2 text-xs mb-3">
             <div id="udhaarContainer" class="space-y-3 max-h-64 overflow-y-auto"></div>
         </div>
 
@@ -95,15 +105,15 @@
             <label class="block text-xs text-gray-400 mb-2">SELECT FILTER MONTH</label>
             <select id="monthFilter" class="input-field text-sm mb-4" onchange="updateDashboardUI()"></select>
             <div class="grid grid-cols-2 gap-2 text-sm border-t border-slate-800 pt-3">
-                <div class="text-gray-400">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono">19</div>
-                <div class="text-gray-400">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono">₹24,670</div>
+                <div class="text-gray-400">Total Units Sold:</div><div id="totalUnitsSold" class="text-right font-mono">0</div>
+                <div class="text-gray-400">Total Capital Cost:</div><div id="totalCapitalCost" class="text-right font-mono">₹0</div>
                 <div class="text-gray-400">Other Expenses:</div><div id="totalOtherExpenses" class="text-right font-mono text-rose-400">₹0</div>
-                <div class="text-emerald-400 font-bold">Actual Net Margin:</div><div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400">₹13,970</div>
+                <div class="text-emerald-400 font-bold">Actual Net Margin:</div><div id="actualNetMargin" class="text-right font-mono font-bold text-emerald-400">₹0</div>
             </div>
         </div>
 
         <div class="card-bg p-4 mb-4"><h3 class="text-sm font-semibold text-gray-300 mb-2">TOP SELLING MODELS</h3><div id="topProductsContainer" class="space-y-2 text-xs"></div></div>
-        <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></tr></thead><tbody id="expenseTableBody"></tbody>}</div></div>
+        <div class="card-bg p-4 mb-4"><div class="flex justify-between mb-2"><h3 class="text-sm font-semibold text-gray-300">EXPENSE HISTORY LOG</h3><input type="date" id="expenseLogDateFilter" onchange="renderExpenseLog()" class="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5"></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>EXPENSE</th><th class="text-right">AMOUNT</th><th class="text-center">ACTION</th></table></thead><tbody id="expenseTableBody"></tbody>}</div></div>
         <div class="card-bg p-4 mb-6"><div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-gray-300">SALES HISTORY LOG</h3><button onclick="exportToCSV()" class="text-xs text-blue-400 btn">Export Excel</button></div><div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[9px] text-gray-400">Filter By Date</label><input type="date" id="salesLogDateFilter" onchange="renderLog()" class="w-full bg-slate-900 border border-slate-700 text-[11px] rounded p-1.5"></div><div><label class="text-[9px] text-gray-400">Search</label><input type="text" id="searchLog" oninput="renderLog()" placeholder="Type..." class="input-field rounded-lg p-1.5 text-xs"></div></div><select id="salesSearchType" class="input-field p-2 text-xs w-full mb-3"><option value="model">Search by Model</option><option value="brand">Search by Brand</option><option value="imei">Search by IMEI</option></select><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-gray-400"><th class="pb-2">DATE</th><th>PRODUCT</th><th class="text-center">QTY</th><th class="text-right">SALE</th><th class="text-center">BILL</th></tr></thead><tbody id="logTableBody"></tbody>}</div></div>
     </div>
 
@@ -113,7 +123,7 @@
     </div>
 
     <div id="stockModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Stock</h3><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field mb-2"><input type="text" id="stockImei" placeholder="IMEI" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="stockCount" placeholder="Quantity" class="input-field"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field"></div><button onclick="submitStockForm()" class="w-full bg-blue-600 py-2 rounded-lg btn">SAVE STOCK</button><button onclick="closeModal('stockModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Stock</h3><div class="bg-purple-900/30 p-2 rounded-lg mb-2"><span class="text-xs text-purple-400"><i class="fa-solid fa-image mr-1"></i> Product Photo</span><input type="file" id="stockPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="stockPhotoBase64"><div id="stockPhotoPreview" class="mt-1 hidden"></div></div><input type="text" id="stockBrand" placeholder="Brand Name" class="input-field mb-2"><input type="text" id="stockModelName" placeholder="Model Name" class="input-field mb-2"><input type="text" id="stockImei" placeholder="IMEI" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="stockCount" placeholder="Quantity" class="input-field"><input type="number" id="stockPriceInp" placeholder="Cost Price ₹" class="input-field"></div><button onclick="submitStockForm()" class="w-full bg-blue-600 py-2 rounded-lg btn">SAVE STOCK</button><button onclick="closeModal('stockModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <div id="expenseModal" class="modal-bg" style="display:none;">
@@ -121,7 +131,7 @@
     </div>
 
     <div id="udhaarModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-rose-400 font-bold mb-3">🔴 Udhaar Entry</h3><input type="date" id="udhaarDate" class="input-field mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field"><input type="number" id="udhaarJamaPrice" value="0" placeholder="Jama Amount ₹" class="input-field"></div><button onclick="submitUdhaarForm()" class="w-full bg-rose-600 py-2 rounded-lg mt-2 btn">SAVE UDHAAR</button><button onclick="closeModal('udhaarModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-rose-400 font-bold mb-3">🔴 Udhaar Entry</h3><input type="date" id="udhaarDate" class="input-field mb-2"><input type="text" id="udhaarCustomerName" placeholder="Customer Name" class="input-field mb-2"><input type="tel" id="udhaarCustomerPhone" placeholder="Mobile Number" class="input-field mb-2"><input type="text" id="udhaarCompanyName" placeholder="Company/Brand" class="input-field mb-2"><input type="text" id="udhaarProductName" placeholder="Product Model" class="input-field mb-2"><div class="grid grid-cols-2 gap-2 mb-3"><input type="number" id="udhaarTotalPrice" placeholder="Total Amount ₹" class="input-field"><input type="number" id="udhaarJamaPrice" value="0" placeholder="Jama Amount ₹" class="input-field"></div><div><label class="text-[10px] text-gray-400">Customer Photo</label><input type="file" id="udhaarPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="udhaarPhotoBase64"></div><button onclick="submitUdhaarForm()" class="w-full bg-rose-600 py-2 rounded-lg mt-2 btn">SAVE UDHAAR</button><button onclick="closeModal('udhaarModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <!-- BOTTOM NAV -->
@@ -134,68 +144,78 @@
     </div>
 
     <script>
-        // ========== DATA (Exactly as your screenshot) ==========
-        let salesData = [], expenseData = [], inventory = {}, udhaarData = [], myChart = null;
-        
-        // Default Data - EXACT VALUES
-        function setDefaultData() {
-            inventory = {
-                "Money Transfer": { qty: 6, price: 100, brand: "SERVICE", imei: "N/A", photo: "" },
-                "Glass": { qty: 27, price: 100, brand: "GENERIC", imei: "N/A", photo: "" },
-                "Hero Shakti": { qty: 3, price: 3200, brand: "GENERIC", imei: "N/A", photo: "" },
-                "Iphone Glass": { qty: 50, price: 2000, brand: "GENERIC", imei: "N/A", photo: "" },
-                "A1 Vibe": { qty: 1, price: 2500, brand: "GENERIC", imei: "N/A", photo: "" },
-                "Vivo y16 display": { qty: 7, price: 1500, brand: "Vivo", imei: "12345", photo: "" },
-                "OPPO a18k combo": { qty: 5, price: 1300, brand: "OPPO", imei: "67890", photo: "" }
-            };
-            salesData = [
-                { id: 1, date: "2026-06-11", brand: "SERVICE", model: "Money Transfer", imei: "N/A", qty: 4, mode: "Cash", cost: 400, sale: 400 },
-                { id: 2, date: "2026-06-11", brand: "GENERIC", model: "Glass", imei: "N/A", qty: 3, mode: "Cash", cost: 240, sale: 300 },
-                { id: 3, date: "2026-06-11", brand: "GENERIC", model: "Hero Shakti", imei: "N/A", qty: 1, mode: "Cash", cost: 2800, sale: 3200 },
-                { id: 4, date: "2026-06-10", brand: "Vivo", model: "Vivo y16 display", imei: "12345", qty: 1, mode: "Cash", cost: 1200, sale: 1500 },
-                { id: 5, date: "2026-06-10", brand: "OPPO", model: "OPPO a18k combo", imei: "67890", qty: 1, mode: "UPI", cost: 1000, sale: 1300 },
-                { id: 6, date: "2026-06-11", brand: "", model: "Ramesh lava jama", imei: "N/A", qty: 1, mode: "Udhaar", cost: 2500, sale: 3000 },
-                { id: 7, date: "2026-06-11", brand: "", model: "Vipul Jama mobile na", imei: "N/A", qty: 1, mode: "Udhaar", cost: 4500, sale: 5000 },
-                { id: 8, date: "2026-06-11", brand: "", model: "Print", imei: "N/A", qty: 1, mode: "Cash", cost: 20, sale: 40 }
-            ];
-            udhaarData = [
-                { id: 1, date: "2026-06-01", name: "Om", phone: "7859895511", company: "Halvad", product: "Amzon", total: 5000, jama: 0, photo: "" }
-            ];
-            expenseData = [];
-        }
+        // ========== DATA STORAGE (LocalStorage) ==========
+        let salesData = [], expenseData = [], inventory = {}, udhaarData = [], myChart = null, weeklyChart = null;
         
         function getToday() { let d=new Date(); return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`; }
         function getMonthLabel(date) { let d=new Date(date); return d.toLocaleString('default',{month:'long'})+" "+d.getFullYear(); }
         
-        function saveToLocal() {
+        function saveAllData() {
             localStorage.setItem('shakti_sales', JSON.stringify(salesData));
+            localStorage.setItem('shakti_expense', JSON.stringify(expenseData));
             localStorage.setItem('shakti_inventory', JSON.stringify(inventory));
             localStorage.setItem('shakti_udhaar', JSON.stringify(udhaarData));
-            localStorage.setItem('shakti_expense', JSON.stringify(expenseData));
+            console.log("✅ Data saved to localStorage");
         }
         
-        function loadFromLocal() {
+        function loadAllData() {
             let savedSales = localStorage.getItem('shakti_sales');
+            let savedExpense = localStorage.getItem('shakti_expense');
             let savedInventory = localStorage.getItem('shakti_inventory');
             let savedUdhaar = localStorage.getItem('shakti_udhaar');
-            let savedExpense = localStorage.getItem('shakti_expense');
+            
             if(savedSales) salesData = JSON.parse(savedSales);
+            if(savedExpense) expenseData = JSON.parse(savedExpense);
             if(savedInventory) inventory = JSON.parse(savedInventory);
             if(savedUdhaar) udhaarData = JSON.parse(savedUdhaar);
-            if(savedExpense) expenseData = JSON.parse(savedExpense);
-            if(salesData.length === 0 && Object.keys(inventory).length === 0) {
-                setDefaultData();
-                saveToLocal();
-            }
+            
+            console.log("✅ Data loaded from localStorage");
         }
         
+        // Photo Handlers
+        document.getElementById('stockPhotoFile')?.addEventListener('change', function(e) {
+            let file = e.target.files[0];
+            if(file) {
+                let reader = new FileReader();
+                reader.onload = function(ev) {
+                    document.getElementById('stockPhotoBase64').value = ev.target.result;
+                    let previewDiv = document.getElementById('stockPhotoPreview');
+                    previewDiv.innerHTML = `<img src="${ev.target.result}" class="preview-img mx-auto"><p class="text-[9px] text-green-400 text-center mt-1">✓ Photo set</p>`;
+                    previewDiv.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        document.getElementById('udhaarPhotoFile')?.addEventListener('change', function(e) {
+            let file = e.target.files[0];
+            if(file) {
+                let reader = new FileReader();
+                reader.onload = function(ev) {
+                    let img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas'); let max_size = 300;
+                        let width = img.width, height = img.height;
+                        if(width > height) { if(width > max_size) { height *= max_size / width; width = max_size; } }
+                        else { if(height > max_size) { width *= max_size / height; height = max_size; } }
+                        canvas.width = width; canvas.height = height;
+                        let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                        document.getElementById('udhaarPhotoBase64').value = canvas.toDataURL('image/jpeg', 0.6);
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // ========== LOGIN FUNCTIONS ==========
         function handleLogin() {
             let pin = document.getElementById('loginPin').value;
             if(pin === '1234') {
                 sessionStorage.setItem('shaktiLoggedIn', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardContent').style.display = 'block';
-                loadFromLocal();
+                loadAllData();
                 updateMonthFilterOptions();
                 updateDashboardUI();
             } else {
@@ -211,7 +231,7 @@
         if(sessionStorage.getItem('shaktiLoggedIn') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardContent').style.display = 'block';
-            loadFromLocal();
+            loadAllData();
             updateMonthFilterOptions();
             updateDashboardUI();
         }
@@ -230,6 +250,7 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; if(id==='saleModal') document.getElementById('saleDate').value = getToday(); if(id==='udhaarModal') document.getElementById('udhaarDate').value = getToday(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
+        // ========== CRUD OPERATIONS ==========
         function submitSaleForm() {
             let date = document.getElementById('saleDate').value || getToday();
             let brand = document.getElementById('modelBrand').value;
@@ -242,7 +263,7 @@
             if(!model) { alert("Model name required"); return; }
             salesData.push({ id: Date.now(), date, brand, model, imei, qty, mode, cost: cost*qty, sale: sale*qty });
             if(inventory[model]) inventory[model].qty = Math.max(0, (inventory[model].qty || 0) - qty);
-            closeModal('saleModal'); saveToLocal(); updateDashboardUI(); alert("Sale added!");
+            closeModal('saleModal'); saveAllData(); updateDashboardUI(); alert("Sale added!");
             document.getElementById('modelBrand').value = ""; document.getElementById('modelName').value = ""; document.getElementById('modelImei').value = ""; document.getElementById('costPrice').value = ""; document.getElementById('salePrice').value = "";
         }
         
@@ -252,19 +273,24 @@
             let imei = document.getElementById('stockImei').value;
             let qty = parseInt(document.getElementById('stockCount').value) || 0;
             let price = parseFloat(document.getElementById('stockPriceInp').value) || 0;
+            let photo = document.getElementById('stockPhotoBase64')?.value || '';
             if(!model) { alert("Model name required"); return; }
             if(inventory[model]) {
                 inventory[model].qty += qty;
                 if(price > 0) inventory[model].price = price;
                 if(brand) inventory[model].brand = brand;
                 if(imei) inventory[model].imei = imei;
+                if(photo) inventory[model].photo = photo;
                 alert(`✅ Stock Updated! ${model} quantity now ${inventory[model].qty}`);
             } else {
-                inventory[model] = { qty, price, brand, imei, photo: "" };
+                inventory[model] = { qty, price, brand, imei, photo };
                 alert(`✅ New Stock Added: ${model} (${qty} units)`);
             }
-            closeModal('stockModal'); saveToLocal(); updateDashboardUI();
+            closeModal('stockModal'); saveAllData(); updateDashboardUI();
             document.getElementById('stockBrand').value = ""; document.getElementById('stockModelName').value = ""; document.getElementById('stockImei').value = ""; document.getElementById('stockCount').value = ""; document.getElementById('stockPriceInp').value = "";
+            document.getElementById('stockPhotoBase64').value = "";
+            document.getElementById('stockPhotoFile').value = "";
+            document.getElementById('stockPhotoPreview').classList.add('hidden');
         }
         
         function addExpense() {
@@ -272,7 +298,7 @@
             let amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
             if(!name || amount<=0) { alert("Enter valid expense details"); return; }
             expenseData.push({ id: Date.now(), name, amount, date: getToday() });
-            closeModal('expenseModal'); saveToLocal(); updateDashboardUI(); alert("Expense added!");
+            closeModal('expenseModal'); saveAllData(); updateDashboardUI(); alert("Expense added!");
             document.getElementById('expenseName').value = ''; document.getElementById('expenseAmount').value = '';
         }
         
@@ -284,18 +310,21 @@
             let product = document.getElementById('udhaarProductName').value;
             let total = parseFloat(document.getElementById('udhaarTotalPrice').value) || 0;
             let jama = parseFloat(document.getElementById('udhaarJamaPrice').value) || 0;
+            let photo = document.getElementById('udhaarPhotoBase64')?.value || '';
             if(!name || total<=0) { alert("Customer name and total amount required"); return; }
-            udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo: "" });
-            closeModal('udhaarModal'); saveToLocal(); updateDashboardUI(); alert("Udhaar record added!");
+            udhaarData.push({ id: Date.now(), date, name, phone, company, product, total, jama, photo });
+            closeModal('udhaarModal'); saveAllData(); updateDashboardUI(); alert("Udhaar record added!");
             document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarCompanyName').value = ""; document.getElementById('udhaarProductName').value = ""; document.getElementById('udhaarTotalPrice').value = ""; document.getElementById('udhaarJamaPrice').value = "0";
+            document.getElementById('udhaarPhotoBase64').value = ""; document.getElementById('udhaarPhotoFile').value = "";
         }
         
-        function deleteStockItem(key) { if(confirm("Delete stock?")){ delete inventory[key]; saveToLocal(); updateDashboardUI(); } }
-        function deleteUdhaarItem(id) { if(confirm("Delete udhaar?")){ udhaarData=udhaarData.filter(x=>x.id!=id); saveToLocal(); updateDashboardUI(); } }
-        function deleteExpense(id) { if(confirm("Delete expense?")){ expenseData=expenseData.filter(x=>x.id!=id); saveToLocal(); updateDashboardUI(); } }
+        function deleteStockItem(key) { if(confirm("Delete stock?")){ delete inventory[key]; saveAllData(); updateDashboardUI(); } }
+        function deleteUdhaarItem(id) { if(confirm("Delete udhaar?")){ udhaarData=udhaarData.filter(x=>x.id!=id); saveAllData(); updateDashboardUI(); } }
+        function deleteExpense(id) { if(confirm("Delete expense?")){ expenseData=expenseData.filter(x=>x.id!=id); saveAllData(); updateDashboardUI(); } }
         
+        // ========== UPDATE UI ==========
         function updateDashboardUI() {
-            renderStockTable(); renderUdhaarTable(); renderLog(); renderExpenseLog(); renderTopProducts();
+            renderStockTable(); renderUdhaarTable(); renderLog(); renderExpenseLog(); renderTopProducts(); renderWeeklyChart();
             
             let tSale=0,tProfit=0,tOrders=0,mSale=0,mProfit=0,uSold=0,cCost=0,expT=0,cashSplit=0,upiSplit=0,today=getToday(),filterMonth=document.getElementById('monthFilter')?.value||getMonthLabel(new Date());
             
@@ -339,30 +368,50 @@
             });
         }
         
+        function renderWeeklyChart() {
+            let last7Days = [], last7Sales = [];
+            for(let i=6;i>=0;i--){ let d=new Date(); d.setDate(d.getDate()-i); let ds=d.toISOString().split('T')[0]; let dn=d.toLocaleDateString('en-IN',{weekday:'short'}); last7Days.push(dn); let dsale=salesData.filter(x=>x.date===ds).reduce((s,x)=>s+x.sale,0); last7Sales.push(dsale); }
+            let ctx=document.getElementById('weeklyChart')?.getContext('2d');
+            if(ctx){ if(weeklyChart) weeklyChart.destroy(); weeklyChart=new Chart(ctx,{type:'bar',data:{labels:last7Days,datasets:[{label:'Sale (₹)',data:last7Sales,backgroundColor:'#3B82F6',borderRadius:6}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94A3B8',size:10}}}}}); }
+        }
+        
         function renderStockTable() {
             let c = document.getElementById('stockContainer');
             if(!c) return;
+            let kw = document.getElementById('searchStockInp')?.value.toLowerCase()||'';
+            let t = document.getElementById('stockSearchType')?.value||'model';
             c.innerHTML = '';
             for(let [model,data] of Object.entries(inventory)) {
-                let qty = data.qty||0, price = data.price||0, brand = data.brand||'', imei = data.imei||'';
-                let low = (qty<=2 && qty>0);
-                let div = document.createElement('div');
-                div.className = `card-bg p-2.5 rounded-lg border mb-2 ${low ? 'border-amber-600 bg-amber-950/20' : 'border-slate-800'}`;
-                div.innerHTML = `<div class="flex justify-between"><div><span class="text-[10px] text-blue-400 font-bold">${brand||'GENERIC'}</span><p class="font-bold text-sm">${model}</p><p class="text-[9px] text-gray-500">IMEI: ${imei||'N/A'} | Value: ₹${qty*price}</p></div><div><span class="bg-slate-900 px-2 py-0.5 rounded text-xs ${low?'text-amber-400':''}">${qty} Left</span>${low?'<span class="text-amber-400 text-[10px] ml-1">⚠️ LOW STOCK!</span>':''}<button onclick='deleteStockItem("${model.replace(/'/g,"\\'")}")' class="text-rose-500 ml-2"><i class="fa-regular fa-trash-can"></i></button></div></div>`;
-                c.appendChild(div);
+                let qty = data.qty||0, price = data.price||0, brand = data.brand||'', imei = data.imei||'', photo = data.photo||'';
+                let match = false;
+                if(t==='model' && model.toLowerCase().includes(kw)) match=true;
+                if(t==='brand' && brand.toLowerCase().includes(kw)) match=true;
+                if(t==='imei' && imei.toLowerCase().includes(kw)) match=true;
+                if(kw==='') match=true;
+                if(match) {
+                    let low = (qty<=2 && qty>0);
+                    let div = document.createElement('div');
+                    div.className = `card-bg p-2.5 rounded-lg border mb-2 flex gap-2 items-center ${low ? 'border-amber-600 bg-amber-950/20' : 'border-slate-800'}`;
+                    let photoHtml = photo ? `<img src="${photo}" class="stock-photo-img">` : `<div class="stock-photo-img flex items-center justify-center bg-slate-800"><i class="fa-solid fa-box text-gray-500 text-sm"></i></div>`;
+                    div.innerHTML = `${photoHtml}<div class="flex-1"><div class="flex justify-between items-center"><div><span class="text-[10px] text-blue-400 font-bold">${brand||'GENERIC'}</span><p class="font-bold text-sm">${model}</p><p class="text-[9px] text-gray-500">IMEI: ${imei||'N/A'} | Value: ₹${qty*price}</p></div><div class="flex items-center gap-1"><span class="bg-slate-900 px-2 py-0.5 rounded text-xs ${low?'text-amber-400':''}">${qty} Left</span>${low?'<span class="text-amber-400 text-[10px] ml-1">⚠️ LOW STOCK!</span>':''}<button onclick='deleteStockItem("${model.replace(/'/g,"\\'")}")' class="text-rose-500 ml-1"><i class="fa-regular fa-trash-can"></i></button></div></div></div>`;
+                    c.appendChild(div);
+                }
             }
         }
         
         function renderUdhaarTable() {
             let c = document.getElementById('udhaarContainer');
             if(!c) return;
+            let kw = document.getElementById('searchUdhaarInp')?.value.toLowerCase()||'';
             c.innerHTML = '';
-            if(udhaarData.length === 0){ c.innerHTML='<p class="text-center text-gray-500 py-2">No Udhaar records</p>'; return; }
-            udhaarData.forEach(x => {
+            let f = udhaarData.filter(x => x.name.toLowerCase().includes(kw) || x.phone.includes(kw));
+            if(f.length===0){ c.innerHTML='<p class="text-center text-gray-500 py-2">No Udhaar records</p>'; return; }
+            f.reverse().forEach(x => {
                 let p = x.total - x.jama;
+                let photoHtml = x.photo ? `<img src="${x.photo}" class="w-10 h-10 rounded-full object-cover">` : `<div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-user text-gray-400"></i></div>`;
                 let div = document.createElement('div');
-                div.className = "card-bg p-3 rounded-xl mb-2 flex gap-3";
-                div.innerHTML = `<div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-user text-gray-400"></i></div><div class="flex-1"><div class="flex justify-between"><div><p class="font-bold">${x.name}</p><p class="text-gray-400 text-[10px]">${x.phone}</p></div><button onclick='deleteUdhaarItem(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></div><div class="bg-slate-900/50 p-2 rounded mt-1 text-[11px] grid grid-cols-2 gap-1"><div>Item: ${x.company} ${x.product}</div><div>Total: ₹${x.total}</div><div>Jama: ₹${x.jama}</div><div class="text-rose-400 font-bold">Pending: ₹${p}</div></div></div>`;
+                div.className = "card-bg p-3 rounded-xl mb-2 flex gap-3 items-center";
+                div.innerHTML = `${photoHtml}<div class="flex-1"><div class="flex justify-between"><div><p class="font-bold">${x.name}</p><p class="text-gray-400 text-[10px]">${x.phone}</p></div><button onclick='deleteUdhaarItem(${x.id})' class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button></div><div class="bg-slate-900/50 p-2 rounded mt-1 text-[11px] grid grid-cols-2 gap-1"><div>Item: ${x.company} ${x.product}</div><div>Total: ₹${x.total}</div><div>Jama: ₹${x.jama}</div><div class="text-rose-400 font-bold">Pending: ₹${p}</div></div></div>`;
                 c.appendChild(div);
             });
         }
