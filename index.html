@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>SHAKTI MOBILE · Dashboard</title>
+    <title>SHAKTI MOBILE · Complete Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,6 +21,8 @@
         .btn { cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
         .btn:active { opacity: 0.7; transform: scale(0.97); }
         .customer-photo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #1E293B; border: 2px solid #3B82F6; flex-shrink: 0; }
+        .stock-photo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #0F172A; border: 1px solid #334155; flex-shrink: 0; }
+        .preview-img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid #10b981; }
         .low-stock-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1E293B; }
         .recent-sale-item { background: #0F172A; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
         .status-paid { color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 20px; font-size: 10px; display: inline-block; }
@@ -28,6 +30,11 @@
         .stat-value { font-size: 1.6rem; font-weight: 700; }
         .stat-label { font-size: 0.65rem; color: #94A3B8; }
         .trend-up { color: #10b981; font-size: 11px; }
+        .delete-btn { color: #EF4444; cursor: pointer; margin-left: 8px; }
+        .delete-btn:hover { opacity: 0.7; }
+        .suggestion-box { background-color: #0F172A; border: 1px solid #334155; max-height: 200px; overflow-y: auto; z-index: 200; border-radius: 12px; position: absolute; left: 0; right: 0; }
+        .suggestion-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1E293B; display: flex; gap: 10px; align-items: center; }
+        .suggestion-item:hover { background-color: #1E2A48; }
     </style>
 </head>
 <body>
@@ -51,94 +58,49 @@
 
     <!-- MAIN DASHBOARD -->
     <div id="dashboardContent" style="display: none;">
-        <!-- Header with Date Time -->
+        <!-- Header -->
         <div class="flex justify-between items-center mb-5">
             <div>
                 <h1 class="text-xl font-bold text-white">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
-                <p class="text-[10px] text-gray-400" id="headerDateTime">29 May 2025, 10:30 AM</p>
+                <p class="text-[10px] text-gray-400" id="headerDateTime"></p>
             </div>
             <div class="text-right">
                 <button onclick="handleLogout()" class="text-[9px] bg-rose-950/60 hover:bg-rose-900 text-rose-400 px-3 py-1.5 rounded-full border border-rose-900 btn">Logout</button>
             </div>
         </div>
 
-        <!-- Stats Cards (4 cards) -->
+        <!-- Stats Cards -->
         <div class="grid grid-cols-2 gap-4 mb-5">
-            <div class="card-bg p-4">
-                <p class="stat-label">Total Sales</p>
-                <p id="totalSales" class="stat-value text-blue-500">₹ 1,85,250</p>
-                <p id="salesGrowth" class="trend-up">↑ 12.5% from last month</p>
-            </div>
-            <div class="card-bg p-4">
-                <p class="stat-label">Today's Profit</p>
-                <p id="todayProfitValue" class="stat-value text-emerald-500">₹ 18,750</p>
-                <p id="profitGrowth" class="trend-up">↑ 8.2% from yesterday</p>
-            </div>
-            <div class="card-bg p-4">
-                <p class="stat-label">Stock Items</p>
-                <p id="totalStockItems" class="stat-value text-blue-400">1,248</p>
-                <p class="text-[10px] text-gray-500">Total items in stock</p>
-            </div>
-            <div class="card-bg p-4">
-                <p class="stat-label">Pending Payments</p>
-                <p id="pendingPayments" class="stat-value text-rose-400">₹ 27,350</p>
-                <p id="pendingCount" class="text-[10px] text-gray-500">5 Pending Payments</p>
-            </div>
+            <div class="card-bg p-4"><p class="stat-label">Total Sales</p><p id="totalSales" class="stat-value text-blue-500">₹ 0</p><p id="salesGrowth" class="trend-up">↑ 0% from last month</p></div>
+            <div class="card-bg p-4"><p class="stat-label">Today's Profit</p><p id="todayProfitValue" class="stat-value text-emerald-500">₹ 0</p><p id="profitGrowth" class="trend-up">↑ 0% from yesterday</p></div>
+            <div class="card-bg p-4"><p class="stat-label">Stock Items</p><p id="totalStockItems" class="stat-value text-blue-400">0</p><p class="text-[10px] text-gray-500">Total items in stock</p></div>
+            <div class="card-bg p-4"><p class="stat-label">Pending Payments</p><p id="pendingPayments" class="stat-value text-rose-400">₹ 0</p><p id="pendingCount" class="text-[10px] text-gray-500">0 Pending Payments</p></div>
         </div>
 
-        <!-- Business Overview Section with Chart -->
+        <!-- Business Overview Chart -->
         <div class="card-bg p-4 mb-5">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-semibold text-gray-300">Business Overview</h3>
-                <span class="text-[10px] text-gray-500">This Month</span>
-            </div>
-            <div class="flex gap-4 mb-3">
-                <div><span class="text-[10px] text-gray-500">Sales</span><span class="text-sm font-semibold text-blue-400 ml-2">₹ 1,25,000</span></div>
-                <div><span class="text-[10px] text-gray-500">Profit</span><span class="text-sm font-semibold text-emerald-400 ml-2">₹ 12,750</span></div>
-            </div>
+            <div class="flex justify-between items-center mb-3"><h3 class="text-sm font-semibold text-gray-300">Business Overview</h3><span class="text-[10px] text-gray-500">This Month</span></div>
+            <div class="flex gap-4 mb-3"><div><span class="text-[10px] text-gray-500">Sales</span><span id="chartSales" class="text-sm font-semibold text-blue-400 ml-2">₹ 0</span></div><div><span class="text-[10px] text-gray-500">Profit</span><span id="chartProfit" class="text-sm font-semibold text-emerald-400 ml-2">₹ 0</span></div></div>
             <div class="h-52 w-full"><canvas id="businessChart"></canvas></div>
         </div>
 
         <!-- Low Stock Alert -->
-        <div class="card-bg p-4 mb-5">
-            <h3 class="text-sm font-semibold text-amber-400 mb-3">⚠️ Low Stock Alert</h3>
-            <div id="lowStockContainer"></div>
-        </div>
+        <div class="card-bg p-4 mb-5"><h3 class="text-sm font-semibold text-amber-400 mb-3">⚠️ Low Stock Alert</h3><div id="lowStockContainer"></div></div>
 
         <!-- Recent Sales -->
-        <div class="mb-5">
-            <h3 class="text-sm font-semibold text-gray-300 mb-3">Recent Sales</h3>
-            <div id="recentSalesContainer"></div>
-        </div>
+        <div class="mb-5"><h3 class="text-sm font-semibold text-gray-300 mb-3">Recent Sales</h3><div id="recentSalesContainer"></div></div>
 
-        <!-- Add Sale Button (Quick Action) -->
-        <div class="mb-5">
-            <button onclick="playClickSound(); openModal('saleModal')" class="w-full bg-emerald-600 py-3 rounded-xl font-semibold btn">➕ Add New Sale</button>
-        </div>
+        <!-- Add Sale Button -->
+        <div class="mb-5"><button onclick="playClickSound(); openModal('saleModal')" class="w-full bg-emerald-600 py-3 rounded-xl font-semibold btn">➕ Add New Sale</button></div>
     </div>
 
     <!-- MODALS -->
     <div id="saleModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-emerald-400 font-bold mb-3">🟢 Add Sale</h3><input type="date" id="saleDate" class="input-field mb-2"><input type="text" id="customerName" placeholder="Customer Name" class="input-field mb-2"><input type="text" id="productName" placeholder="Product Name" class="input-field mb-2"><input type="number" id="productPrice" placeholder="Price ₹" class="input-field mb-2"><select id="paymentStatus" class="input-field mb-3"><option value="Paid">Paid</option><option value="COD">COD</option></select><button onclick="playSaveSound(); addSale()" class="w-full bg-emerald-600 py-2 rounded-lg btn">SAVE SALE</button><button onclick="playClickSound(); closeModal('saleModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
+        <div class="modal-card"><h3 class="text-emerald-400 font-bold mb-3">🟢 Add Sale</h3><input type="date" id="saleDate" class="input-field mb-2"><div class="relative mb-2"><input type="text" id="productName" oninput="showProductSuggestions()" placeholder="Product Name" class="input-field"><div id="productSuggestionBox" class="suggestion-box hidden"></div></div><input type="text" id="customerName" placeholder="Customer Name" class="input-field mb-2"><input type="number" id="productPrice" placeholder="Price ₹" class="input-field mb-2"><select id="paymentStatus" class="input-field mb-3"><option value="Paid">Paid</option><option value="COD">COD</option></select><button onclick="playSaveSound(); addSale()" class="w-full bg-emerald-600 py-2 rounded-lg btn">SAVE SALE</button><button onclick="playClickSound(); closeModal('saleModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
-    <div class="bottom-nav-bar">
-        <div onclick="playClickSound(); scrollToTop()" class="nav-item active"><i class="fa-solid fa-chart-line text-sm"></i><span>Dashboard</span></div>
-        <div onclick="playClickSound(); openModal('saleModal')" class="nav-item"><i class="fa-solid fa-cart-plus text-sm"></i><span>Add Sale</span></div>
-        <div onclick="playClickSound(); openModal('stockModalForProducts')" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Products</span></div>
-        <div onclick="playClickSound(); scrollToSection('salesHistory')" class="nav-item"><i class="fa-solid fa-clock-rotate-left text-sm"></i><span>Sales History</span></div>
-        <div onclick="playClickSound(); openModal('moreModal')" class="nav-item"><i class="fa-solid fa-ellipsis-h text-sm"></i><span>More</span></div>
-    </div>
-
-    <!-- Products Modal -->
-    <div id="stockModalForProducts" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">📦 Products</h3><div id="productsListModal" class="max-h-96 overflow-y-auto"></div><button onclick="playClickSound(); closeModal('stockModalForProducts')" class="w-full bg-gray-700 mt-3 py-2 rounded-lg btn">CLOSE</button></div>
-    </div>
-
-    <!-- More Modal -->
-    <div id="moreModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-purple-400 font-bold mb-3">⚙️ More Options</h3><button onclick="playClickSound(); openModal('expenseModal'); closeModal('moreModal')" class="w-full bg-amber-600 py-2 rounded-lg mb-2 btn">💸 Add Expense</button><button onclick="playClickSound(); openModal('udhaarModal'); closeModal('moreModal')" class="w-full bg-rose-600 py-2 rounded-lg mb-2 btn">🔴 Add Udhaar</button><button onclick="playClickSound(); openModal('reportsModal'); closeModal('moreModal')" class="w-full bg-purple-600 py-2 rounded-lg mb-2 btn">📊 Reports</button><button onclick="playClickSound(); closeModal('moreModal')" class="w-full bg-gray-700 py-2 rounded-lg btn">CLOSE</button></div>
+    <div id="stockModal" class="modal-bg" style="display:none;">
+        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Product</h3><div class="bg-purple-900/30 p-2 rounded-lg mb-2"><span class="text-xs text-purple-400"><i class="fa-solid fa-image mr-1"></i> Product Photo</span><input type="file" id="stockPhotoFile" accept="image/*" class="w-full text-xs text-gray-400 mt-1"><input type="hidden" id="stockPhotoBase64"><div id="stockPhotoPreview" class="mt-1 hidden"></div></div><input type="text" id="stockProductName" placeholder="Product Name" class="input-field mb-2"><input type="text" id="stockBrand" placeholder="Category / Brand" class="input-field mb-2"><input type="number" id="stockQuantity" placeholder="Quantity" class="input-field mb-2"><input type="number" id="stockPrice" placeholder="Price ₹" class="input-field mb-3"><button onclick="playSaveSound(); addProduct()" class="w-full bg-blue-600 py-2 rounded-lg btn">SAVE PRODUCT</button><button onclick="playClickSound(); closeModal('stockModal')" class="w-full bg-gray-700 mt-2 py-2 rounded-lg btn">CANCEL</button></div>
     </div>
 
     <div id="expenseModal" class="modal-bg" style="display:none;">
@@ -150,31 +112,37 @@
     </div>
 
     <div id="reportsModal" class="modal-bg" style="display:none;">
-        <div class="modal-card"><h3 class="text-purple-400 font-bold mb-3">📊 Reports</h3><p class="text-xs text-gray-400 mb-3">Total Sales: <span id="reportTotalSales">₹0</span></p><p class="text-xs text-gray-400 mb-3">Total Expenses: <span id="reportTotalExpense">₹0</span></p><p class="text-xs text-gray-400 mb-3">Total Udhaar: <span id="reportTotalUdhaar">₹0</span></p><button onclick="playClickSound(); closeModal('reportsModal')" class="w-full bg-gray-700 mt-3 py-2 rounded-lg btn">CLOSE</button></div>
+        <div class="modal-card"><h3 class="text-purple-400 font-bold mb-3">📊 Reports</h3><p class="text-xs text-gray-400 mb-2">Total Sales: <span id="reportTotalSales" class="text-blue-400">₹0</span></p><p class="text-xs text-gray-400 mb-2">Total Expenses: <span id="reportTotalExpense" class="text-rose-400">₹0</span></p><p class="text-xs text-gray-400 mb-2">Total Udhaar: <span id="reportTotalUdhaar" class="text-amber-400">₹0</span></p><p class="text-xs text-gray-400 mb-2">Total Stock Value: <span id="reportStockValue" class="text-blue-400">₹0</span></p><button onclick="playClickSound(); closeModal('reportsModal')" class="w-full bg-gray-700 mt-3 py-2 rounded-lg btn">CLOSE</button></div>
+    </div>
+
+    <div id="productsModal" class="modal-bg" style="display:none;">
+        <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">📦 Products</h3><div id="productsListModal" class="max-h-96 overflow-y-auto"></div><button onclick="playClickSound(); closeModal('productsModal')" class="w-full bg-gray-700 mt-3 py-2 rounded-lg btn">CLOSE</button></div>
+    </div>
+
+    <div id="salesHistoryModal" class="modal-bg" style="display:none;">
+        <div class="modal-card"><h3 class="text-gray-300 font-bold mb-3">📋 Sales History</h3><div id="salesHistoryList" class="max-h-96 overflow-y-auto"></div><button onclick="playClickSound(); closeModal('salesHistoryModal')" class="w-full bg-gray-700 mt-3 py-2 rounded-lg btn">CLOSE</button></div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav-bar">
+        <div onclick="playClickSound(); scrollToTop()" class="nav-item active"><i class="fa-solid fa-chart-line text-sm"></i><span>Dashboard</span></div>
+        <div onclick="playClickSound(); openModal('saleModal')" class="nav-item"><i class="fa-solid fa-cart-plus text-sm"></i><span>Add Sale</span></div>
+        <div onclick="playClickSound(); openModal('stockModal')" class="nav-item"><i class="fa-solid fa-boxes text-sm"></i><span>Products</span></div>
+        <div onclick="playClickSound(); openModal('salesHistoryModal'); renderSalesHistory()" class="nav-item"><i class="fa-solid fa-clock-rotate-left text-sm"></i><span>Sales History</span></div>
+        <div onclick="playClickSound(); openModal('moreModal')" class="nav-item"><i class="fa-solid fa-ellipsis-h text-sm"></i><span>More</span></div>
+    </div>
+
+    <div id="moreModal" class="modal-bg" style="display:none;">
+        <div class="modal-card"><h3 class="text-purple-400 font-bold mb-3">⚙️ More Options</h3><button onclick="playClickSound(); openModal('expenseModal'); closeModal('moreModal')" class="w-full bg-amber-600 py-2 rounded-lg mb-2 btn">💸 Add Expense</button><button onclick="playClickSound(); openModal('udhaarModal'); closeModal('moreModal')" class="w-full bg-rose-600 py-2 rounded-lg mb-2 btn">🔴 Add Udhaar</button><button onclick="playClickSound(); openModal('reportsModal'); updateReports(); closeModal('moreModal')" class="w-full bg-purple-600 py-2 rounded-lg mb-2 btn">📊 Reports</button><button onclick="playClickSound(); openModal('productsModal'); renderProductsModal(); closeModal('moreModal')" class="w-full bg-blue-600 py-2 rounded-lg mb-2 btn">📦 View Products</button><button onclick="playClickSound(); closeModal('moreModal')" class="w-full bg-gray-700 py-2 rounded-lg btn">CLOSE</button></div>
     </div>
 
     <script>
-        // ========== DATA ==========
-        let recentSales = [
-            { id: 1, customer: "Nishar Bhai", product: "iPhone 15 Pro Max", qty: 1, price: 134900, status: "Paid", date: "29 May 2025", time: "10:15 AM", more: "+ 1 more" },
-            { id: 2, customer: "Aman Verma", product: "Samsung Galaxy S24", qty: 2, price: 79999, status: "Paid", date: "29 May 2025", time: "09:45 AM", more: "+ 1 more" },
-            { id: 3, customer: "Rahul Kumar", product: "OnePlus 12R", qty: 1, price: 39999, status: "COD", date: "29 May 2025", time: "09:30 AM", more: "" }
-        ];
-        
-        let lowStockItems = [
-            { name: "Charger", qty: 3 },
-            { name: "Earbuds", qty: 2 },
-            { name: "USB Cable", qty: 5 },
-            { name: "Screen", qty: 4 }
-        ];
-        
-        let products = [
-            "iPhone 15 Pro Max", "Samsung Galaxy S24", "OnePlus 12R", 
-            "boAt Airdopes 131", "Noise ColorFit Pro 4", "Charger", "Earbuds", "USB Cable", "Screen"
-        ];
-        
+        // ========== DATA (Fresh Start - All Zero) ==========
+        let products = [];           // { name, brand, qty, price, photo }
+        let salesHistory = [];       // { id, date, customer, product, qty, price, status, time }
         let expenses = [];
         let udhaarList = [];
+        let myChart = null;
         
         function updateDateTime() {
             let now = new Date();
@@ -217,7 +185,20 @@
             } catch(e) {}
         }
         
-        // Photo Handler
+        // ========== PHOTO HANDLERS ==========
+        document.getElementById('stockPhotoFile')?.addEventListener('change', function(e) {
+            let file = e.target.files[0];
+            if(file) {
+                let reader = new FileReader();
+                reader.onload = function(ev) {
+                    document.getElementById('stockPhotoBase64').value = ev.target.result;
+                    document.getElementById('stockPhotoPreview').innerHTML = `<img src="${ev.target.result}" class="preview-img mx-auto"><p class="text-[9px] text-green-400 text-center mt-1">✓ Photo set</p>`;
+                    document.getElementById('stockPhotoPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
         document.getElementById('udhaarPhotoFile')?.addEventListener('change', function(e) {
             let file = e.target.files[0];
             if(file) {
@@ -241,7 +222,61 @@
             }
         });
         
-        // ========== CRUD ==========
+        // ========== SAVE/LOAD DATA ==========
+        function saveAllData() {
+            localStorage.setItem('shakti_products', JSON.stringify(products));
+            localStorage.setItem('shakti_sales', JSON.stringify(salesHistory));
+            localStorage.setItem('shakti_expenses', JSON.stringify(expenses));
+            localStorage.setItem('shakti_udhaar', JSON.stringify(udhaarList));
+        }
+        
+        function loadAllData() {
+            let savedProducts = localStorage.getItem('shakti_products');
+            let savedSales = localStorage.getItem('shakti_sales');
+            let savedExpenses = localStorage.getItem('shakti_expenses');
+            let savedUdhaar = localStorage.getItem('shakti_udhaar');
+            if(savedProducts) products = JSON.parse(savedProducts);
+            if(savedSales) salesHistory = JSON.parse(savedSales);
+            if(savedExpenses) expenses = JSON.parse(savedExpenses);
+            if(savedUdhaar) udhaarList = JSON.parse(savedUdhaar);
+        }
+        
+        // Clear old data on first load (fresh start)
+        if(!localStorage.getItem('shakti_fresh_start')) {
+            localStorage.clear();
+            localStorage.setItem('shakti_fresh_start', 'true');
+            products = [];
+            salesHistory = [];
+            expenses = [];
+            udhaarList = [];
+        }
+        
+        // ========== CRUD OPERATIONS ==========
+        function addProduct() {
+            let name = document.getElementById('stockProductName').value;
+            let brand = document.getElementById('stockBrand').value;
+            let qty = parseInt(document.getElementById('stockQuantity').value) || 0;
+            let price = parseFloat(document.getElementById('stockPrice').value) || 0;
+            let photo = document.getElementById('stockPhotoBase64')?.value || '';
+            if(!name || qty<=0 || price<=0) { alert("Product name, quantity and price required"); return; }
+            let existing = products.find(p => p.name === name);
+            if(existing) {
+                existing.qty += qty;
+                if(price > 0) existing.price = price;
+                if(brand) existing.brand = brand;
+                if(photo) existing.photo = photo;
+                alert(`✅ Stock Updated! ${name} quantity now ${existing.qty}`);
+            } else {
+                products.push({ name, brand, qty, price, photo });
+                alert(`✅ New Product Added: ${name} (${qty} units)`);
+            }
+            closeModal('stockModal'); saveAllData(); updateUI();
+            document.getElementById('stockProductName').value = ""; document.getElementById('stockBrand').value = "";
+            document.getElementById('stockQuantity').value = ""; document.getElementById('stockPrice').value = "";
+            document.getElementById('stockPhotoBase64').value = ""; document.getElementById('stockPhotoFile').value = "";
+            document.getElementById('stockPhotoPreview').classList.add('hidden');
+        }
+        
         function addSale() {
             let date = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
             let time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -250,9 +285,20 @@
             let price = parseFloat(document.getElementById('productPrice').value) || 0;
             let status = document.getElementById('paymentStatus').value;
             if(!customer || !product || price<=0) { alert("Please fill all fields"); return; }
-            recentSales.unshift({ id: Date.now(), customer, product, qty: 1, price, status, date, time, more: "" });
-            closeModal('saleModal'); updateUI(); saveToLocal(); playSaveSound(); alert("Sale added!");
-            document.getElementById('customerName').value = ""; document.getElementById('productName').value = ""; document.getElementById('productPrice').value = "";
+            // Reduce stock
+            let stockItem = products.find(p => p.name === product);
+            if(stockItem) stockItem.qty = Math.max(0, stockItem.qty - 1);
+            salesHistory.unshift({ id: Date.now(), date, customer, product, qty: 1, price, status, time });
+            closeModal('saleModal'); saveAllData(); updateUI(); playSaveSound(); alert("Sale added!");
+            document.getElementById('customerName').value = ""; document.getElementById('productName').value = "";
+            document.getElementById('productPrice').value = "";
+        }
+        
+        function deleteSale(id) {
+            if(confirm("Delete this sale record?")) {
+                salesHistory = salesHistory.filter(s => s.id !== id);
+                saveAllData(); updateUI(); playClickSound(); alert("Sale deleted!");
+            }
         }
         
         function addExpense() {
@@ -260,7 +306,7 @@
             let amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
             if(!name || amount<=0) { alert("Enter valid expense details"); return; }
             expenses.push({ id: Date.now(), name, amount, date: new Date().toLocaleDateString() });
-            closeModal('expenseModal'); updateUI(); saveToLocal(); playSaveSound(); alert("Expense added!");
+            closeModal('expenseModal'); saveAllData(); updateUI(); playSaveSound(); alert("Expense added!");
             document.getElementById('expenseName').value = ''; document.getElementById('expenseAmount').value = '';
         }
         
@@ -272,24 +318,140 @@
             let photo = document.getElementById('udhaarPhotoBase64')?.value || '';
             if(!name || amount<=0) { alert("Customer name and amount required"); return; }
             udhaarList.push({ id: Date.now(), name, phone, product, amount, photo, date: new Date().toLocaleDateString() });
-            closeModal('udhaarModal'); updateUI(); saveToLocal(); playSaveSound(); alert("Udhaar added!");
-            document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = ""; document.getElementById('udhaarProduct').value = ""; document.getElementById('udhaarAmount').value = "";
-            document.getElementById('udhaarPhotoBase64').value = ""; document.getElementById('udhaarPhotoFile').value = ""; document.getElementById('udhaarPhotoPreview').classList.add('hidden');
+            closeModal('udhaarModal'); saveAllData(); updateUI(); playSaveSound(); alert("Udhaar added!");
+            document.getElementById('udhaarCustomerName').value = ""; document.getElementById('udhaarCustomerPhone').value = "";
+            document.getElementById('udhaarProduct').value = ""; document.getElementById('udhaarAmount').value = "";
+            document.getElementById('udhaarPhotoBase64').value = ""; document.getElementById('udhaarPhotoFile').value = "";
+            document.getElementById('udhaarPhotoPreview').classList.add('hidden');
         }
         
-        function saveToLocal() {
-            localStorage.setItem('shakti_recentSales', JSON.stringify(recentSales));
-            localStorage.setItem('shakti_expenses', JSON.stringify(expenses));
-            localStorage.setItem('shakti_udhaar', JSON.stringify(udhaarList));
+        function showProductSuggestions() {
+            let inp = document.getElementById('productName'), q = inp.value.toLowerCase(), box = document.getElementById('productSuggestionBox');
+            if(!box) return; box.innerHTML = ''; if(q.length < 1) { box.classList.add('hidden'); return; }
+            let found = 0;
+            for(let p of products) {
+                if(p.name.toLowerCase().includes(q)) {
+                    found++;
+                    let div = document.createElement('div'); div.className = "suggestion-item";
+                    let photoHtml = p.photo ? `<img src="${p.photo}" class="w-8 h-8 rounded object-cover">` : `<div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-box text-gray-400 text-xs"></i></div>`;
+                    div.innerHTML = `${photoHtml}<div><div class="font-medium">${p.name}</div><div class="text-[10px] text-gray-400">Stock: ${p.qty} | ₹${p.price}</div></div>`;
+                    div.onclick = () => { inp.value = p.name; document.getElementById('productPrice').value = p.price; box.classList.add('hidden'); playClickSound(); };
+                    box.appendChild(div);
+                }
+            }
+            if(found > 0) box.classList.remove('hidden'); else box.classList.add('hidden');
         }
         
-        function loadFromLocal() {
-            let savedSales = localStorage.getItem('shakti_recentSales');
-            let savedExpenses = localStorage.getItem('shakti_expenses');
-            let savedUdhaar = localStorage.getItem('shakti_udhaar');
-            if(savedSales) recentSales = JSON.parse(savedSales);
-            if(savedExpenses) expenses = JSON.parse(savedExpenses);
-            if(savedUdhaar) udhaarList = JSON.parse(savedUdhaar);
+        // ========== UI RENDER FUNCTIONS ==========
+        function updateUI() {
+            renderLowStock(); renderRecentSales(); renderBusinessChart(); updateStats(); renderProductsModal(); renderSalesHistory();
+        }
+        
+        function updateStats() {
+            let totalSales = salesHistory.reduce((s, sale) => s + sale.price, 0);
+            let todayProfit = salesHistory.filter(s => s.date === new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })).reduce((p, s) => p + s.price, 0);
+            let totalStockQty = products.reduce((s, p) => s + p.qty, 0);
+            let totalPending = udhaarList.reduce((s, u) => s + u.amount, 0);
+            document.getElementById('totalSales').innerHTML = `₹ ${totalSales.toLocaleString()}`;
+            document.getElementById('todayProfitValue').innerHTML = `₹ ${todayProfit.toLocaleString()}`;
+            document.getElementById('totalStockItems').innerHTML = totalStockQty;
+            document.getElementById('pendingPayments').innerHTML = `₹ ${totalPending.toLocaleString()}`;
+            document.getElementById('pendingCount').innerHTML = `${udhaarList.length} Pending Payments`;
+        }
+        
+        function renderLowStock() {
+            let container = document.getElementById('lowStockContainer');
+            if(!container) return; container.innerHTML = '';
+            let lowStockItems = products.filter(p => p.qty > 0 && p.qty <= 5);
+            if(lowStockItems.length === 0) { container.innerHTML = '<p class="text-gray-500 text-center py-2">No low stock items</p>'; return; }
+            lowStockItems.forEach(item => {
+                let div = document.createElement('div'); div.className = "low-stock-item";
+                div.innerHTML = `<span class="font-medium">${item.name}</span><span class="text-amber-400 font-bold">${item.qty} Left</span>`;
+                container.appendChild(div);
+            });
+        }
+        
+        function renderRecentSales() {
+            let container = document.getElementById('recentSalesContainer');
+            if(!container) return; container.innerHTML = '';
+            if(salesHistory.length === 0) { container.innerHTML = '<p class="text-center text-gray-500 py-4">No sales yet</p>'; return; }
+            salesHistory.slice(0, 5).forEach(sale => {
+                let div = document.createElement('div'); div.className = "recent-sale-item";
+                let statusClass = sale.status === 'Paid' ? 'status-paid' : 'status-cod';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div><p class="font-bold">${sale.customer}</p><p class="text-xs text-gray-400">${sale.product}</p></div>
+                        <div><span class="${statusClass}">${sale.status}</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-blue-400 font-bold">₹ ${sale.price.toLocaleString()}</span>
+                        <span class="text-gray-500">${sale.date} · ${sale.time}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function renderSalesHistory() {
+            let container = document.getElementById('salesHistoryList');
+            if(!container) return; container.innerHTML = '';
+            if(salesHistory.length === 0) { container.innerHTML = '<p class="text-center text-gray-500 py-4">No sales records</p>'; return; }
+            salesHistory.forEach(sale => {
+                let div = document.createElement('div'); div.className = "p-3 border-b border-slate-800 flex justify-between items-center";
+                div.innerHTML = `<div><p class="font-medium">${sale.customer}</p><p class="text-xs text-gray-400">${sale.product} · ₹${sale.price} · ${sale.date}</p></div><button onclick='deleteSale(${sale.id})' class="text-red-500"><i class="fa-regular fa-trash-can"></i></button>`;
+                container.appendChild(div);
+            });
+        }
+        
+        function renderProductsModal() {
+            let container = document.getElementById('productsListModal');
+            if(!container) return; container.innerHTML = '';
+            if(products.length === 0) { container.innerHTML = '<p class="text-center text-gray-500 py-4">No products added</p>'; return; }
+            products.forEach(p => {
+                let div = document.createElement('div'); div.className = "p-3 border-b border-slate-800 flex justify-between items-center";
+                let photoHtml = p.photo ? `<img src="${p.photo}" class="w-8 h-8 rounded object-cover">` : `<div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-box text-gray-400 text-xs"></i></div>`;
+                div.innerHTML = `<div class="flex gap-2 items-center">${photoHtml}<div><p class="font-medium">${p.name}</p><p class="text-xs text-gray-400">${p.brand || 'No brand'} | Stock: ${p.qty} | ₹${p.price}</p></div></div><span class="text-xs ${p.qty<=5?'text-amber-400':'text-green-400'}">${p.qty} left</span>`;
+                container.appendChild(div);
+            });
+        }
+        
+        function updateReports() {
+            let totalSales = salesHistory.reduce((s, sale) => s + sale.price, 0);
+            let totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
+            let totalUdhaar = udhaarList.reduce((s, u) => s + u.amount, 0);
+            let stockValue = products.reduce((s, p) => s + (p.qty * p.price), 0);
+            document.getElementById('reportTotalSales').innerHTML = `₹${totalSales.toLocaleString()}`;
+            document.getElementById('reportTotalExpense').innerHTML = `₹${totalExpense.toLocaleString()}`;
+            document.getElementById('reportTotalUdhaar').innerHTML = `₹${totalUdhaar.toLocaleString()}`;
+            document.getElementById('reportStockValue').innerHTML = `₹${stockValue.toLocaleString()}`;
+        }
+        
+        function renderBusinessChart() {
+            let ctx = document.getElementById('businessChart')?.getContext('2d');
+            if(!ctx) return;
+            let labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            let weeklySales = [0, 0, 0, 0];
+            let weeklyProfit = [0, 0, 0, 0];
+            let now = new Date();
+            salesHistory.forEach(s => {
+                let saleDate = new Date(s.date);
+                let week = Math.floor((saleDate.getDate() - 1) / 7);
+                if(week >= 0 && week < 4 && saleDate.getMonth() === now.getMonth()) {
+                    weeklySales[week] += s.price;
+                    weeklyProfit[week] += s.price;
+                }
+            });
+            document.getElementById('chartSales').innerHTML = `₹ ${weeklySales.reduce((a,b)=>a+b,0).toLocaleString()}`;
+            document.getElementById('chartProfit').innerHTML = `₹ ${weeklyProfit.reduce((a,b)=>a+b,0).toLocaleString()}`;
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: [
+                    { label: 'Sales', data: weeklySales, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
+                    { label: 'Profit', data: weeklyProfit, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.3 }
+                ] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#94A3B8', font: { size: 10 } } } }, scales: { y: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8' } }, x: { ticks: { color: '#94A3B8' } } } }
+            });
         }
         
         // ========== LOGIN ==========
@@ -300,7 +462,7 @@
                 sessionStorage.setItem('shaktiLoggedIn', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardContent').style.display = 'block';
-                loadFromLocal();
+                loadAllData();
                 updateUI();
             } else {
                 let errorDiv = document.getElementById('loginError');
@@ -315,103 +477,15 @@
         if(sessionStorage.getItem('shaktiLoggedIn') === 'true') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardContent').style.display = 'block';
-            loadFromLocal();
+            loadAllData();
             updateUI();
         }
         
         function scrollToTop() { window.scrollTo({top:0,behavior:'smooth'}); }
-        function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
-        // ========== UPDATE UI ==========
-        function updateUI() {
-            renderLowStock();
-            renderRecentSales();
-            renderProductsModal();
-            updateReports();
-            
-            let totalSales = recentSales.reduce((s, sale) => s + (sale.price * sale.qty), 0);
-            let totalPending = udhaarList.reduce((s, u) => s + u.amount, 0);
-            document.getElementById('totalSales').innerHTML = `₹ ${totalSales.toLocaleString() || '1,85,250'}`;
-            document.getElementById('pendingPayments').innerHTML = `₹ ${totalPending.toLocaleString() || '27,350'}`;
-            document.getElementById('pendingCount').innerHTML = `${udhaarList.length || 5} Pending Payments`;
-            
-            renderBusinessChart();
-        }
-        
-        function renderLowStock() {
-            let container = document.getElementById('lowStockContainer');
-            if(!container) return;
-            container.innerHTML = '';
-            lowStockItems.forEach(item => {
-                let div = document.createElement('div');
-                div.className = "low-stock-item";
-                div.innerHTML = `<span class="font-medium">${item.name}</span><span class="text-amber-400 font-bold">${item.qty} Left</span>`;
-                container.appendChild(div);
-            });
-        }
-        
-        function renderRecentSales() {
-            let container = document.getElementById('recentSalesContainer');
-            if(!container) return;
-            container.innerHTML = '';
-            recentSales.slice(0, 5).forEach(sale => {
-                let div = document.createElement('div');
-                div.className = "recent-sale-item";
-                let statusClass = sale.status === 'Paid' ? 'status-paid' : 'status-cod';
-                div.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <div><p class="font-bold">${sale.customer}</p><p class="text-xs text-gray-400">${sale.product} (${sale.qty})</p></div>
-                        <div><span class="${statusClass}">${sale.status}</span></div>
-                    </div>
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="text-blue-400 font-bold">₹ ${sale.price.toLocaleString()}</span>
-                        <span class="text-gray-500">${sale.date} · ${sale.time}</span>
-                    </div>
-                    ${sale.more ? `<p class="text-[10px] text-gray-500 mt-1">${sale.more}</p>` : ''}
-                `;
-                container.appendChild(div);
-            });
-        }
-        
-        function renderProductsModal() {
-            let container = document.getElementById('productsListModal');
-            if(!container) return;
-            container.innerHTML = '';
-            products.forEach(product => {
-                let div = document.createElement('div');
-                div.className = "p-2 border-b border-slate-800 text-sm";
-                div.innerHTML = product;
-                container.appendChild(div);
-            });
-        }
-        
-        function updateReports() {
-            let totalSales = recentSales.reduce((s, sale) => s + (sale.price * sale.qty), 0);
-            let totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
-            let totalUdhaar = udhaarList.reduce((s, u) => s + u.amount, 0);
-            document.getElementById('reportTotalSales').innerHTML = `₹${totalSales.toLocaleString()}`;
-            document.getElementById('reportTotalExpense').innerHTML = `₹${totalExpense.toLocaleString()}`;
-            document.getElementById('reportTotalUdhaar').innerHTML = `₹${totalUdhaar.toLocaleString()}`;
-        }
-        
-        function renderBusinessChart() {
-            let ctx = document.getElementById('businessChart')?.getContext('2d');
-            if(!ctx) return;
-            let labels = ['01 May', '08 May', '15 May', '22 May', '29 May'];
-            let salesData = [85000, 110000, 95000, 125000, 140000];
-            let profitData = [8500, 11000, 9500, 12500, 14000];
-            if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: labels, datasets: [
-                    { label: 'Sales', data: salesData, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
-                    { label: 'Profit', data: profitData, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.3 }
-                ] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#94A3B8', font: { size: 10 } } } }, scales: { y: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8', stepSize: 50000 } }, x: { ticks: { color: '#94A3B8' } } } }
-            });
-        }
+        document.addEventListener('click', function(e) { if(e.target.id !== 'productName') { let b = document.getElementById('productSuggestionBox'); if(b) b.classList.add('hidden'); } });
     </script>
 </body>
 </html>
