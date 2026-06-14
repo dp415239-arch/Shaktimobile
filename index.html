@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SHAKTI MOBILE · Premium Dashboard</title>
+    <title>SHAKTI MOBILE · Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Segoe UI', Roboto, sans-serif; padding-bottom: 85px; }
+        body { background-color: #0B111E; color: #FFFFFF; font-family: 'Segoe UI', sans-serif; padding-bottom: 85px; }
         .card-bg { background-color: #121A2E; border: 1px solid #1E293B; border-radius: 16px; }
         .input-field { background-color: #0F172A; border: 1px solid #334155; color: white; border-radius: 12px; padding: 10px; width: 100%; }
-        .modal-bg { background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .modal-bg { background-color: rgba(0,0,0,0.85); position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; }
         .modal-card { background-color: #121A2E; border-radius: 20px; padding: 20px; width: 90%; max-width: 380px; max-height: 80vh; overflow-y: auto; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 28rem; margin: 0 auto; background: #0F172A; border-top: 1px solid #1E293B; padding: 10px; display: flex; justify-content: space-around; z-index: 50; border-radius: 20px 20px 0 0; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; padding: 8px 12px; border-radius: 12px; color: #94A3B8; }
@@ -20,25 +20,21 @@
         .btn:active { transform: scale(0.97); }
         .stat-value { font-size: 1.4rem; font-weight: 700; }
         .stat-label { font-size: 0.6rem; color: #94A3B8; text-transform: uppercase; }
-        .suggestion-box { background: #0F172A; border: 1px solid #334155; max-height: 200px; overflow-y: auto; position: absolute; z-index: 200; border-radius: 12px; width: 100%; }
-        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #1E293B; display: flex; gap: 10px; align-items: center; }
-        .suggestion-item:hover { background: #1E293B; }
+        .stock-photo { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #0F172A; }
         .customer-photo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #1E293B; }
-        .stock-photo { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
         .delete-btn { color: #ef4444; cursor: pointer; margin-left: 8px; }
-        .delete-btn:hover { opacity: 0.7; }
     </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginScreen" class="min-h-screen flex items-center">
     <div class="card-bg p-6 mx-4 w-full max-w-sm mx-auto">
         <h1 class="text-2xl font-bold text-center">SHAKTI <span class="text-blue-500">MOBILE</span></h1>
         <p class="text-center text-gray-400 text-xs mt-1">PIN: 1234</p>
         <div class="mt-6 space-y-3">
             <input type="password" id="pin" placeholder="Enter PIN" class="input-field text-center text-xl tracking-widest">
-            <button onclick="handleLogin()" class="w-full bg-emerald-600 py-3 rounded-lg font-bold btn">LOGIN</button>
+            <button onclick="doLogin()" class="w-full bg-emerald-600 py-3 rounded-lg font-bold btn">LOGIN</button>
         </div>
         <p class="text-center text-gray-500 text-xs mt-4">🔑 PIN: <strong class="text-emerald-400">1234</strong></p>
     </div>
@@ -49,10 +45,10 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-4">
         <div><h1 class="text-xl font-bold">SHAKTI <span class="text-blue-500">MOBILE</span></h1><p class="text-[10px] text-gray-400">TRUST · QUALITY · SERVICE</p></div>
-        <button onclick="handleLogout()" class="bg-rose-950/60 px-3 py-1 rounded-full text-xs btn">Logout</button>
+        <button onclick="doLogout()" class="bg-rose-950/60 px-3 py-1 rounded-full text-xs btn">Logout</button>
     </div>
 
-    <!-- Stats Row 1 -->
+    <!-- Stats -->
     <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="card-bg p-3"><p class="stat-label">CASH IN HAND</p><p id="cashInHand" class="stat-value text-emerald-400">₹0</p></div>
         <div class="card-bg p-3"><p class="stat-label">TOTAL PRODUCTS</p><p id="totalProducts" class="stat-value text-blue-400">0</p></div>
@@ -60,7 +56,6 @@
         <div class="card-bg p-3"><p class="stat-label">PENDING UDHAAR</p><p id="pendingUdhaar" class="stat-value text-rose-400">₹0</p></div>
     </div>
 
-    <!-- Stats Row 2 -->
     <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S SALE</p><p id="todaySale" class="text-xl font-bold text-blue-500">₹0</p><p id="todayOrders" class="text-xs text-gray-500">0 Orders</p></div>
         <div class="card-bg p-3"><p class="text-xs text-gray-400">TODAY'S PROFIT</p><p id="todayProfit" class="text-xl font-bold text-emerald-500">₹0</p><p class="text-xs text-gray-500">Live Active</p></div>
@@ -68,13 +63,13 @@
         <div class="card-bg p-3"><p class="text-xs text-gray-400">MONTH PROFIT</p><p id="monthProfit" class="text-xl font-bold text-amber-500">₹0</p><p class="text-xs text-gray-500">Margin Target</p></div>
     </div>
 
-    <!-- Cash Flow Split -->
+    <!-- Cash Split -->
     <div class="bg-[#0F172A] border border-slate-800 p-2 rounded-xl mb-4 flex justify-between text-xs">
         <span>Cash Flow Split:</span>
         <div class="flex gap-2"><span class="bg-emerald-950/40 px-2 py-1 rounded">Cash: <span id="cashSplit">₹0</span></span><span class="bg-blue-950/40 px-2 py-1 rounded">UPI: <span id="upiSplit">₹0</span></span></div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Buttons -->
     <div class="grid grid-cols-4 gap-2 mb-5">
         <button onclick="openModal('saleModal')" class="card-bg p-2 text-center btn"><p class="text-emerald-400">➕ Add Sale</p></button>
         <button onclick="openModal('stockModal')" class="card-bg p-2 text-center btn"><p class="text-blue-400">📦 Add Stock</p></button>
@@ -83,11 +78,11 @@
     </div>
 
     <!-- Chart -->
-    <div class="card-bg p-4 mb-4"><canvas id="myChart" height="150"></canvas></div>
+    <div class="card-bg p-4 mb-4"><canvas id="salesChart" height="150"></canvas></div>
 
     <!-- Stock List -->
     <div class="card-bg p-4 mb-4">
-        <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold">CURRENT STOCK</h3><span class="text-[9px] text-emerald-400">Multi-Device Sync</span></div>
+        <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold">CURRENT STOCK</h3><span class="text-[9px] text-emerald-400">Sync</span></div>
         <div class="bg-blue-950/40 rounded-xl p-2 mb-3"><p class="text-[9px] text-gray-400">TOTAL VALUE</p><p id="stockValue" class="text-lg font-bold text-blue-400">₹0</p></div>
         <div id="stockList" class="space-y-2 max-h-48 overflow-y-auto"></div>
     </div>
@@ -95,25 +90,25 @@
     <!-- Udhaar List -->
     <div class="card-bg p-4 mb-4 border-t-4 border-rose-500">
         <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold text-rose-400">📕 UDHAAR REGISTER</h3><span id="udhaarPending" class="text-sm font-bold text-rose-400">₹0 Pending</span></div>
-        <input type="text" id="searchUdhaar" oninput="renderUdhaarList()" placeholder="Search customer..." class="input-field text-xs mb-2">
+        <input type="text" id="searchUdhaar" oninput="renderUdhaar()" placeholder="Search customer..." class="input-field text-xs mb-2">
         <div id="udhaarList" class="space-y-2 max-h-48 overflow-y-auto"></div>
     </div>
 
-    <!-- Sales History -->
+    <!-- Sales Log -->
     <div class="card-bg p-4 mb-4">
-        <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold">SALES HISTORY</h3><button onclick="exportData()" class="text-blue-400 text-xs btn">Export</button></div>
-        <input type="date" id="dateFilter" onchange="renderSalesLog()" class="bg-slate-800 rounded p-1 text-xs w-full mb-2">
-        <div id="salesLogList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+        <div class="flex justify-between mb-3"><h3 class="text-sm font-semibold">SALES HISTORY</h3><button onclick="exportSales()" class="text-blue-400 text-xs btn">Export</button></div>
+        <input type="date" id="dateFilter" onchange="renderSales()" class="bg-slate-800 rounded p-1 text-xs w-full mb-2">
+        <div id="salesList" class="space-y-2 max-h-48 overflow-y-auto"></div>
     </div>
 </div>
 
 <!-- MODALS -->
 <div id="saleModal" class="modal-bg" style="display:none">
-    <div class="modal-card"><h3 class="text-emerald-400 font-bold mb-3">🟢 Add Sale</h3><input type="date" id="saleDate" class="input-field text-sm mb-2"><div class="relative"><input type="text" id="productName" oninput="showProductSuggestions()" placeholder="Product Name" class="input-field text-sm"><div id="productSuggestions" class="suggestion-box hidden"></div></div><input type="text" id="customerName" placeholder="Customer Name" class="input-field text-sm mt-2"><input type="number" id="saleQty" placeholder="Quantity" value="1" class="input-field text-sm mt-2"><input type="number" id="saleAmount" placeholder="Amount ₹" class="input-field text-sm mt-2"><select id="paymentStatus" class="input-field text-sm mt-2"><option>Cash</option><option>UPI</option><option>Udhaar</option></select><button onclick="addSale()" class="w-full bg-emerald-600 py-2 rounded-lg mt-3 btn">SAVE SALE</button><button onclick="closeModal('saleModal')" class="w-full bg-gray-700 py-2 rounded-lg mt-2 btn">CANCEL</button></div>
+    <div class="modal-card"><h3 class="text-emerald-400 font-bold mb-3">🟢 Add Sale</h3><input type="date" id="saleDate" class="input-field text-sm mb-2"><input type="text" id="saleCustomer" placeholder="Customer Name" class="input-field text-sm mb-2"><input type="text" id="saleProduct" placeholder="Product Name" class="input-field text-sm mb-2"><input type="number" id="saleQty" placeholder="Quantity" value="1" class="input-field text-sm mb-2"><input type="number" id="saleAmount" placeholder="Amount ₹" class="input-field text-sm mb-2"><select id="saleMode" class="input-field text-sm mb-2"><option>Cash</option><option>UPI</option><option>Udhaar</option></select><button onclick="addSale()" class="w-full bg-emerald-600 py-2 rounded-lg mt-2 btn">SAVE SALE</button><button onclick="closeModal('saleModal')" class="w-full bg-gray-700 py-2 rounded-lg mt-2 btn">CANCEL</button></div>
 </div>
 
 <div id="stockModal" class="modal-bg" style="display:none">
-    <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Stock</h3><input type="text" id="stockName" placeholder="Product Name" class="input-field text-sm mb-2"><input type="text" id="stockBrand" placeholder="Brand" class="input-field text-sm mb-2"><div class="grid grid-cols-2 gap-2"><input type="number" id="stockQty" placeholder="Quantity" class="input-field text-sm"><input type="number" id="stockPrice" placeholder="Price ₹" class="input-field text-sm"></div><div class="mt-2"><label class="text-xs text-purple-400">Product Photo</label><input type="file" id="stockPhoto" accept="image/*" class="text-xs text-gray-400 mt-1"><div id="stockPhotoPreview" class="mt-1 hidden"></div></div><button onclick="addStock()" class="w-full bg-blue-600 py-2 rounded-lg mt-3 btn">SAVE STOCK</button><button onclick="closeModal('stockModal')" class="w-full bg-gray-700 py-2 rounded-lg mt-2 btn">CANCEL</button></div>
+    <div class="modal-card"><h3 class="text-blue-400 font-bold mb-3">🔵 Add Stock</h3><input type="text" id="stockName" placeholder="Product Name" class="input-field text-sm mb-2"><input type="text" id="stockBrand" placeholder="Brand" class="input-field text-sm mb-2"><div class="grid grid-cols-2 gap-2"><input type="number" id="stockQty" placeholder="Quantity" class="input-field text-sm"><input type="number" id="stockPrice" placeholder="Price ₹" class="input-field text-sm"></div><div class="mt-2"><label class="text-xs text-purple-400">Product Photo</label><input type="file" id="stockPhotoInput" accept="image/*" class="text-xs text-gray-400 mt-1"><div id="stockPhotoPreview" class="mt-1 hidden"></div></div><button onclick="addStock()" class="w-full bg-blue-600 py-2 rounded-lg mt-3 btn">SAVE STOCK</button><button onclick="closeModal('stockModal')" class="w-full bg-gray-700 py-2 rounded-lg mt-2 btn">CANCEL</button></div>
 </div>
 
 <div id="expenseModal" class="modal-bg" style="display:none">
@@ -121,7 +116,7 @@
 </div>
 
 <div id="udhaarModal" class="modal-bg" style="display:none">
-    <div class="modal-card"><h3 class="text-rose-400 font-bold mb-3">🔴 Add Udhaar</h3><input type="text" id="udhaarName" placeholder="Customer Name" class="input-field text-sm mb-2"><input type="tel" id="udhaarPhone" placeholder="Mobile" class="input-field text-sm mb-2"><input type="text" id="udhaarProduct" placeholder="Product" class="input-field text-sm mb-2"><input type="number" id="udhaarAmount" placeholder="Amount ₹" class="input-field text-sm mb-2"><div class="mt-2"><label class="text-xs text-purple-400">Customer Photo</label><input type="file" id="udhaarPhoto" accept="image/*" class="text-xs text-gray-400 mt-1"><div id="udhaarPhotoPreview" class="mt-1 hidden"></div></div><button onclick="addUdhaar()" class="w-full bg-rose-600 py-2 rounded-lg mt-3 btn">SAVE UDHAAR</button><button onclick="closeModal('udhaarModal')" class="w-full bg-gray-700 py-2 rounded-lg mt-2 btn">CANCEL</button></div>
+    <div class="modal-card"><h3 class="text-rose-400 font-bold mb-3">🔴 Add Udhaar</h3><input type="text" id="udhaarName" placeholder="Customer Name" class="input-field text-sm mb-2"><input type="tel" id="udhaarPhone" placeholder="Mobile" class="input-field text-sm mb-2"><input type="text" id="udhaarProduct" placeholder="Product" class="input-field text-sm mb-2"><input type="number" id="udhaarAmount" placeholder="Amount ₹" class="input-field text-sm mb-2"><div class="mt-2"><label class="text-xs text-purple-400">Customer Photo</label><input type="file" id="udhaarPhotoInput" accept="image/*" class="text-xs text-gray-400 mt-1"><div id="udhaarPhotoPreview" class="mt-1 hidden"></div></div><button onclick="addUdhaar()" class="w-full bg-rose-600 py-2 rounded-lg mt-3 btn">SAVE UDHAAR</button><button onclick="closeModal('udhaarModal')" class="w-full bg-gray-700 py-2 rounded-lg mt-2 btn">CANCEL</button></div>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -134,31 +129,31 @@
 </div>
 
 <script>
-    // ========== DATA STORAGE ==========
+    // ========== DATA ==========
     let products = [];
     let sales = [];
     let expenses = [];
     let udhaar = [];
-    let myChart = null;
+    let chart = null;
 
-    function saveData() {
-        localStorage.setItem('shakti_products', JSON.stringify(products));
-        localStorage.setItem('shakti_sales', JSON.stringify(sales));
-        localStorage.setItem('shakti_expenses', JSON.stringify(expenses));
-        localStorage.setItem('shakti_udhaar', JSON.stringify(udhaar));
+    function saveAll() {
+        localStorage.setItem('products', JSON.stringify(products));
+        localStorage.setItem('sales', JSON.stringify(sales));
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+        localStorage.setItem('udhaar', JSON.stringify(udhaar));
     }
 
-    function loadData() {
-        products = JSON.parse(localStorage.getItem('shakti_products') || '[]');
-        sales = JSON.parse(localStorage.getItem('shakti_sales') || '[]');
-        expenses = JSON.parse(localStorage.getItem('shakti_expenses') || '[]');
-        udhaar = JSON.parse(localStorage.getItem('shakti_udhaar') || '[]');
+    function loadAll() {
+        products = JSON.parse(localStorage.getItem('products') || '[]');
+        sales = JSON.parse(localStorage.getItem('sales') || '[]');
+        expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+        udhaar = JSON.parse(localStorage.getItem('udhaar') || '[]');
     }
 
-    // Sound (simple beep)
-    function playSound() {
+    // Sound
+    function playBeep() {
         try {
-            let ctx = new (window.AudioContext || window.webkitAudioContext)();
+            let ctx = new (AudioContext || webkitAudioContext)();
             let o = ctx.createOscillator();
             let g = ctx.createGain();
             o.type = 'sine';
@@ -173,7 +168,7 @@
     }
 
     // Photo handlers
-    document.getElementById('stockPhoto')?.addEventListener('change', function(e) {
+    document.getElementById('stockPhotoInput')?.addEventListener('change', function(e) {
         let file = e.target.files[0];
         if(file) {
             let reader = new FileReader();
@@ -186,7 +181,7 @@
         }
     });
 
-    document.getElementById('udhaarPhoto')?.addEventListener('change', function(e) {
+    document.getElementById('udhaarPhotoInput')?.addEventListener('change', function(e) {
         let file = e.target.files[0];
         if(file) {
             let reader = new FileReader();
@@ -199,57 +194,25 @@
         }
     });
 
-    // ========== PRODUCT SUGGESTIONS ==========
-    function showProductSuggestions() {
-        let input = document.getElementById('productName');
-        let query = input.value.toLowerCase();
-        let box = document.getElementById('productSuggestions');
-        box.innerHTML = '';
-        if(query.length < 1) { box.classList.add('hidden'); return; }
-        let filtered = products.filter(p => p.name.toLowerCase().includes(query));
-        if(filtered.length === 0) { box.classList.add('hidden'); return; }
-        filtered.forEach(p => {
-            let div = document.createElement('div');
-            div.className = "suggestion-item";
-            div.innerHTML = `<div><div class="font-medium">${p.name}</div><div class="text-gray-400 text-[10px]">₹${p.price} | Stock: ${p.qty}</div></div>`;
-            div.onclick = () => {
-                input.value = p.name;
-                document.getElementById('saleAmount').value = p.price;
-                box.classList.add('hidden');
-                playSound();
-            };
-            box.appendChild(div);
-        });
-        box.classList.remove('hidden');
-    }
-
-    document.addEventListener('click', function(e) {
-        if(e.target.id !== 'productName') {
-            let box = document.getElementById('productSuggestions');
-            if(box) box.classList.add('hidden');
-        }
-    });
-
-    // ========== CRUD OPERATIONS ==========
+    // ========== CRUD ==========
     function addSale() {
         let date = document.getElementById('saleDate').value || new Date().toISOString().split('T')[0];
-        let customer = document.getElementById('customerName').value;
-        let product = document.getElementById('productName').value;
+        let customer = document.getElementById('saleCustomer').value;
+        let product = document.getElementById('saleProduct').value;
         let qty = parseInt(document.getElementById('saleQty').value) || 1;
         let amount = parseFloat(document.getElementById('saleAmount').value) || 0;
-        let status = document.getElementById('paymentStatus').value;
-        if(!product || amount <= 0) { alert("Please fill all fields"); return; }
+        let mode = document.getElementById('saleMode').value;
+        if(!product || amount <= 0) { alert("Fill all fields"); return; }
         
-        // Reduce stock
         let stockItem = products.find(p => p.name === product);
         if(stockItem) stockItem.qty = Math.max(0, stockItem.qty - qty);
         
-        sales.unshift({ id: Date.now(), date, customer, product, qty, amount, status });
-        saveData();
-        updateDashboard();
+        sales.unshift({ id: Date.now(), date, customer, product, qty, amount, mode });
+        saveAll();
+        updateUI();
         closeModal('saleModal');
         clearSaleForm();
-        playSound();
+        playBeep();
         alert("Sale added!");
     }
 
@@ -259,7 +222,7 @@
         let qty = parseInt(document.getElementById('stockQty').value) || 0;
         let price = parseFloat(document.getElementById('stockPrice').value) || 0;
         let photo = document.getElementById('stockPhotoData')?.value || '';
-        if(!name || qty <= 0 || price <= 0) { alert("Please fill all fields"); return; }
+        if(!name || qty <= 0 || price <= 0) { alert("Fill all fields"); return; }
         
         let existing = products.find(p => p.name === name);
         if(existing) {
@@ -270,26 +233,26 @@
             alert(`Stock updated! ${name} now ${existing.qty} units`);
         } else {
             products.push({ id: Date.now(), name, brand, qty, price, photo });
-            alert(`New product added: ${name}`);
+            alert(`New product: ${name} added`);
         }
-        saveData();
-        updateDashboard();
+        saveAll();
+        updateUI();
         closeModal('stockModal');
         clearStockForm();
-        playSound();
+        playBeep();
     }
 
     function addExpense() {
         let name = document.getElementById('expenseName').value;
         let amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
-        if(!name || amount <= 0) { alert("Please fill all fields"); return; }
+        if(!name || amount <= 0) { alert("Fill all fields"); return; }
         expenses.push({ id: Date.now(), name, amount, date: new Date().toISOString().split('T')[0] });
-        saveData();
-        updateDashboard();
+        saveAll();
+        updateUI();
         closeModal('expenseModal');
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
-        playSound();
+        playBeep();
         alert("Expense added!");
     }
 
@@ -299,130 +262,119 @@
         let product = document.getElementById('udhaarProduct').value;
         let amount = parseFloat(document.getElementById('udhaarAmount').value) || 0;
         let photo = document.getElementById('udhaarPhotoData')?.value || '';
-        if(!name || amount <= 0) { alert("Please fill all fields"); return; }
+        if(!name || amount <= 0) { alert("Fill all fields"); return; }
         udhaar.push({ id: Date.now(), name, phone, product, amount, photo, date: new Date().toISOString().split('T')[0] });
-        saveData();
-        updateDashboard();
+        saveAll();
+        updateUI();
         closeModal('udhaarModal');
         clearUdhaarForm();
-        playSound();
+        playBeep();
         alert("Udhaar added!");
     }
 
     function deleteSale(id) {
         if(confirm("Delete this sale?")) {
             sales = sales.filter(s => s.id !== id);
-            saveData();
-            updateDashboard();
-            playSound();
+            saveAll();
+            updateUI();
+            playBeep();
         }
     }
 
-    function deleteStock(name) {
-        if(confirm(`Delete ${name} from stock?`)) {
+    function deleteProduct(name) {
+        if(confirm(`Delete ${name}?`)) {
             products = products.filter(p => p.name !== name);
-            saveData();
-            updateDashboard();
-            playSound();
+            saveAll();
+            updateUI();
+            playBeep();
         }
     }
 
     function deleteUdhaar(id) {
         if(confirm("Delete udhaar record?")) {
             udhaar = udhaar.filter(u => u.id !== id);
-            saveData();
-            updateDashboard();
-            playSound();
+            saveAll();
+            updateUI();
+            playBeep();
         }
     }
 
-    function deleteExpense(id) {
-        if(confirm("Delete expense?")) {
-            expenses = expenses.filter(e => e.id !== id);
-            saveData();
-            updateDashboard();
-            playSound();
-        }
-    }
-
-    // Clear forms
     function clearSaleForm() {
-        document.getElementById('customerName').value = '';
-        document.getElementById('productName').value = '';
+        document.getElementById('saleCustomer').value = '';
+        document.getElementById('saleProduct').value = '';
         document.getElementById('saleQty').value = '1';
         document.getElementById('saleAmount').value = '';
     }
+
     function clearStockForm() {
         document.getElementById('stockName').value = '';
         document.getElementById('stockBrand').value = '';
         document.getElementById('stockQty').value = '';
         document.getElementById('stockPrice').value = '';
-        document.getElementById('stockPhoto').value = '';
+        document.getElementById('stockPhotoInput').value = '';
         document.getElementById('stockPhotoPreview').innerHTML = '';
         document.getElementById('stockPhotoPreview').classList.add('hidden');
     }
+
     function clearUdhaarForm() {
         document.getElementById('udhaarName').value = '';
         document.getElementById('udhaarPhone').value = '';
         document.getElementById('udhaarProduct').value = '';
         document.getElementById('udhaarAmount').value = '';
-        document.getElementById('udhaarPhoto').value = '';
+        document.getElementById('udhaarPhotoInput').value = '';
         document.getElementById('udhaarPhotoPreview').innerHTML = '';
         document.getElementById('udhaarPhotoPreview').classList.add('hidden');
     }
 
-    // ========== UI UPDATE ==========
-    function updateDashboard() {
-        renderStockList();
-        renderUdhaarList();
-        renderSalesLog();
+    // ========== UI ==========
+    function updateUI() {
+        renderStock();
+        renderUdhaar();
+        renderSales();
         
-        // Calculate stats
         let today = new Date().toISOString().split('T')[0];
-        let todaySales = sales.filter(s => s.date === today).reduce((sum, s) => sum + s.amount, 0);
+        let todaySales = sales.filter(s => s.date === today).reduce((s, i) => s + i.amount, 0);
         let todayOrders = sales.filter(s => s.date === today).length;
-        let monthSales = sales.filter(s => s.date.substring(0,7) === today.substring(0,7)).reduce((sum, s) => sum + s.amount, 0);
-        let totalStockValue = products.reduce((sum, p) => sum + (p.qty * p.price), 0);
-        let totalUdhaarPending = udhaar.reduce((sum, u) => sum + u.amount, 0);
-        let cashSales = sales.filter(s => s.status === 'Cash' && s.date === today).reduce((sum, s) => sum + s.amount, 0);
-        let upiSales = sales.filter(s => s.status === 'UPI' && s.date === today).reduce((sum, s) => sum + s.amount, 0);
+        let month = today.substring(0,7);
+        let monthSales = sales.filter(s => s.date.startsWith(month)).reduce((s, i) => s + i.amount, 0);
+        let stockVal = products.reduce((s, p) => s + (p.qty * p.price), 0);
+        let udhaarTotal = udhaar.reduce((s, u) => s + u.amount, 0);
+        let cashTotal = sales.filter(s => s.date === today && s.mode === 'Cash').reduce((s, i) => s + i.amount, 0);
+        let upiTotal = sales.filter(s => s.date === today && s.mode === 'UPI').reduce((s, i) => s + i.amount, 0);
         
         document.getElementById('cashInHand').innerHTML = `₹${todaySales}`;
         document.getElementById('totalProducts').innerHTML = products.length;
         document.getElementById('totalCustomers').innerHTML = udhaar.length;
-        document.getElementById('pendingUdhaar').innerHTML = `₹${totalUdhaarPending}`;
+        document.getElementById('pendingUdhaar').innerHTML = `₹${udhaarTotal}`;
         document.getElementById('todaySale').innerHTML = `₹${todaySales}`;
         document.getElementById('todayOrders').innerHTML = `${todayOrders} Orders`;
         document.getElementById('todayProfit').innerHTML = `₹${Math.floor(todaySales * 0.3)}`;
         document.getElementById('monthSale').innerHTML = `₹${monthSales}`;
         document.getElementById('monthProfit').innerHTML = `₹${Math.floor(monthSales * 0.3)}`;
-        document.getElementById('stockValue').innerHTML = `₹${totalStockValue}`;
-        document.getElementById('udhaarPending').innerHTML = `₹${totalUdhaarPending} Pending`;
-        document.getElementById('cashSplit').innerHTML = `₹${cashSales}`;
-        document.getElementById('upiSplit').innerHTML = `₹${upiSales}`;
+        document.getElementById('stockValue').innerHTML = `₹${stockVal}`;
+        document.getElementById('udhaarPending').innerHTML = `₹${udhaarTotal} Pending`;
+        document.getElementById('cashSplit').innerHTML = `₹${cashTotal}`;
+        document.getElementById('upiSplit').innerHTML = `₹${upiTotal}`;
         
         // Chart
-        let last7Days = [];
-        let last7Sales = [];
+        let last7Days = [], last7Sales = [];
         for(let i=6; i>=0; i--) {
             let d = new Date();
             d.setDate(d.getDate() - i);
             let ds = d.toISOString().split('T')[0];
-            let dayName = d.toLocaleDateString('en-IN', {weekday:'short'});
-            last7Days.push(dayName);
-            let daySale = sales.filter(s => s.date === ds).reduce((sum, s) => sum + s.amount, 0);
-            last7Sales.push(daySale);
+            last7Days.push(d.toLocaleDateString('en-IN', {weekday:'short'}));
+            last7Sales.push(sales.filter(s => s.date === ds).reduce((sum, s) => sum + s.amount, 0));
         }
-        if(myChart) myChart.destroy();
-        let ctx = document.getElementById('myChart').getContext('2d');
-        myChart = new Chart(ctx, {
+        if(chart) chart.destroy();
+        let ctx = document.getElementById('salesChart').getContext('2d');
+        chart = new Chart(ctx, {
             type: 'line',
             data: { labels: last7Days, datasets: [{ label: 'Sales (₹)', data: last7Sales, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 }] },
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#94A3B8' } } } }
         });
     }
 
-    function renderStockList() {
+    function renderStock() {
         let container = document.getElementById('stockList');
         if(!container) return;
         container.innerHTML = '';
@@ -430,13 +382,13 @@
             let div = document.createElement('div');
             div.className = "card-bg p-2 rounded-lg flex gap-2 items-center mb-2";
             let photoHtml = p.photo ? `<img src="${p.photo}" class="stock-photo">` : `<div class="stock-photo bg-slate-800 flex items-center justify-center"><i class="fas fa-box text-gray-500"></i></div>`;
-            div.innerHTML = `${photoHtml}<div class="flex-1"><div class="flex justify-between"><div><span class="text-blue-400 text-[10px]">${p.brand || 'GENERIC'}</span><p class="font-bold text-sm">${p.name}</p></div><div><span class="bg-slate-800 px-2 py-0.5 rounded text-xs">${p.qty} Left</span><button onclick='deleteStock("${p.name}")' class="delete-btn ml-1"><i class="far fa-trash-can"></i></button></div></div><p class="text-gray-500 text-[10px]">₹${p.price} | Value: ₹${p.qty * p.price}</p></div>`;
+            div.innerHTML = `${photoHtml}<div class="flex-1"><div class="flex justify-between"><div><span class="text-blue-400 text-[10px]">${p.brand || 'GENERIC'}</span><p class="font-bold text-sm">${p.name}</p></div><div><span class="bg-slate-800 px-2 py-0.5 rounded text-xs">${p.qty} Left</span><button onclick='deleteProduct("${p.name}")' class="delete-btn ml-1"><i class="far fa-trash-can"></i></button></div></div><p class="text-gray-500 text-[10px]">₹${p.price} | Value: ₹${p.qty * p.price}</p></div>`;
             container.appendChild(div);
         });
-        if(products.length === 0) container.innerHTML = '<p class="text-center text-gray-500 py-4">No products yet. Add stock!</p>';
+        if(products.length === 0) container.innerHTML = '<p class="text-center text-gray-500 py-4">No products. Add stock!</p>';
     }
 
-    function renderUdhaarList() {
+    function renderUdhaar() {
         let container = document.getElementById('udhaarList');
         let search = document.getElementById('searchUdhaar')?.value.toLowerCase() || '';
         if(!container) return;
@@ -452,37 +404,44 @@
         if(filtered.length === 0) container.innerHTML = '<p class="text-center text-gray-500 py-4">No udhaar records</p>';
     }
 
-    function renderSalesLog() {
-        let container = document.getElementById('salesLogList');
-        let dateFilter = document.getElementById('dateFilter').value;
+    function renderSales() {
+        let container = document.getElementById('salesList');
+        let filter = document.getElementById('dateFilter').value;
         if(!container) return;
         container.innerHTML = '';
-        let filtered = sales.filter(s => !dateFilter || s.date === dateFilter);
+        let filtered = sales.filter(s => !filter || s.date === filter);
         filtered.forEach(s => {
             let div = document.createElement('div');
             div.className = "card-bg p-2 rounded-lg mb-2";
-            div.innerHTML = `<div class="flex justify-between"><div><p class="font-bold text-sm">${s.product}</p><p class="text-gray-400 text-[10px]">${s.customer || 'Walk-in Customer'}</p></div><div class="text-right"><p class="text-blue-400 font-bold">₹${s.amount}</p><p class="text-gray-400 text-[10px]">${s.date}</p></div></div><div class="flex justify-between mt-1"><span class="text-xs px-2 py-0.5 rounded ${s.status === 'Cash' ? 'bg-emerald-950/50 text-emerald-400' : s.status === 'UPI' ? 'bg-blue-950/50 text-blue-400' : 'bg-rose-950/50 text-rose-400'}">${s.status}</span><button onclick='deleteSale(${s.id})' class="delete-btn text-xs"><i class="far fa-trash-can"></i> Delete</button></div>`;
+            div.innerHTML = `<div class="flex justify-between"><div><p class="font-bold text-sm">${s.product}</p><p class="text-gray-400 text-[10px]">${s.customer || 'Walk-in'}</p></div><div class="text-right"><p class="text-blue-400 font-bold">₹${s.amount}</p><p class="text-gray-400 text-[10px]">${s.date}</p></div></div><div class="flex justify-between mt-1"><span class="text-xs px-2 py-0.5 rounded ${s.mode === 'Cash' ? 'bg-emerald-950/50 text-emerald-400' : s.mode === 'UPI' ? 'bg-blue-950/50 text-blue-400' : 'bg-rose-950/50 text-rose-400'}">${s.mode}</span><button onclick='deleteSale(${s.id})' class="delete-btn text-xs"><i class="far fa-trash-can"></i> Delete</button></div>`;
             container.appendChild(div);
         });
         if(filtered.length === 0) container.innerHTML = '<p class="text-center text-gray-500 py-4">No sales records</p>';
     }
 
+    function exportSales() {
+        let csv = "Date,Product,Customer,Amount,Mode\n";
+        sales.forEach(s => csv += `${s.date},${s.product},${s.customer || ''},${s.amount},${s.mode}\n`);
+        let a = document.createElement('a');
+        a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        a.download = 'sales_report.csv';
+        a.click();
+    }
+
     // ========== LOGIN ==========
-    function handleLogin() {
+    function doLogin() {
         let pin = document.getElementById('pin').value;
         if(pin === '1234') {
             sessionStorage.setItem('loggedIn', 'true');
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            loadData();
-            updateDashboard();
-            playSound();
-        } else {
-            alert('Wrong PIN! Use 1234');
-        }
+            loadAll();
+            updateUI();
+            playBeep();
+        } else { alert('Wrong PIN! Use 1234'); }
     }
 
-    function handleLogout() {
+    function doLogout() {
         sessionStorage.removeItem('loggedIn');
         location.reload();
     }
@@ -490,21 +449,13 @@
     if(sessionStorage.getItem('loggedIn') === 'true') {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-        loadData();
-        updateDashboard();
+        loadAll();
+        updateUI();
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function scrollToTop() { window.scrollTo({top:0,behavior:'smooth'}); }
-    function exportData() {
-        let csv = "Date,Product,Customer,Amount,Status\n";
-        sales.forEach(s => csv += `${s.date},${s.product},${s.customer || ''},${s.amount},${s.status}\n`);
-        let a = document.createElement('a');
-        a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'sales_report.csv';
-        a.click();
-    }
 </script>
 </body>
 </html>
